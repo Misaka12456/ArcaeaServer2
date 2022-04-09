@@ -1,0 +1,31 @@
+﻿/* 请在手动初始化 123 Marvelous Cube(下称"123 MarveCube") 之前(FirstStart模块未完成之前手动初始化)按照注释将配置信息填写完整,
+ 并将该文件改名为config.json(大小写敏感)复制到"程序根目录/data/"下 */
+{
+	"settings": {
+		"isMaintaining": false, // 是否正在维护中
+		"isPreparingForRelease": false, // [仅针对最新版本(见下)]是否正在准备发布
+		"isOverrideAprilFools": false, // 是否覆盖愚人节模块检查(true时服务器永久开放愚人节模块; false时仅服务器时间4.1时开放)
+		"isWorldEventMapTesting": false, // 是否正在测试世界模式限时地图(true时设置的测试员(见下)将可以进入不在活动时间范围内的限时地图)
+		"eventMapTestPlayers": [], // 世界模式限时地图测试玩家的用户id列表
+		"minSupportVer": "3.10.0", // 最低支持的Arcaea客户端版本
+		"latestVersion": "3.12.6", // Arcaea客户端的最新版本
+		"aprilFoolsStartTime": -1, // 愚人节开放的UNIX时间戳(单位为秒)(优先级高于上文的"服务器时间",低于"isOverrideAprilFools"的设置)
+		"topRankLimit": 200 //Top玩家(#框)的最大排名限制(最高可填写为200)
+	},
+	"config": {
+		"dbIP": "数据库的ip",
+		"dbPort": 3306, // 数据库的端口
+		"dbUser": "登录数据库使用的用户名",
+		"dbPass": "登录数据库使用的密码(Base64了)",
+		"dbName": "操作的数据库的名称",
+		"remoteDlPrefix": "http://127.0.0.1:51495", // 客户端请求远程下载时独立下载服务器的域名(包括http/https,结尾无斜杠)
+		"standaloneToken": "独立服务器被客户端请求下载时使用的Token",
+		"listenPort": 80, // 主服务器的监听端口
+		"redisPort": 6379 // 本机Redis服务器的连接端口
+	}
+}
+
+// 填写完毕后请务必在{程序根目录}/data/下新建
+// static/Songs
+// static/WorldMap
+// 目录

@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Team123it.Arcaea.MarveCube", "Team123it.Arcaea.MarveCube\Team123it.Arcaea.MarveCube.csproj", "{1871EC64-123D-4CA1-92E1-EE7F4B515359}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Team123it.Arcaea.MarveCube.Standalone", "Team123it.Arcaea.MarveCube.Standalone\Team123it.Arcaea.MarveCube.Standalone.csproj", "{B8AD8196-3878-45D1-B3E3-1092B2A2DFC5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C9EAB9AD-D507-4412-96D8-28F68C5B0AA4}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM64 = Debug|ARM64
+		Debug|x64 = Debug|x64
+		Release|ARM64 = Release|ARM64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1871EC64-123D-4CA1-92E1-EE7F4B515359}.Debug|ARM64.ActiveCfg = Debug|x64
+		{1871EC64-123D-4CA1-92E1-EE7F4B515359}.Debug|ARM64.Build.0 = Debug|x64
+		{1871EC64-123D-4CA1-92E1-EE7F4B515359}.Debug|x64.ActiveCfg = Debug|x64
+		{1871EC64-123D-4CA1-92E1-EE7F4B515359}.Debug|x64.Build.0 = Debug|x64
+		{1871EC64-123D-4CA1-92E1-EE7F4B515359}.Release|ARM64.ActiveCfg = Release|x64
+		{1871EC64-123D-4CA1-92E1-EE7F4B515359}.Release|ARM64.Build.0 = Release|x64
+		{1871EC64-123D-4CA1-92E1-EE7F4B515359}.Release|x64.ActiveCfg = Release|x64
+		{1871EC64-123D-4CA1-92E1-EE7F4B515359}.Release|x64.Build.0 = Release|x64
+		{B8AD8196-3878-45D1-B3E3-1092B2A2DFC5}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{B8AD8196-3878-45D1-B3E3-1092B2A2DFC5}.Debug|ARM64.Build.0 = Debug|ARM64
+		{B8AD8196-3878-45D1-B3E3-1092B2A2DFC5}.Debug|x64.ActiveCfg = Debug|x64
+		{B8AD8196-3878-45D1-B3E3-1092B2A2DFC5}.Debug|x64.Build.0 = Debug|x64
+		{B8AD8196-3878-45D1-B3E3-1092B2A2DFC5}.Release|ARM64.ActiveCfg = Release|ARM64
+		{B8AD8196-3878-45D1-B3E3-1092B2A2DFC5}.Release|ARM64.Build.0 = Release|ARM64
+		{B8AD8196-3878-45D1-B3E3-1092B2A2DFC5}.Release|x64.ActiveCfg = Release|x64
+		{B8AD8196-3878-45D1-B3E3-1092B2A2DFC5}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {646E1181-A60C-4A0B-AA6D-85C76E0CE72B}
+	EndGlobalSection
+EndGlobal

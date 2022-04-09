@@ -1,0 +1,13 @@
+{
+	"settings": {
+		"isMaintaining": false
+	},
+	"config": {
+		"dbIP": "127.0.0.1",
+		"dbPort": 3306,
+		"dbUser": "root",
+		"dbPass": "cm9vdA==",
+		"dbName": "arcaea",
+		"listenPort": 4501
+	}
+}

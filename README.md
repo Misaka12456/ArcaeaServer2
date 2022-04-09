@@ -1,0 +1,60 @@
+# Arcaea Server 2
+
+基于ASP.NET Core 6.0实现的Arcaea服务器程序实现
+
+##### 支持的Arcaea客户端版本
+
+* Arcaea 3.10.0+
+* Arcaea 3.10.0c+
+
+##### 项目结构
+
+* [Team123it.Arcaea.MarveCube](https://github.com/Misaka12456/ArcaeaServer2/blob/master/Team123it.Arcaea.MarveCube) - Arcaea Server 2主服务器程序
+* [Team123it.Arcaea.MarveCube.Standalone](https://github.com/Misaka12456/ArcaeaServer2/blob/master/Team123it.Arcaea.MarveCube.Standalone) - Arcaea Server 2独立下载服务器程序
+
+##### 开发环境
+
+* Microsoft Visual Studio 2022 (17.0+) (x64)
+* Microsoft.AspNetCore.App 运行时 6.0.0+ (x64)
+* Microsoft.NETCore.App 6.0.0 运行时 6.0.0+ (x64)
+* .NET SDK 6.0.100+ (x64)
+
+##### 运行环境(标注有*的表示独立下载服务器无需该环境(仅主服务器程序需要该环境))
+
+* Microsoft.NETCore.App 6.0.0 运行时 6.0.0+ (x64)
+* Microsoft.AspNetCore.App 运行时 6.0.0+ (x64)
+* *MySQL 8.0+ / MariaDB 10.0+ (*用于存储服务器数据)
+* *Redis 6.0+ (Windows端为Redis for Windows 3.0+) (用于存放下载Token等临时数据)
+* *没了(对就是这么简单)*
+
+##### 特点
+
+* 对于曲包id为 `unranked` 或难度定数为0(不存在应为-1)的曲目，程序会将成绩存储至 `bests_special` 而并非 `bests` 表中，因此这些曲目将不计入Best30计算
+* 玩家的个人游玩潜力值计算中仅存在Best30，不存在Recent10，因此潜力值在任何情况下都不会出现倒扣的情况
+
+##### 搭建之前……
+
+独立的下载服务器(Team123it.Arcaea.MarveCube.Standalone)可以与主服务器程序放在一起，但我们极力建议您将其放在与主服务器不同的、带宽较为充足的服务器上以减轻主服务器的带宽负担&增强主服务器的安全性。
+
+无论是主服务器还是下载服务器都应存在谱面文件夹(包括该曲目的ogg音频文件以及aff谱面文件)(位置在 `{程序根目录}\data\static\Songs` )，其作用在这几处：
+
+1. 下载服务器为玩家提供数据下载时
+2. 主服务器在玩家提交数据后检查MD5校验值是否正确时
+3. 主服务器在玩家登录账号后返回所有谱面以及音频文件的MD5校验值时
+
+##### 运行之前……
+
+1. 在数据库中执行主服务器项目下的 `FirstStartData\Initialization.sql` 初始化数据库;
+2. 阅读主服务器项目下的 `FirstStartData\ConfigExample.json` 并按照注释填写信息并保存
+3. 启动数据库程序&Redis程序
+
+##### 注意事项
+
+* 在任何一个玩家初次登录Arcaea Server 2服务端后，服务器会为减轻后续文件读写压力而在此时将所有谱面文件夹中的ogg音频文件以及aff谱面文件的MD5校验值保存在数据库的 `fixed_songs_checksum` 表中。
+  若后续出现再次登录将直接返回数据库中存储的校验值而并非重新遍历计算校验值。
+  但使用该方法时可能会出现谱面文件/音频文件需要更新的情况，这时请手动删除 `fixed_songs_checksum ` 表中的对应文件的MD5校验值项，下一位玩家登录后将会自动更新MD5校验值。
+* 当前暂时不支持Link Play游玩，请等待后续更新
+
+##### 开源协议
+
+本企划基于[123 Open-Source Organization MIT Public License 3.0](https://team123it.github.io/LICENSE.html)许可协议开源。

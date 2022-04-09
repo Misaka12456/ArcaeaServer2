@@ -1,0 +1,51 @@
+123 Open-Source Organization MIT Public License v2.0
+
+ 
+
+Copyright (C) 2015-2022 123 Open-Source Organization
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+ 
+
+1.         If you want to use the Software which is any-person-accessable, you can public or not public the Software by any way.
+
+ 
+
+2.         If you want to use the Software which only give access to some people, you can use the Software without limit, but you should not public the Software by any way including:
+
+ 
+
+ Sharing with other persons who don't allowed to access the Software;
+
+ Distrubuting the raw Software without grants
+
+ 
+
+or the Software copyright owner have the right to take legal actions, includes but not limited to:
+
+ 
+
+ Require you to stop using the Software and/or the modified Software;
+
+ Require you to apologize your action and publish it;
+
+ Recover the income from the Software and/or the modified Software
+
+ 
+
+and/or achieve the requirements and the rights by filing lawsuits.
+
+ 
+
+3.         If you want to use the Software which only give access to some people and is expressly prohibited to modify the Software, you should obey the notice in section 2 and the following notice:
+
+ 
+
+ Never modify it for any reasons, including repairing bugs(if this happens, you should submit an issue in the source of the Software,like Github, Gitlab or E-mail instead of repairing bugs by yourself).
+
+ 
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
