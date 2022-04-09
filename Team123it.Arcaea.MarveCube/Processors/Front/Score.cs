@@ -16,7 +16,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 {
 	/// <summary>
 	/// 分数提交管理相关API。<br />
-	/// 对应API前缀:/cutestscope/2/score/
+	/// 对应API前缀:/years/19/score/
 	/// </summary>
 	public static class Score
 	{

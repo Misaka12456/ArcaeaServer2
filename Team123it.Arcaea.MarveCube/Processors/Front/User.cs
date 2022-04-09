@@ -12,7 +12,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 {
 	/// <summary>
 	/// 玩家用户数据相关API。<br />
-	/// 对应API前缀:/cutestscope/2/user/
+	/// 对应API前缀:/years/19/user/
 	/// </summary>
 	public class User
 	{

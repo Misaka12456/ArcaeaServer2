@@ -13,7 +13,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 {
 	/// <summary>
 	/// 数据获取相关API。<br />
-	/// 对应API前缀:/cutestscope/2/compose/
+	/// 对应API前缀:/years/19/compose/
 	/// </summary>
 	public class Compose
 	{
@@ -98,7 +98,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							}
 							props.Add("level_steps", levels);
 							break;
-						case "world_ranking_enabled": //是否启用初始曲包(Beginning)世界排行榜
+						case "world_ranking_enabled": //是否启用初始曲包(base)世界排行榜
 							props.Add("world_ranking_enabled", Convert.ToBoolean(Convert.ToInt32(rd.GetString(1))));
 							break;
 						case "is_byd_chapter_unlocked": //世界(World)模式 - Beyond章节是否已解封

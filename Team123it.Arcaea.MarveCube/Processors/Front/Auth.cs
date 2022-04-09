@@ -14,7 +14,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 {
 	/// <summary>
 	/// 玩家帐号验证相关API。<br />
-	/// 对应API前缀:/cutestscope/2/auth/
+	/// 对应API前缀:/years/19/auth/
 	/// </summary>
 	public class Auth
 	{

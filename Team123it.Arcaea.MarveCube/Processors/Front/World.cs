@@ -6,7 +6,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 {
 	/// <summary>
 	/// 世界(World)模式相关API。<br />
-	/// 对应API前缀:/cutestscope/2/world/
+	/// 对应API前缀:/years/19/world/
 	/// </summary>
 	public class World
 	{

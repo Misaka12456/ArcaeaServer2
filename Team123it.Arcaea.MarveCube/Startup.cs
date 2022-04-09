@@ -58,8 +58,6 @@ namespace Team123it.Arcaea.MarveCube
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapControllers();
-				// endpoints.MapControllerRoute("default", "years/19/{controller}/{action}/{id?}");
-				// endpoints.MapControllerRoute("default-oldver-v2", "cutestscope/2/{controller}/{action}/{id?}");
 			});
 
 			//			app.UseMiddleware<LargeDataProcessMiddleware>(null);
