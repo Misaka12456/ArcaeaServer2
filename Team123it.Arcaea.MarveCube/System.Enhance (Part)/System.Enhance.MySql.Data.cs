@@ -42,7 +42,7 @@ namespace System.Enhance.MySql.Data
                 ExecuteCommand(sqlConnString, alSql);
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }
@@ -60,7 +60,7 @@ namespace System.Enhance.MySql.Data
 					cmd.ExecuteNonQuery();
 				}
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
                 throw;
 			}

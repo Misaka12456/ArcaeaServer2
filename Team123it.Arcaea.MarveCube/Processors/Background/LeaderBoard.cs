@@ -3,8 +3,6 @@ using static Team123it.Arcaea.MarveCube.GlobalProperties;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
 using Team123it.Arcaea.MarveCube.Core;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Team123it.Arcaea.MarveCube.Processors.Background
 {
@@ -43,18 +41,22 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 					switch (difficulty)
 					{
 						case SongDifficulty.Past: //Past
-							cmd.CommandText = $"SELECT COUNT(*),rating_pst,pakset FROM fixed_songs WHERE sid='{songid}'";
+							cmd.CommandText = $"SELECT COUNT(*),rating_pst,pakset FROM fixed_songs WHERE sid=?sid;";
 							break;
 						case SongDifficulty.Present: //Present
-							cmd.CommandText = $"SELECT COUNT(*),rating_prs,pakset FROM fixed_songs WHERE sid='{songid}'";
+							cmd.CommandText = $"SELECT COUNT(*),rating_prs,pakset FROM fixed_songs WHERE sid=?sid;";
 							break;
 						case SongDifficulty.Future: //Future
-							cmd.CommandText = $"SELECT COUNT(*),rating_ftr,pakset FROM fixed_songs WHERE sid='{songid}'";
+							cmd.CommandText = $"SELECT COUNT(*),rating_ftr,pakset FROM fixed_songs WHERE sid=?sid;";
 							break;
 						case SongDifficulty.Beyond: //Beyond
-							cmd.CommandText = $"SELECT COUNT(*),rating_byd,pakset FROM fixed_songs WHERE sid='{songid}'";
+							cmd.CommandText = $"SELECT COUNT(*),rating_byd,pakset FROM fixed_songs WHERE sid=?sid;";
 							break;
 					}
+					cmd.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
+					{
+						Value = songid
+					});
 					#endregion
 					var rd = cmd.ExecuteReader();
 					rd.Read();
@@ -79,7 +81,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 						{
 							case LeaderBoardType.World: //世界排行
 								#region "世界排行"
-								cmd.CommandText = $"SELECT user_id,score,time_played FROM {tableName} WHERE song_id='{songid}' AND difficulty={(int)difficulty} ORDER BY score DESC, time_played DESC LIMIT {limit}";
+								cmd.CommandText = $"SELECT user_id,score,time_played FROM {tableName} WHERE song_id=?sid AND difficulty={(int)difficulty} ORDER BY score DESC, time_played DESC LIMIT {limit}";
 								rd = cmd.ExecuteReader();
 								long rank = 0;
 								while (rd.Read()) //遍历同一曲目同一难度的所有最佳成绩
@@ -105,12 +107,12 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 								}
 								else
 								{
-									cmd.CommandText = $"SELECT COUNT(*) FROM {tableName} WHERE user_id={userid} AND song_id='{songid}' and difficulty={(int)difficulty}";
+									cmd.CommandText = $"SELECT COUNT(*) FROM {tableName} WHERE user_id={userid} AND song_id=?sid and difficulty={(int)difficulty}";
 									if ((long)cmd.ExecuteScalar() == 1) //如果存在当前玩家对应曲目的最佳成绩
 									{
-										cmd.CommandText = $"SELECT COUNT(*) FROM {tableName} WHERE song_id='{songid}' AND difficulty={(int)difficulty} " +
-											$"AND (score>(SELECT score FROM {tableName} WHERE user_id={userid} AND song_id='{songid}' AND difficulty={(int)difficulty}) " +
-											$"AND time_played > (SELECT time_played FROM {tableName} WHERE user_id={userid} and song_id='{songid}' AND difficulty={(int)difficulty})" +
+										cmd.CommandText = $"SELECT COUNT(*) FROM {tableName} WHERE song_id=?sid AND difficulty={(int)difficulty} " +
+											$"AND (score>(SELECT score FROM {tableName} WHERE user_id={userid} AND song_id=?sid AND difficulty={(int)difficulty}) " +
+											$"AND time_played > (SELECT time_played FROM {tableName} WHERE user_id={userid} and song_id=?sid AND difficulty={(int)difficulty})" +
 											$")";
 										rd = cmd.ExecuteReader();
 										rd.Read();
@@ -119,7 +121,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 										{
 											rd.Close();
 											#region "世界模式排行"
-											cmd.CommandText = $"SELECT user_id FROM {tableName} WHERE song_id='{songid}' AND difficulty={(int)difficulty} ORDER BY score DESC, time_played DESC LIMIT {limit.Value}";
+											cmd.CommandText = $"SELECT user_id FROM {tableName} WHERE song_id=?sid AND difficulty={(int)difficulty} ORDER BY score DESC, time_played DESC LIMIT {limit.Value}";
 											rd = cmd.ExecuteReader();
 											long rank1 = 0;
 											while (rd.Read()) //遍历同一曲目同一难度的所有最佳成绩
@@ -138,7 +140,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 										} else if (myRank >= 5 && myRank <= 9983) //排名5-9983
 										{
 											rd.Close();
-											cmd.CommandText = $"SELECT user_id,score,time_played FROM {tableName} WHERE song_id='{songid}' AND difficulty={(int)difficulty} ORDER BY score DESC,time_played DESC limit {limit.Value} offset {myRank - 5L};";
+											cmd.CommandText = $"SELECT user_id,score,time_played FROM {tableName} WHERE song_id=?sid AND difficulty={(int)difficulty} ORDER BY score DESC,time_played DESC limit {limit.Value} offset {myRank - 5L};";
 											rd = cmd.ExecuteReader();
 											long rank1 = myRank - 5;
 											while (rd.Read())
@@ -155,7 +157,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 										} else if (myRank >= 9984 && myRank <= 9999) //排名9984-9999
 										{
 											rd.Close();
-											cmd.CommandText = $"SELECT user_id FROM {tableName} WHERE song_id='{songid}' AND difficulty={(int)difficulty} ORDER BY score DESC,time_played DESC limit {limit.Value} offset {9998 - limit.Value};";
+											cmd.CommandText = $"SELECT user_id FROM {tableName} WHERE song_id=?sid AND difficulty={(int)difficulty} ORDER BY score DESC,time_played DESC limit {limit.Value} offset {9998 - limit.Value};";
 											rd = cmd.ExecuteReader();
 											long rank1 = 9998 - limit.Value;
 											while(rd.Read())
@@ -172,7 +174,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 										} else //排名1w+
 										{
 											rd.Close();
-											cmd.CommandText = $"SELECT user_id FROM {tableName} WHERE song_id='{songid}' AND difficulty={(int)difficulty} ORDER BY score DESC,time_played DESC limit {limit.Value} offset {9999 - limit.Value};";
+											cmd.CommandText = $"SELECT user_id FROM {tableName} WHERE song_id=?sid AND difficulty={(int)difficulty} ORDER BY score DESC,time_played DESC limit {limit.Value} offset {9999 - limit.Value};";
 											rd = cmd.ExecuteReader();
 											long rank1 = 9999 - limit.Value;
 											while (rd.Read())
@@ -211,7 +213,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 								{
 									cmd.CommandText = $"SELECT user_id,score,time_played FROM {tableName} WHERE user_id IN " +
 										$"(SELECT {userid} UNION SELECT user_id_other FROM friend WHERE user_id_me={userid}) " +
-										$"AND song_id='{songid}' AND difficulty={(int)difficulty} " +
+										$"AND song_id=?sid AND difficulty={(int)difficulty} " +
 										$"ORDER BY score DESC, time_played DESC limit {limit}";
 									var rd1 = cmd.ExecuteReader();
 									long rank2 = 0;

@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
-using System.Enhance.AspNetCore;
 
 namespace Team123it.Arcaea.MarveCube.Standalone
 {

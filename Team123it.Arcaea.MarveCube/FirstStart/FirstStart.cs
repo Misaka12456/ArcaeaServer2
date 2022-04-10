@@ -41,12 +41,12 @@ DoInitialize:
 				MysqlExecutor.ExecuteSqlFileData(DatabaseConnectURL, initSQLCodes);
 				c.WriteLine("数据库初始化成功完成");
 			}
-			catch (MySqlException ex)
+			catch (MySqlException)
 			{
 				c.WriteLine("无法连接到数据库, 请检查配置信息是否填写有误后单击任意键继续");
 				goto DoInitialize;
 			}
-			catch (JsonException ex)
+			catch (JsonException)
 			{
 				c.WriteLine("配置信息填写有误, 请重新填写, 注意一定要删除所有注释");
 				c.WriteLine("完成后单击任意键继续");

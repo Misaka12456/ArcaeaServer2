@@ -469,7 +469,11 @@ namespace Team123it.Arcaea.MarveCube.Core
 				case SongDifficulty.Past:
 					#region "Past"
 					Difficulty = songDiff;
-					cmd.CommandText = $"SELECT COUNT(sid),rating_pst FROM fixed_songs WHERE sid='{songId}'";
+					cmd.CommandText = "SELECT COUNT(sid),rating_pst FROM fixed_songs WHERE sid=?sid";
+					cmd.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
+					{
+						Value = songId
+					});
 					var r_pst = cmd.ExecuteReader();
 					r_pst.Read();
 					if (r_pst.GetInt32(0) == 1)
@@ -502,7 +506,11 @@ namespace Team123it.Arcaea.MarveCube.Core
 				case SongDifficulty.Present:
 					#region "Present"
 					Difficulty = songDiff;
-					cmd.CommandText = $"SELECT COUNT(sid),rating_prs FROM fixed_songs WHERE sid='{songId}'";
+					cmd.CommandText = "SELECT COUNT(sid),rating_prs FROM fixed_songs WHERE sid=?sid";
+					cmd.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
+					{
+						Value = songId
+					});
 					var r_prs = cmd.ExecuteReader();
 					r_prs.Read();
 					if (r_prs.GetInt32(0) == 1)
@@ -535,7 +543,11 @@ namespace Team123it.Arcaea.MarveCube.Core
 				case SongDifficulty.Future:
 					#region "Future"
 					Difficulty = songDiff;
-					cmd.CommandText = $"SELECT COUNT(sid),rating_ftr FROM fixed_songs WHERE sid='{songId}'";
+					cmd.CommandText = $"SELECT COUNT(sid),rating_ftr FROM fixed_songs WHERE sid=?sid";
+					cmd.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
+					{
+						Value = songId
+					});
 					var r_ftr = cmd.ExecuteReader();
 					r_ftr.Read();
 					if (r_ftr.GetInt32(0) == 1)
@@ -568,7 +580,11 @@ namespace Team123it.Arcaea.MarveCube.Core
 				case SongDifficulty.Beyond:
 					#region "Beyond"
 					Difficulty = songDiff;
-					cmd.CommandText = $"SELECT COUNT(sid),rating_byd FROM fixed_songs WHERE sid='{songId}'";
+					cmd.CommandText = $"SELECT COUNT(sid),rating_byd FROM fixed_songs WHERE sid=?sid";
+					cmd.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
+					{
+						Value = songId
+					});
 					var r_byd = cmd.ExecuteReader();
 					r_byd.Read();
 					if (r_byd.GetInt32(0) == 1)
@@ -653,7 +669,11 @@ namespace Team123it.Arcaea.MarveCube.Core
 				case SongDifficulty.Past:
 					#region "Past"
 					Difficulty = songDiff;
-					cmd.CommandText = $"SELECT COUNT(*),rating_pst FROM fixed_songs WHERE sid='{songId}'";
+					cmd.CommandText = $"SELECT COUNT(*),rating_pst FROM fixed_songs WHERE sid=?sid";
+					cmd.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
+					{
+						Value = songId
+					});
 					var r_pst = cmd.ExecuteReader();
 					r_pst.Read();
 					if (r_pst.GetInt32(0) == 1)
@@ -686,7 +706,11 @@ namespace Team123it.Arcaea.MarveCube.Core
 				case SongDifficulty.Present:
 					#region "Present"
 					Difficulty = songDiff;
-					cmd.CommandText = $"SELECT COUNT(*),rating_prs FROM fixed_songs WHERE sid='{songId}'";
+					cmd.CommandText = $"SELECT COUNT(*),rating_prs FROM fixed_songs WHERE sid=?sid";
+					cmd.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
+					{
+						Value = songId
+					});
 					var r_prs = cmd.ExecuteReader();
 					r_prs.Read();
 					if (r_prs.GetInt32(0) == 1)
@@ -719,7 +743,11 @@ namespace Team123it.Arcaea.MarveCube.Core
 				case SongDifficulty.Future:
 					#region "Future"
 					Difficulty = songDiff;
-					cmd.CommandText = $"SELECT COUNT(*),rating_ftr FROM fixed_songs WHERE sid='{songId}'";
+					cmd.CommandText = $"SELECT COUNT(*),rating_ftr FROM fixed_songs WHERE sid=?sid";
+					cmd.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
+					{
+						Value = songId
+					});
 					var r_ftr = cmd.ExecuteReader();
 					r_ftr.Read();
 					if (r_ftr.GetInt32(0) == 1)
@@ -752,7 +780,11 @@ namespace Team123it.Arcaea.MarveCube.Core
 				case SongDifficulty.Beyond:
 					#region "Beyond"
 					Difficulty = songDiff;
-					cmd.CommandText = $"SELECT COUNT(*),rating_byd FROM fixed_songs WHERE sid='{songId}'";
+					cmd.CommandText = $"SELECT COUNT(*),rating_byd FROM fixed_songs WHERE sid=?sid";
+					cmd.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
+					{
+						Value = songId
+					});
 					var r_byd = cmd.ExecuteReader();
 					r_byd.Read();
 					if (r_byd.GetInt32(0) == 1)
@@ -878,7 +910,11 @@ namespace Team123it.Arcaea.MarveCube.Core
 				using var conn = new MySqlConnection(DatabaseConnectURL);
 				conn.Open();
 				var cmd = conn.CreateCommand();
-				cmd.CommandText = $"SELECT * FROM {tableName} WHERE user_id={userid} AND song_id='{songId}' AND difficulty={(int)difficulty};";
+				cmd.CommandText = $"SELECT * FROM {tableName} WHERE user_id={userid} AND song_id=?sid AND difficulty={(int)difficulty};";
+				cmd.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
+				{
+					Value = songId
+				});
 				var rd = cmd.ExecuteReader();
 				if (rd.HasRows) //存在最好成绩
 				{

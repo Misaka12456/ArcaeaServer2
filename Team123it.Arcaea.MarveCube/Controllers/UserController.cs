@@ -185,15 +185,13 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 					{
 						try
 						{
-							Console.WriteLine(form["scores_data"]);
-							string scores_data = HttpUtility.UrlDecode(form["scores_data"], Encoding.UTF8);
-							string clearlamps_data = HttpUtility.UrlDecode(form["clearlamps_data"], Encoding.UTF8);
-							string clearedsongs_data = HttpUtility.UrlDecode(form["clearedsongs_data"], Encoding.UTF8);
-							string unlocklist_data = HttpUtility.UrlDecode(form["unlocklist_data"], Encoding.UTF8);
-							string story_data = HttpUtility.UrlDecode(form["story_data"], Encoding.UTF8);
-							string installid_data = HttpUtility.UrlDecode(form["installid_data"], Encoding.UTF8);
-							string devicemodelname_data = HttpUtility.UrlDecode(form["devicemodelname_data"], Encoding.UTF8);
-							File2.WriteAllText(Path2.Combine(AppContext.BaseDirectory, "data", "test.txt"), scores_data, Encoding.UTF8);
+							string scores_data = form["scores_data"];
+							string clearlamps_data = form["clearlamps_data"];
+							string clearedsongs_data = form["clearedsongs_data"];
+							string unlocklist_data = form["unlocklist_data"];
+							string story_data = form["story_data"];
+							string installid_data = form["installid_data"];
+							string devicemodelname_data = form["devicemodelname_data"];
 							var scores = JObject.Parse(scores_data).Value<JArray>("");
 							var clearLamps = JObject.Parse(clearlamps_data).Value<JArray>("");
 							var clearedSongs = JObject.Parse(clearedsongs_data).Value<JArray>("");

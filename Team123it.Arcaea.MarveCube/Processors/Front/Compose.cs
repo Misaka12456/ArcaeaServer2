@@ -6,7 +6,6 @@ using System;
 using Team123it.Arcaea.MarveCube.Core;
 using Team123it.Arcaea.MarveCube.Processors.Background;
 using World2 = Team123it.Arcaea.MarveCube.Processors.Background.World;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using System.Linq;
 
 namespace Team123it.Arcaea.MarveCube.Processors.Front
