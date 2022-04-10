@@ -1,6 +1,6 @@
 # Arcaea Server 2
 
-基于ASP.NET Core 6.0实现的Arcaea服务器程序实现
+高并发低占用的 Arcaea API 后端 基于ASP.NET Core 6.0
 
 ##### 支持的Arcaea客户端版本
 
@@ -8,16 +8,19 @@
 
 ##### 项目结构
 
-* [Team123it.Arcaea.MarveCube](https://github.com/Misaka12456/ArcaeaServer2/blob/master/Team123it.Arcaea.MarveCube) - Arcaea Server 2主服务器程序
-* [Team123it.Arcaea.MarveCube.Standalone](https://github.com/Misaka12456/ArcaeaServer2/blob/master/Team123it.Arcaea.MarveCube.Standalone) - Arcaea Server 2独立下载服务器程序
+* [Team123it.Arcaea.MarveCube](./Team123it.Arcaea.MarveCube) - Arcaea Server 2 主服务器后端
+* [Team123it.Arcaea.MarveCube.Standalone](./Team123it.Arcaea.MarveCube.Standalone) - Arcaea Server 2 独立下载服务器后端
 
 ##### 运行环境(标注有*的表示独立下载服务器无需该环境(仅主服务器程序需要该环境))
 
 * Microsoft.NETCore.App x64 运行时 6.0.0 及以上版本
+* 
 * Microsoft.AspNetCore.App x64 运行时 6.0.0 及以上版本
-* *MySQL 8.0+ / MariaDB 10.0+ (*用于存储服务器数据)
-* *Redis 6.0+ (Windows端为Redis for Windows 3.0+) (用于存放下载Token等临时数据)
-* *没了(对就是这么简单)*
+* 
+* MySQL 8.0+ / MariaDB 10.0+ (用于存储服务器数据)
+* 
+* Redis 6.0+ (Windows端为Redis for Windows 3.0+) (用于存放下载Token等临时数据)
+
 
 ##### 特点
 
