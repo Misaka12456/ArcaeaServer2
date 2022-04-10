@@ -18,8 +18,11 @@ namespace Team123it.Arcaea.MarveCube.FirstStart
 	{
 		public static void FastInitialize()
 		{
+			var main = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, "data"));
+			if (!main.Exists) main.Create();
 			File.WriteAllBytes(Path.Combine(AppContext.BaseDirectory, "data", "config.json"), ReadEmbeddedResources("Team123it.Arcaea.MarveCube.FirstStartData.ConfigExample.json"));
 			c.WriteLine("请打开{程序根目录}\\data\\config.json, 阅读完毕注释后按照注释填写配置信息, 并在保存时删除所有注释");
+			c.WriteLine("(如果您使用的是Linux等系统, 请重新打开一个新的ssh连接编辑对应的文件)");
 			c.WriteLine("以上均完成后单击任意键继续");
 DoInitialize:
 			c.ReadKey(true);
