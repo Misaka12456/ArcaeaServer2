@@ -14,11 +14,11 @@
 ##### 运行环境(标注有*的表示独立下载服务器无需该环境(仅主服务器程序需要该环境))
 
 * Microsoft.NETCore.App x64 运行时 6.0.0 及以上版本
-* 
+
 * Microsoft.AspNetCore.App x64 运行时 6.0.0 及以上版本
-* 
+
 * MySQL 8.0+ / MariaDB 10.0+ (用于存储服务器数据)
-* 
+
 * Redis 6.0+ (Windows端为Redis for Windows 3.0+) (用于存放下载Token等临时数据)
 
 
