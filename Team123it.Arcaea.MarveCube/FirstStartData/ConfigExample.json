@@ -24,8 +24,3 @@
 		"redisPort": 6379 // 本机Redis服务器的连接端口
 	}
 }
-
-// 填写完毕后请务必在{程序根目录}/data/下新建
-// static/Songs
-// static/WorldMap
-// 目录

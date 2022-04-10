@@ -10,7 +10,7 @@
     <FileVersion>0.1.6</FileVersion>
     <Copyright>(C)Copyright 2015-2022 123 Open-Source Organization. All rights reserved.</Copyright>
     <AssemblyTitle>Arcaea Server 2 - High-Speed Protable Arcaea API Server</AssemblyTitle>
-    <Platforms>x64</Platforms>
+    <Platforms>x64;ARM64</Platforms>
     <UserSecretsId>3ec8699b-b822-4ec9-83d6-25f853a0fab7</UserSecretsId>
   </PropertyGroup>
 
