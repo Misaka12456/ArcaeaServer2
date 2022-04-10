@@ -1,6 +1,3 @@
-﻿-- ----------------------------
--- Table structure for bests
--- ----------------------------
 DROP TABLE IF EXISTS `bests`;
 CREATE TABLE `bests` (
   `user_id` int(11) NOT NULL,
@@ -19,10 +16,6 @@ CREATE TABLE `bests` (
   `rating` decimal(10,3) DEFAULT NULL,
   PRIMARY KEY (`user_id`,`song_id`,`difficulty`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for bests_special
--- ----------------------------
 DROP TABLE IF EXISTS `bests_special`;
 CREATE TABLE `bests_special` (
   `user_id` int(11) NOT NULL,
@@ -41,9 +34,6 @@ CREATE TABLE `bests_special` (
   `rating` decimal(10,3) DEFAULT NULL,
   PRIMARY KEY (`user_id`,`song_id`,`difficulty`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
--- ----------------------------
--- Table structure for fixed_characters
--- ----------------------------
 DROP TABLE IF EXISTS `fixed_characters`;
 CREATE TABLE `fixed_characters` (
   `character_id` int(11) NOT NULL,
@@ -67,10 +57,6 @@ CREATE TABLE `fixed_characters` (
   `version` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`character_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for fixed_packs
--- ----------------------------
 DROP TABLE IF EXISTS `fixed_packs`;
 CREATE TABLE `fixed_packs` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -97,10 +83,6 @@ CREATE TABLE `fixed_packs` (
   `version` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`,`pid`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for fixed_presents
--- ----------------------------
 DROP TABLE IF EXISTS `fixed_presents`;
 CREATE TABLE `fixed_presents` (
   `present_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -113,20 +95,12 @@ CREATE TABLE `fixed_presents` (
   `items` text COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`present_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for fixed_properties
--- ----------------------------
 DROP TABLE IF EXISTS `fixed_properties`;
 CREATE TABLE `fixed_properties` (
   `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `value` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`key`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for fixed_purchases
--- ----------------------------
 DROP TABLE IF EXISTS `fixed_purchases`;
 CREATE TABLE `fixed_purchases` (
   `item_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -138,10 +112,6 @@ CREATE TABLE `fixed_purchases` (
   `discount_to` datetime DEFAULT NULL,
   PRIMARY KEY (`item_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for fixed_songs
--- ----------------------------
 DROP TABLE IF EXISTS `fixed_songs`;
 CREATE TABLE `fixed_songs` (
   `sid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -186,30 +156,18 @@ CREATE TABLE `fixed_songs` (
   `version` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`sid`,`date`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for fixed_songs_checksum
--- ----------------------------
 DROP TABLE IF EXISTS `fixed_songs_checksum`;
 CREATE TABLE `fixed_songs_checksum` (
   `sid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `filename` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `checksum` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for friend
--- ----------------------------
 DROP TABLE IF EXISTS `friend`;
 CREATE TABLE `friend` (
   `user_id_me` int(11) NOT NULL,
   `user_id_other` int(11) NOT NULL,
   PRIMARY KEY (`user_id_me`,`user_id_other`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for logins
--- ----------------------------
 DROP TABLE IF EXISTS `logins`;
 CREATE TABLE `logins` (
   `access_token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -220,20 +178,12 @@ CREATE TABLE `logins` (
   `last_login_deviceId` mediumtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`access_token`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for user_bydunlocks
--- ----------------------------
 DROP TABLE IF EXISTS `user_bydunlocks`;
 CREATE TABLE `user_bydunlocks` (
   `user_id` int(11) NOT NULL,
   `sid` varchar(255) NOT NULL,
   PRIMARY KEY (`user_id`,`sid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- ----------------------------
--- Table structure for user_chars
--- ----------------------------
 DROP TABLE IF EXISTS `user_chars`;
 CREATE TABLE `user_chars` (
   `user_id` int(11) NOT NULL,
@@ -253,10 +203,6 @@ CREATE TABLE `user_chars` (
   `is_uncapped_override` int(11) DEFAULT 0,
   PRIMARY KEY (`user_id`,`character_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for user_saves
--- ----------------------------
 DROP TABLE IF EXISTS `user_saves`;
 CREATE TABLE `user_saves` (
   `user_id` int(10) unsigned NOT NULL,
@@ -270,10 +216,6 @@ CREATE TABLE `user_saves` (
   `create_time` datetime DEFAULT NULL,
   PRIMARY KEY (`user_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for user_world
--- ----------------------------
 DROP TABLE IF EXISTS `user_world`;
 CREATE TABLE `user_world` (
   `user_id` int(11) NOT NULL,
@@ -283,10 +225,6 @@ CREATE TABLE `user_world` (
   `is_locked` int(11) DEFAULT 0,
   PRIMARY KEY (`user_id`,`map_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for users
--- ----------------------------
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -331,10 +269,6 @@ CREATE TABLE `users` (
   PRIMARY KEY (`user_id`) USING BTREE,
   UNIQUE KEY `name` (`name`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=10000024 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
--- ----------------------------
--- Table structure for world_songplay
--- ----------------------------
 DROP TABLE IF EXISTS `world_songplay`;
 CREATE TABLE `world_songplay` (
   `user_id` int(11) NOT NULL,

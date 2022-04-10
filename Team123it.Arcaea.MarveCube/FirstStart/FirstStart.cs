@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Reflection;
 using Newtonsoft.Json;
+using System.Enhance.MySql.Data;
 
 namespace Team123it.Arcaea.MarveCube.FirstStart
 {
@@ -37,15 +38,10 @@ DoInitialize:
 				cmd.CommandText = $"CREATE DATABASE {dbName};";
 				cmd.ExecuteNonQuery();
 				conn.Close();
-				conn = new MySqlConnection(DatabaseConnectURL);
-				conn.Open();
-				cmd = conn.CreateCommand();
-				cmd.CommandText = initSQLCodes;
-				cmd.ExecuteNonQuery();
-				conn.Close();
+				MysqlExecutor.ExecuteSqlFileData(DatabaseConnectURL, initSQLCodes);
 				c.WriteLine("数据库初始化成功完成");
 			}
-			catch (MySqlException)
+			catch (MySqlException ex)
 			{
 				c.WriteLine("无法连接到数据库, 请检查配置信息是否填写有误后单击任意键继续");
 				goto DoInitialize;
