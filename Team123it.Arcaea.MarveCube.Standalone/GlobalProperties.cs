@@ -43,7 +43,6 @@ namespace Team123it.Arcaea.MarveCube.Standalone
 				}
 			}
 		}
-
 		/// <summary>
 		/// 获取HTTPS证书密码。
 		/// <para>若证书密码设置项不存在则返回 <see langword="null"/> 。</para>
@@ -61,6 +60,56 @@ namespace Team123it.Arcaea.MarveCube.Standalone
 						var config = settings.Value<JObject>("config");
 						string pass = Encoding.UTF8.GetString(Convert.FromBase64String(config.Value<string>("httpsCerPass")));
 						return pass;
+					}
+					catch 
+					{
+						return null;
+					}
+				}
+				else
+				{
+					throw new FileNotFoundException($"找不到配置文件(config.json): {Path.Combine(AppContext.BaseDirectory, "data", "config.json")}");
+				}
+			}
+		}
+
+	public static string MainServerURLPrefix
+		{
+			get
+			{
+				if (File.Exists(Path.Combine(AppContext.BaseDirectory, "data", "config.json")))
+				{
+					try
+					{
+						var settings = JObject.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "data", "config.json"), Encoding.UTF8));
+						var config = settings.Value<JObject>("config");
+						string prefix = config.Value<string>("mainServerURLPrefix");
+						return prefix;
+					}
+					catch 
+					{
+						return null;
+					}
+				}
+				else
+				{
+					throw new FileNotFoundException($"找不到配置文件(config.json): {Path.Combine(AppContext.BaseDirectory, "data", "config.json")}");
+				}
+			}
+		}
+
+		public static string StandaloneKey
+		{
+			get
+			{
+				if (File.Exists(Path.Combine(AppContext.BaseDirectory, "data", "config.json")))
+				{
+					try
+					{
+						var settings = JObject.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "data", "config.json"), Encoding.UTF8));
+						var config = settings.Value<JObject>("config");
+						string key = config.Value<string>("standaloneKey");
+						return key;
 					}
 					catch 
 					{

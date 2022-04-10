@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>MarveCube</AssemblyName>
-    <Version>0.1.6</Version>
+    <Version>0.2.0</Version>
     <Company>123 Open-Source Organization</Company>
     <Product>Arcaea Server 2(123 Marvelous Cube Open-Source Version)</Product>
-    <AssemblyVersion>0.1.6</AssemblyVersion>
-    <FileVersion>0.1.6</FileVersion>
+    <AssemblyVersion>0.2.0</AssemblyVersion>
+    <FileVersion>0.2.0</FileVersion>
     <Copyright>(C)Copyright 2015-2022 123 Open-Source Organization. All rights reserved.</Copyright>
     <AssemblyTitle>Arcaea Server 2 - High-Speed Protable Arcaea API Server</AssemblyTitle>
     <Platforms>x64;ARM64</Platforms>
@@ -41,12 +41,6 @@
 
   <ItemGroup>
     <Folder Include="..\..\123 Marvelous Cube %2528Arcaea API Reconstrct Version%2529\Team123it.Arcaea.MarveCube\Pages\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="config.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties config_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

@@ -17,7 +17,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			{
 				if (!string.IsNullOrWhiteSpace(StandaloneKey))
 				{
-					if (StandaloneKey == "设置的StandaloneKey")
+					if (StandaloneKey == StandaloneToken.Current.Key)
 					{
 						return new JObjectResult(new JObject()
 						{

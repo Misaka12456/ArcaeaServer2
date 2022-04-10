@@ -22,6 +22,11 @@ namespace Team123it.Arcaea.MarveCube.Core
 		public string Token { get; private set; }
 
 		/// <summary>
+		/// 下载服务器请求获取Token时使用的Key。
+		/// </summary>
+		public string Key { get; private set; }
+
+		/// <summary>
 		/// 获取当前实时的 <see cref="StandaloneToken"/> 实例。
 		/// </summary>
 		private static StandaloneToken GetCurrentToken()
@@ -32,7 +37,7 @@ namespace Team123it.Arcaea.MarveCube.Core
 				{
 					var settings = JObject.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "data", "config.json"), Encoding.UTF8));
 					var config = settings.Value<JObject>("config");
-					return new StandaloneToken() { Token = config.Value<string>("standaloneToken") };
+					return new StandaloneToken() { Token = config.Value<string>("standaloneToken"), Key = config.Value<string>("standaloneKey") };
 				}
 				catch (Exception ex)
 				{

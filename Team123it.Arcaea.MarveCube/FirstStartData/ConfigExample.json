@@ -19,7 +19,8 @@
 		"dbPass": "登录数据库使用的密码(Base64了)",
 		"dbName": "操作的数据库的名称",
 		"remoteDlPrefix": "http://127.0.0.1:51495", // 客户端请求远程下载时独立下载服务器的域名(包括http/https,结尾无斜杠)
-		"standaloneToken": "独立服务器被客户端请求下载时使用的Token",
+		"standaloneKey":  "12345678901234567890123456789012", // 独立下载服务器请求主服务器(获取下载Token)的时候使用的Key
+		"standaloneToken": "abcdefghijklmnopqrstuvwxyz789012", // 独立下载服务器解密下载URL参数时使用的解密Token(即上文的"下载Token")
 		"listenPort": 80, // 主服务器的监听端口
 		"redisPort": 6379 // 本机Redis服务器的连接端口
 	}

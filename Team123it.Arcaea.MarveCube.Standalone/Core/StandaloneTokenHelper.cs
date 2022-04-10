@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using static Team123it.Arcaea.MarveCube.Standalone.GlobalProperties;
+using Newtonsoft.Json.Linq;
 using System.Enhance.Net;
 
 namespace Team123it.Arcaea.MarveCube.Standalone.Core
@@ -9,7 +10,7 @@ namespace Team123it.Arcaea.MarveCube.Standalone.Core
 		{
 			try
 			{
-				string? response = await HttpWebRequest.SendHttpRequestAsync("{您的Arcaea Server 2的起始域名(包括http/https)}/standalone/token?StandaloneKey={您在主服务器程序的Controllers/StandaloneController.cs里设置的StandaloneKey}");
+				string? response = await HttpWebRequest.SendHttpRequestAsync($"{MainServerURLPrefix}/standalone/token?StandaloneKey={StandaloneKey}");
 				if (!string.IsNullOrWhiteSpace(response))
 				{
 					var respData = JObject.Parse(response);
