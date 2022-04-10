@@ -279,3 +279,16 @@ CREATE TABLE `world_songplay` (
   `prog_boost_multiply` int(11) DEFAULT NULL,
   PRIMARY KEY (`user_id`,`song_id`,`difficulty`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+DROP TABLE IF EXISTS `bots`;
+CREATE TABLE `bots`  (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `apikey` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `descrption` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+  `botQQ` bigint NOT NULL,
+  `author` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `authorQQ` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_banned` tinyint(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE INDEX `UniqueApikey`(`apikey`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
