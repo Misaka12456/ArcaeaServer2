@@ -241,7 +241,7 @@ namespace Team123it.Arcaea.MarveCube
 							.Append(pass).Append(";database=").Append(name).Append(";charset=utf8");
 						return dbConnURL.ToString();
 					}
-					catch(Exception ex)
+					catch (Exception ex)
 					{
 						throw new JsonException($"配置文件 {Path.Combine(AppContext.BaseDirectory, "data", "config.json")} 读取失败: {ex.Message}");
 					}
@@ -250,6 +250,35 @@ namespace Team123it.Arcaea.MarveCube
 				{
 					throw new FileNotFoundException($"找不到配置文件(config.json): {Path.Combine(AppContext.BaseDirectory, "data", "config.json")}");
 				}
+			}
+		}
+
+		public static string GetDatabaseConnectNoDBNameURL(out string dbName)
+		{
+			if (File.Exists(Path.Combine(AppContext.BaseDirectory, "data", "config.json")))
+			{
+				try
+				{
+					var settings = JObject.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "data", "config.json"), Encoding.UTF8));
+					var dbConnURL = new StringBuilder();
+					var config = settings.Value<JObject>("config");
+					string ip = config.Value<string>("dbIP");
+					int port = config.TryGetValue("dbPort", out var tPort) ? (int)tPort! : 3306;
+					string user = config.Value<string>("dbUser");
+					string pass = Encoding.UTF8.GetString(Convert.FromBase64String(config.Value<string>("dbPass")));
+					dbName = config.TryGetValue("dbName", out var tName) ? (string)tName! : "arcaea";
+					dbConnURL.Append("server=").Append(ip).Append(";port=").Append(port).Append(";user=").Append(user).Append(";password=")
+										.Append(pass).Append(";charset=utf8");
+					return dbConnURL.ToString();
+				}
+				catch (Exception ex)
+				{
+					throw new JsonException($"配置文件 {Path.Combine(AppContext.BaseDirectory, "data", "config.json")} 读取失败: {ex.Message}");
+				}
+			}
+			else
+			{
+				throw new FileNotFoundException($"找不到配置文件(config.json): {Path.Combine(AppContext.BaseDirectory, "data", "config.json")}");
 			}
 		}
 
@@ -305,7 +334,7 @@ namespace Team123it.Arcaea.MarveCube
 						string pass = Encoding.UTF8.GetString(Convert.FromBase64String(config.Value<string>("httpsCerPass")));
 						return pass;
 					}
-					catch 
+					catch
 					{
 						return null;
 					}
@@ -393,7 +422,7 @@ namespace Team123it.Arcaea.MarveCube
 						var minSupportVer = Version.Parse(minSupportVerStr);
 						return minSupportVer;
 					}
-					catch(FormatException)
+					catch (FormatException)
 					{
 						return new Version(1, 0, 0);
 					}
@@ -509,7 +538,7 @@ namespace Team123it.Arcaea.MarveCube
 						var settings = JObject.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "data", "config.json"), Encoding.UTF8));
 						var dbConnURL = new StringBuilder();
 						var config = settings.Value<JObject>("config");
-						if (config.TryGetValue("reportDescEmail",out var rptDescEmail))
+						if (config.TryGetValue("reportDescEmail", out var rptDescEmail))
 						{
 							return (string)rptDescEmail!;
 						}

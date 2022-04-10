@@ -629,7 +629,6 @@ namespace Team123it.Arcaea.MarveCube.Core
 				// bool isBeyondChapterUnlocked = true;
 				var packs = Purchase.GetUserPurchasedItemsList(UserId!.Value, ItemType.Pack);
 				packs.Add("base");
-				packs.Add("arcdans");
 				var r = new JObject() 
 				{
 					{"is_aprilfools", IsOverrideAprilFools || IsDuringAprilFools() }, //愚人节判断(4.1)

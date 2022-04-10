@@ -1,4 +1,5 @@
 ﻿using static Microsoft.VisualBasic.Information;
+using static Team123it.Arcaea.MarveCube.GlobalProperties;
 using System;
 using System.Collections.Generic;
 using c = System.Console;
@@ -9,11 +10,56 @@ using System.Security.Cryptography.X509Certificates;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Reflection;
+using Newtonsoft.Json;
 
 namespace Team123it.Arcaea.MarveCube.FirstStart
 {
 	public sealed class FirstStart
 	{
+		public static void FastInitialize()
+		{
+			File.WriteAllBytes(Path.Combine(AppContext.BaseDirectory, "data", "config.json"), ReadEmbeddedResources("Team123it.Arcaea.MarveCube.FirstStartData.ConfigExample.json"));
+			c.WriteLine("请打开{程序根目录}\\data\\config.json, 阅读完毕注释后按照注释填写配置信息, 并在保存时删除所有注释");
+			c.WriteLine("以上均完成后单击任意键继续");
+DoInitialize:
+			c.ReadKey(true);
+			try
+			{
+				string initSQLCodes = Encoding.UTF8.GetString(ReadEmbeddedResources("Team123it.Arcaea.MarveCube.FirstStartData.Initialization.sql"));
+				var conn = new MySqlConnection(GetDatabaseConnectNoDBNameURL(out string dbName));
+				conn.Open();
+				var cmd = conn.CreateCommand();
+				cmd.CommandText = $"DROP DATABASE IF EXISTS {dbName};";
+				cmd.ExecuteNonQuery();
+				conn.Close();
+				conn = new MySqlConnection(DatabaseConnectURL);
+				conn.Open();
+				cmd = conn.CreateCommand();
+				cmd.CommandText = initSQLCodes;
+				cmd.ExecuteNonQuery();
+				conn.Close();
+				c.WriteLine("数据库初始化成功完成");
+			}
+			catch (MySqlException)
+			{
+				c.WriteLine("无法连接到数据库, 请检查配置信息是否填写有误后单击任意键继续");
+				goto DoInitialize;
+			}
+			catch (JsonException)
+			{
+				c.WriteLine("配置信息填写有误, 请重新填写, 注意一定要删除所有注释");
+				c.WriteLine("完成后单击任意键继续");
+				goto DoInitialize;
+			}
+			var worldMap = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, "data", "static", "WorldMap"));
+			var songs = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, "data", "static", "Songs"));
+			if (!worldMap.Exists) worldMap.Create();
+			if (!songs.Exists) songs.Create();
+			c.WriteLine("所有初始化进程成功完成, 等待主程序加载");
+			return;
+		}
+
+		[Obsolete("StartWizard() 已被弃用。 请改用 FastInitalize()。")]
 		public static void StartWizard()
 		{
 			try
@@ -306,6 +352,7 @@ namespace Team123it.Arcaea.MarveCube.FirstStart
 			}
 		}
 
+		[Obsolete]
 		private static bool isPortInUse(uint port)
 		{
 			bool inUse = false;
@@ -322,6 +369,7 @@ namespace Team123it.Arcaea.MarveCube.FirstStart
 			return inUse;
 		}
 
+		[Obsolete]
 		private static void SaveAndInitialize(string dbIP,uint dbPort,string dbUser,string dbPassword,string dbName,uint listenPort,string httpsCerPass)
 		{
 			var save = new JObject() 
@@ -382,7 +430,7 @@ namespace Team123it.Arcaea.MarveCube.FirstStart
 			return;
 		}
 
-		private static byte[] ReadEmbeddedResources(string resPath)
+		public static byte[] ReadEmbeddedResources(string resPath)
 		{
 			var assembly = Assembly.GetExecutingAssembly();
 			var stream = new BufferedStream(assembly.GetManifestResourceStream(resPath));

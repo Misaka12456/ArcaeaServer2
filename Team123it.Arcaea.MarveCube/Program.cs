@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Team123it.Arcaea.MarveCube.FirstStart;
+using System.Text;
+using MySql.Data.MySqlClient;
 
 namespace Team123it.Arcaea.MarveCube
 {
@@ -25,20 +28,19 @@ namespace Team123it.Arcaea.MarveCube
 			Console.WriteLine();
 			Thread.Sleep(1000);
 			Console.WriteLine("Please wait while system detecting the configurating state...");
-			// 暂时不进行初始化的设定 请等待后续更新
-			// if (!Directory.Exists(Path.Combine(AppContext.BaseDirectory,"data")) 
-			// 	|| (!File.Exists(Path.Combine(AppContext.BaseDirectory,"data","config.json"))))
-			// {
-			// 	Console.WriteLine("Detected the very first start,  starting firststart wizard...");
-			//	FirstStart.FirstStart.StartWizard();
-			//	Console.WriteLine("Config initialized, now starting api...");
-			//	CreateHostBuilder(args).Build().Run();
-			// } 
-			// else
-			// {
+			if (!Directory.Exists(Path.Combine(AppContext.BaseDirectory,"data"))
+				 || (!File.Exists(Path.Combine(AppContext.BaseDirectory, "data", "config.json"))))
+			{
+				Console.WriteLine("Detected the very first start,  starting initialization...");
+				FirstStart.FirstStart.FastInitialize();
+				Console.WriteLine("Config initialized, now starting api...");
+				CreateHostBuilder(args).Build().Run();
+			}
+			else
+			{
 				Console.WriteLine("Detected exist configuration and data store, now starting api...");
 				CreateHostBuilder(args).Build().Run();
-			// }
+			}
 			Console.WriteLine("Api stopped. Press any key to exit program.");
 			Console.ReadKey(true);
 			Environment.Exit(0);
@@ -65,11 +67,6 @@ namespace Team123it.Arcaea.MarveCube
 					webBuilder.UseUrls($"http://*:{ListenPort}");
 				})
 				.UseEnvironment("Development");
-		}
-
-		private static bool IsCorrectStartupPass(string passEncoded)
-		{
-			return true;
 		}
 	}
 }
