@@ -16,7 +16,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 	/// 对应处理类: <see cref="Bot"/>
 	/// </summary>
 	[ApiController]
-	[Route("bot")]
+	[Route("botarcapi")]
 	public class BotController : ControllerBase
 	{
 		[HttpGet("user")]
@@ -31,7 +31,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 					var r = new JObject()
 						{
 							{"status",0 },
-							{"value", Bot.PlayerInfo(user)}
+							{"content", Bot.PlayerInfo(user)}
 						};
 					return new JObjectResult(r);
 				}
@@ -46,7 +46,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			}));
 		}
 
-		[HttpGet("song/best")]
+		[HttpGet("user/best")]
 		public Task<JObjectResult> GetPlayerSongBest([FromQuery] string? apikey,[FromQuery]string user,[FromQuery]string songid,[FromQuery]int? difficulty)
 		{
 			return Task.Run(new Func<JObjectResult>(() => 
@@ -62,7 +62,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 					var r = new JObject()
 						{
 							{"status",0 },
-							{"value",Bot.QueryPlayerBestScore(user,songid,(SongDifficulty)diff)}
+							{"content",Bot.QueryPlayerBestScore(user,songid,(SongDifficulty)diff)}
 						};
 					return new JObjectResult(r);
 				}
@@ -77,7 +77,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			}));
 		}
 
-		[HttpGet("user/recent")]
+		[HttpGet("user/info")]
 		public Task<JObjectResult> GetPlayerRecentScore([FromQuery] string? apikey,[FromQuery]string user)
 		{
 			return Task.Run(new Func<JObjectResult>(() => 
@@ -89,7 +89,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 					var r = new JObject()
 							{
 								{"status",0 },
-								{"value",Bot.QueryPlayerRecentScore(user)}
+								{"content",Bot.QueryPlayerRecentScore(user)}
 							};
 					return new JObjectResult(r);
 				}
@@ -104,8 +104,8 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			}));
 		}
 
-		[HttpPost("user/best30")]
-		public Task<JObjectResult> GetPlayerBest30([FromForm]string? apikey,[FromForm]string user)
+		[HttpGet("user/best30")]
+		public Task<JObjectResult> GetPlayerBest30([FromQuery]string? apikey,[FromQuery]string user)
 		{
 			return Task.Run(new Func<JObjectResult>(() =>
 			{
@@ -116,7 +116,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 					var r = new JObject()
 						{
 							{"status",0 },
-							{"value",Bot.QueryPlayerBest30(user)}
+							{"content",Bot.QueryPlayerBest30(user)}
 						};
 					return new JObjectResult(r);
 				}
@@ -132,7 +132,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			}));
 		}
 
-		[HttpGet("song")]
+		[HttpGet("song/info")]
 		public Task<JObjectResult> GetSongDetails([FromQuery]string? apikey, [FromQuery]string songid)
 		{
 			return Task.Run(new Func<JObjectResult>(() =>
@@ -144,7 +144,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 					var r = new JObject()
 						{
 							{"status",0 },
-							{"value", Bot.SongInfo(songid) }
+							{"content", Bot.SongInfo(songid) }
 						};
 					return new JObjectResult(r);
 				}
