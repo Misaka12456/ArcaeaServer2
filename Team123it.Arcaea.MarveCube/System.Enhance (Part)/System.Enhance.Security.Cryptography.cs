@@ -31,7 +31,7 @@ namespace System.Enhance.Security.Cryptography
         /// <summary>
         /// 默认密钥-密钥的长度必须是32
         /// </summary>
-        private const string PublicKey = "r5wdvxchtfi07oqmy1j3skba849p2z65";
+        private const string PublicKey = "87d80b0614d7cf369c22967ff82aacf5";
 
         /// <summary>
         /// 默认向量
