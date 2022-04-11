@@ -350,7 +350,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 				conn.Open();
 				var cmd = conn.CreateCommand();
 				cmd.CommandText = $"UPDATE users SET totalScore = (IFNULL((SELECT SUM(score) FROM bests WHERE (difficulty = 2 OR difficulty = 3) AND user_id = ?uid),0)) WHERE user_id=?uid;";
-				cmd.Parameters.Add(new MySqlParameter("?user_id", MySqlDbType.Int32)
+				cmd.Parameters.Add(new MySqlParameter("?uid", MySqlDbType.Int32)
 				{
 					Value = info.UserId!.Value
 				});

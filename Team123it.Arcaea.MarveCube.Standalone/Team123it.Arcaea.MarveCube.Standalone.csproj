@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>MarveCube.Standalone</AssemblyName>
-    <Version>0.3.1</Version>
+    <Version>0.3.2</Version>
     <Company>123 Open-Source Organization</Company>
     <Product>Arcaea Server 2(123 Marvelous Cube) Standalone Version</Product>
     <AssemblyVersion>0.3.1</AssemblyVersion>
