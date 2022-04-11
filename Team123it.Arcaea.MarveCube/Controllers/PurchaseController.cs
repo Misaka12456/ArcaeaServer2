@@ -125,6 +125,52 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 		}
 
 		/// <summary>
+		/// [API Action][GET]获取曲包相关的购买信息。
+		/// </summary>
+		/// <param name="Authorization">Bearer Token参数。</param>
+		/// <returns>Json字符串。</returns>
+		[HttpGet("bundle/pack")]
+		public async Task<JObjectResult> FetchSongPackPurchases([FromHeader] string Authorization)
+		{
+			return await Task.Run(new Func<JObjectResult>(() =>
+			{
+				if (PreparingForRelease(HttpContext.Request)) return new ArcaeaAPIException(ArcaeaAPIException.APIExceptionType.PreparingForRelease);
+				try
+				{
+					if (Authorization.Trim().ToLower().StartsWith("bearer"))
+					{
+						uint? user_id = Tokens.GetUserIdByToken(Authorization.Split(" ")[1]);
+						if (Maintaining(out var players))
+						{
+							if (!user_id.HasValue || !players.Contains((int)user_id.Value))
+							{
+								return new ArcaeaAPIException(ArcaeaAPIException.APIExceptionType.ServerMaintaining);
+							}
+						}
+						if (!user_id.HasValue) throw new ArcaeaAPIException(ArcaeaAPIException.APIExceptionType.LoggedInAnotherDevice);
+						return new JObjectResult(new JObject()
+						{
+							{ "success", true },
+							{ "value", Purchase.GetPurchaseData(ItemType.Pack) }
+						});
+					}
+					else
+					{
+						return new ArcaeaAPIException(ArcaeaAPIException.APIExceptionType.Other);
+					}
+				}
+				catch (ArcaeaAPIException ex)
+				{
+					return ex;
+				}
+				catch (Exception)
+				{
+					return new ArcaeaAPIException(ArcaeaAPIException.APIExceptionType.Other);
+				}
+			}));
+		}
+
+		/// <summary>
 		/// [API Action][POST]购买物品。
 		/// </summary>
 		/// <param name="Authorization">Bearer Token参数。</param>
