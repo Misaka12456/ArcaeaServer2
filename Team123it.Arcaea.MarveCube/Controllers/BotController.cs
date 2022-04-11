@@ -29,10 +29,10 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 				{
 					Background.CheckApiKey(apikey);
 					var r = new JObject()
-						{
-							{"status",0 },
-							{"content", Bot.PlayerInfo(user)}
-						};
+					{
+						{"status",0 },
+						{"content", Bot.PlayerInfo(user)}
+					};
 					return new JObjectResult(r);
 				}
 				catch (BotAPIException ex)
@@ -60,10 +60,10 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 					else if (difficulty!.Value != 0 && difficulty!.Value != 1 && difficulty!.Value != 2 && difficulty!.Value != 3) throw new BotAPIException(APIExceptionType.DifficultyIsNotExist, null);
 					else diff = difficulty!.Value;
 					var r = new JObject()
-						{
-							{"status",0 },
-							{"content",Bot.QueryPlayerBestScore(user,songid,(SongDifficulty)diff)}
-						};
+					{
+						{"status",0 },
+						{"content",Bot.QueryPlayerBestScore(user,songid,(SongDifficulty)diff)}
+					};
 					return new JObjectResult(r);
 				}
 				catch (BotAPIException ex)
@@ -87,10 +87,10 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 				{
 					Background.CheckApiKey(apikey);
 					var r = new JObject()
-							{
-								{"status",0 },
-								{"content",Bot.QueryPlayerRecentScore(user)}
-							};
+					{
+						{"status",0 },
+						{"content",Bot.QueryPlayerRecentScore(user)}
+					};
 					return new JObjectResult(r);
 				}
 				catch (BotAPIException ex)
@@ -114,10 +114,10 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 				{
 					Background.CheckApiKey(apikey);
 					var r = new JObject()
-						{
-							{"status",0 },
-							{"content",Bot.QueryPlayerBest30(user)}
-						};
+					{
+						{"status",0 },
+						{"content",Bot.QueryPlayerBest30(user)}
+					};
 					return new JObjectResult(r);
 				}
 				catch (BotAPIException ex)
@@ -142,10 +142,10 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 				{
 					Background.CheckApiKey(apikey);
 					var r = new JObject()
-						{
-							{"status",0 },
-							{"content", Bot.SongInfo(songid) }
-						};
+					{
+						{"status",0 },
+						{"content", Bot.SongInfo(songid) }
+					};
 					return new JObjectResult(r);
 				}
 				catch (BotAPIException ex)

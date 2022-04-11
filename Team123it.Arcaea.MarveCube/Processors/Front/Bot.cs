@@ -28,8 +28,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		{
 			try
 			{
-				if (int.TryParse(user, out _) && user.Length != 9)
-					throw new BotAPIException(BotAPIException.APIExceptionType.PlayerNotExist, null);
+				if (int.TryParse(user, out _) && user.Length != 9) throw new BotAPIException(BotAPIException.APIExceptionType.PlayerNotExist, null);
 				var p = new PlayerInfo2(user, out bool isExists);
 				var r = new JObject();
 				if (!isExists)
@@ -40,7 +39,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						throw new BotAPIException(BotAPIException.APIExceptionType.PlayerNotExist, null);
 					}
 				}
-
 				if (!p.Banned!.Value)
 				{
 					using var conn = new MySqlConnection(DatabaseConnectURL);
@@ -66,8 +64,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					else
 					{
 						cmd.Parameters.Clear();
-						cmd.CommandText =
-							$"SELECT COUNT(*) FROM fixed_songs WHERE sid LIKE concat('%',?songid,'%') OR name_en LIKE concat('%',?name_en,'%') OR name_jp LIKE concat('%',?name_ja,'%');";
+						cmd.CommandText = $"SELECT COUNT(*) FROM fixed_songs WHERE sid LIKE concat('%',?songid,'%') OR name_en LIKE concat('%',?name_en,'%') OR name_jp LIKE concat('%',?name_ja,'%');";
 						cmd.Parameters.Add(new MySqlParameter("?songid", songid));
 						cmd.Parameters.Add(new MySqlParameter("?name_en", songid));
 						cmd.Parameters.Add(new MySqlParameter("?name_ja", songid));
@@ -81,12 +78,11 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						else if (equalCounts2 == 1)
 						{
 							cmd.Parameters.Clear();
-							cmd.CommandText =
-								$"SELECT sid FROM fixed_songs WHERE sid LIKE concat('%',?songid,'%') OR name_en LIKE concat('%',?name_en,'%') OR name_jp LIKE concat('%',?name_ja,'%');";
+							cmd.CommandText = $"SELECT sid FROM fixed_songs WHERE sid LIKE concat('%',?songid,'%') OR name_en LIKE concat('%',?name_en,'%') OR name_jp LIKE concat('%',?name_ja,'%');";
 							cmd.Parameters.Add(new MySqlParameter("?songid", songid));
 							cmd.Parameters.Add(new MySqlParameter("?name_en", songid));
 							cmd.Parameters.Add(new MySqlParameter("?name_ja", songid));
-							sid = (string) cmd.ExecuteScalar();
+							sid = (string)cmd.ExecuteScalar();
 						}
 						else
 						{
@@ -94,16 +90,13 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							throw new BotAPIException(BotAPIException.APIExceptionType.SongIsNotExist, null);
 						}
 					}
-
 					cmd.Parameters.Clear();
-					cmd.CommandText =
-						$"SELECT COUNT(*),rating_pst,rating_prs,rating_ftr,rating_byd FROM fixed_songs WHERE sid=?songid";
+					cmd.CommandText = $"SELECT COUNT(*),rating_pst,rating_prs,rating_ftr,rating_byd FROM fixed_songs WHERE sid=?songid";
 					cmd.Parameters.Add(new MySqlParameter("?songid", sid));
 					var rd = cmd.ExecuteReader();
 					rd.Read();
 					// 判断指定曲目及选择的难度是否存在
-					if (rd.GetInt32(0) == 0)
-						throw new BotAPIException(BotAPIException.APIExceptionType.SongIsNotExist, null);
+					if (rd.GetInt32(0) == 0) throw new BotAPIException(BotAPIException.APIExceptionType.SongIsNotExist, null);
 					int rating_pst, rating_prs, rating_ftr, rating_byd, song_rating;
 					rating_pst = rd.GetInt32(1);
 					rating_prs = rd.GetInt32(2);
@@ -118,7 +111,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					{
 						song_rating = rating_pst;
 					}
-
 					if (difficulty == SongDifficulty.Present && rating_prs == -1)
 					{
 						throw new BotAPIException(BotAPIException.APIExceptionType.DifficultyIsNotExist, null);
@@ -127,7 +119,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					{
 						song_rating = rating_prs;
 					}
-
 					if (difficulty == SongDifficulty.Future && rating_ftr == -1)
 					{
 						throw new BotAPIException(BotAPIException.APIExceptionType.DifficultyIsNotExist, null);
@@ -136,7 +127,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					{
 						song_rating = rating_ftr;
 					}
-
 					if (difficulty == SongDifficulty.Beyond && rating_byd == -1)
 					{
 						throw new BotAPIException(BotAPIException.APIExceptionType.DifficultyIsNotExist, null);
@@ -145,10 +135,8 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					{
 						song_rating = rating_byd;
 					}
-
 					cmd.Parameters.Clear();
-					cmd.CommandText =
-						$"SELECT * FROM bests WHERE user_id={p.UserId!.Value} AND song_id=?songid AND difficulty=?difficulty;";
+					cmd.CommandText = $"SELECT * FROM bests WHERE user_id={p.UserId!.Value} AND song_id=?songid AND difficulty=?difficulty;";
 					cmd.Parameters.Add(new MySqlParameter("?songid", sid));
 					cmd.Parameters.Add(new MySqlParameter("?difficulty", (int) difficulty));
 					rd = cmd.ExecuteReader();
@@ -178,7 +166,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						rd.Close();
 						conn2.Close();
 						conn.Close();
-
 						var accountInfo = PlayerInfo(user).GetValue("account_info");
 						r.Add("account_info", accountInfo);
 						r.Add("record", record);
@@ -217,8 +204,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		{
 			try
 			{
-				if (int.TryParse(user, out _) && user.Length != 9)
-					throw new BotAPIException(BotAPIException.APIExceptionType.PlayerNotExist, null);
+				if (int.TryParse(user, out _) && user.Length != 9) throw new BotAPIException(BotAPIException.APIExceptionType.PlayerNotExist, null);
 				var p = new PlayerInfo2(user, out bool isExists);
 				if (!isExists)
 				{
@@ -228,7 +214,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						throw new BotAPIException(BotAPIException.APIExceptionType.PlayerNotExist, null);
 					}
 				}
-
 				if (!p.Banned!.Value)
 				{
 					if (p.RecentScore != null)
@@ -279,8 +264,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		{
 			try
 			{
-				if (int.TryParse(user, out _) && user.Length != 9)
-					throw new BotAPIException(BotAPIException.APIExceptionType.PlayerNotExist, null);
+				if (int.TryParse(user, out _) && user.Length != 9) throw new BotAPIException(BotAPIException.APIExceptionType.PlayerNotExist, null);
 				var p = new PlayerInfo2(user, out bool isExists);
 				if (!isExists)
 				{
@@ -290,7 +274,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						throw new BotAPIException(BotAPIException.APIExceptionType.PlayerNotExist, null);
 					}
 				}
-
 				if (!p.Banned!.Value)
 				{
 					if (p.RecentScore != null)
@@ -301,8 +284,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						using var conn = new MySqlConnection(DatabaseConnectURL);
 						conn.Open();
 						var cmd = conn.CreateCommand();
-						cmd.CommandText =
-							$"SELECT song_id,difficulty,score,rating FROM bests WHERE user_id={p.UserId!.Value} AND rating > 0 ORDER BY rating DESC, score DESC LIMIT 30;";
+						cmd.CommandText = $"SELECT song_id,difficulty,score,rating FROM bests WHERE user_id={p.UserId!.Value} AND rating > 0 ORDER BY rating DESC, score DESC LIMIT 30;";
 						var rd = cmd.ExecuteReader();
 						var Best30 = new Dictionary<KeyValuePair<string, int>, KeyValuePair<int, decimal>>();
 						// Best30数据格式:
@@ -310,22 +292,18 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						// Value: KeyValuePair<分数,单曲潜力值>
 						while (rd.Read())
 						{
-							Best30.Add(new KeyValuePair<string, int>(rd.GetString(0), rd.GetInt32(1)),
-								new KeyValuePair<int, decimal>(rd.GetInt32(2), rd.GetDecimal(3)));
+							Best30.Add(new KeyValuePair<string, int>(rd.GetString(0), rd.GetInt32(1)), new KeyValuePair<int, decimal>(rd.GetInt32(2), rd.GetDecimal(3)));
 						}
-
 						rd.Close();
 						conn.Close();
-						Best30 = Best30.OrderByDescending(singleBest => singleBest.Value.Value)
-							.ToDictionary(singleBest => singleBest.Key, singleBest => singleBest.Value);
+						Best30 = Best30.OrderByDescending(singleBest => singleBest.Value.Value).ToDictionary(singleBest => singleBest.Key, singleBest => singleBest.Value);
 						// 按照Best30->Value[曲目成绩信息]->Value[单曲潜力值]倒序排序Best30数据
 						decimal b30_avg = 0M;
 						int index = 0;
 						foreach (var singleBest in Best30)
 						{
 							b30_avg += singleBest.Value.Value;
-							var data = SingleScore.GetBestScoreJson(p.UserId!.Value, singleBest.Key.Key,
-								(SongDifficulty) singleBest.Key.Value, "bests", out _);
+							var data = SingleScore.GetBestScoreJson(p.UserId!.Value, singleBest.Key.Key, (SongDifficulty) singleBest.Key.Value, "bests", out _);
 							data.Remove("name");
 							data.Remove("user_id");
 							data.Remove("character");
@@ -341,7 +319,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						r.Add("best30_avg", b30_avg);
 						r.Add("account_info", accountInfo);
 						r.Add("best30_list", r_b30);
-						
 						return r;
 					}
 					else
@@ -380,7 +357,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				{
 					throw new BotAPIException(BotAPIException.APIExceptionType.PlayerNotExist, null);
 				}
-
 				JObject r;
 				conn.Open();
 				var cmd = conn.CreateCommand();
@@ -414,47 +390,40 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						r.Add("account_info", accountInfo);
 						rd.Close();
 						cmd = conn.CreateCommand();
-						cmd.CommandText =
-							$"SELECT COUNT(song_id),song_id,difficulty,score,shiny_perfect_count,perfect_count,near_count,miss_count,health,modifier,time_played,clear_type,rating FROM users WHERE user_id={userid};";
+						cmd.CommandText = $"SELECT COUNT(song_id),song_id,difficulty,score,shiny_perfect_count,perfect_count,near_count,miss_count,health,modifier,time_played,clear_type,rating FROM users WHERE user_id={userid};";
 						rd = cmd.ExecuteReader();
 						rd.Read();
 						JObject recentScoreJObj;
 						if (rd.GetInt32(0) == 1) //如果存在最近成绩
 						{
-							var recentScore = new SingleScore(rd.GetString(1), (SongDifficulty) rd.GetInt32(2),
-								(uint) rd.GetInt32(3), (ClearType) rd.GetInt32(11), (uint) rd.GetInt32(4),
-								(uint) rd.GetInt32(5), (uint) rd.GetInt32(6), (uint) rd.GetInt32(7),
-								(ulong) rd.GetInt64(10) * 1000);
+							var recentScore = new SingleScore(rd.GetString(1), (SongDifficulty)rd.GetInt32(2),
+								(uint)rd.GetInt32(3), (ClearType)rd.GetInt32(11), (uint)rd.GetInt32(4),
+								(uint)rd.GetInt32(5), (uint)rd.GetInt32(6), (uint)rd.GetInt32(7),
+								(ulong)rd.GetInt64(10) * 1000);
 							int health = rd.GetInt32(8);
 							decimal rating = rd.GetDecimal(12);
 							var bestClearType = recentScore.ClearType!.Value;
 							rd.Close();
-							cmd.CommandText =
-								$"SELECT best_clear_type FROM bests WHERE user_id={userid} AND song_id='{recentScore.SongId}' AND difficulty={(int) recentScore.Difficulty} ";
+							cmd.CommandText = $"SELECT best_clear_type FROM bests WHERE user_id={userid} AND song_id='{recentScore.SongId}' AND difficulty={(int) recentScore.Difficulty} ";
 							var rd2 = cmd.ExecuteReader();
 							if (rd2.Read())
 							{
-								bestClearType = (ClearType) rd2.GetInt32(0);
+								bestClearType = (ClearType)rd2.GetInt32(0);
 								rd2.Close();
 							}
-
 							recentScoreJObj = new JObject()
 							{
 								{"song_id", recentScore.SongId},
-								{"difficulty", (int) recentScore.Difficulty},
+								{"difficulty", (int)recentScore.Difficulty},
 								{"score", recentScore.Score!.Value},
 								{"shiny_perfect_count", recentScore.BigPureCount},
 								{"perfect_count", recentScore.PureCount},
 								{"near_count", recentScore.FarCount},
 								{"miss_count", recentScore.LostCount},
-								{"best_clear_type", (int) bestClearType},
-								{"clear_type", (int) recentScore.ClearType},
+								{"best_clear_type", (int)bestClearType},
+								{"clear_type", (int)recentScore.ClearType},
 								{"health", health},
-								{
-									"time_played",
-									(long) Math.Floor((recentScore.PlayDate!.Value - new DateTime(1970, 1, 1))
-										.TotalSeconds)
-								},
+								{"time_played", (long)Math.Floor((recentScore.PlayDate!.Value - new DateTime(1970, 1, 1)).TotalSeconds)},
 								{"rating", rating}
 							};
 							r.Add("recent_score", recentScoreJObj);
@@ -463,7 +432,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						{
 							rd.Close();
 						}
-
 						return r;
 					}
 					else
@@ -505,8 +473,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 			{
 				conn.Open();
 				var cmd = conn.CreateCommand();
-				cmd.CommandText =
-					"SELECT * FROM fixed_songs WHERE sid=?sid OR (sid LIKE CONCAT('%',?sid,'%')) OR (name_en LIKE CONCAT('%',?sid,'%')) OR (name_jp LIKE CONCAT('%',?sid,'%'));";
+				cmd.CommandText = "SELECT * FROM fixed_songs WHERE sid=?sid OR (sid LIKE CONCAT('%',?sid,'%')) OR (name_en LIKE CONCAT('%',?sid,'%')) OR (name_jp LIKE CONCAT('%',?sid,'%'));";
 				cmd.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
 				{
 					Value = songid
@@ -526,7 +493,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					{
 						title_localized.Add("ja", rd.GetString("name_jp"));
 					}
-
 					r.Add("title_localized", title_localized);
 					r.Add("artist", rd.GetString("artist"));
 					r.Add("bpm", rd.GetString("bpm"));
@@ -564,7 +530,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						{
 							diff_pst.Add("chartDesigner", string.Empty);
 						}
-						
 						if (!rd.IsDBNull(24) && !string.IsNullOrEmpty(rd.GetString("jacket_designer_pst")))
 						{
 							diff_pst.Add("jacketDesigner", rd.GetString("jacket_designer_pst").Replace("\\n", "\n"));
@@ -573,23 +538,20 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						{
 							diff_pst.Add("jacketDesigner", string.Empty);
 						}
-						
 						diff_pst.Add("jacketOverride", false);
-
 						diff_pst.Add("realrating",rd.GetInt32("rating_pst"));
 					}
 					else
 					{
 						diff_pst = new JObject()
 						{
-							{"ratingClass", 0},
-							{"jacketDesigner", string.Empty},
-							{"chartDesigner", string.Empty},
-							{"jacketOverride", false},
-							{"realrating", -1}
+							{ "ratingClass", 0 },
+							{ "jacketDesigner", string.Empty },
+							{ "chartDesigner", string.Empty },
+							{ "jacketOverride", false },
+							{ "realrating", -1 }
 						};
 					}
-
 					if (rd.GetInt32("difficulty_prs") != -1)
 					{
 						if (!rd.IsDBNull(21) && !string.IsNullOrEmpty(rd.GetString("chart_designer_prs")))
@@ -600,7 +562,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						{
 							diff_prs.Add("chartDesigner", string.Empty);
 						}
-						
 						if (!rd.IsDBNull(25) && !string.IsNullOrEmpty(rd.GetString("jacket_designer_prs")))
 						{
 							diff_prs.Add("jacketDesigner", rd.GetString("jacket_designer_prs").Replace("\\n", "\n"));
@@ -609,23 +570,20 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						{
 							diff_prs.Add("jacketDesigner", string.Empty);
 						}
-						
 						diff_prs.Add("jacketOverride", false);
-
 						diff_prs.Add("realrating",rd.GetInt32("rating_prs"));
 					}
 					else
 					{
 						diff_prs = new JObject()
 						{
-							{"ratingClass", 1},
-							{"jacketDesigner", string.Empty},
-							{"chartDesigner", string.Empty},
-							{"jacketOverride", false},
-							{"realrating", -1}
+							{ "ratingClass", 1 },
+							{ "jacketDesigner", string.Empty },
+							{ "chartDesigner", string.Empty },
+							{ "jacketOverride", false },
+							{ "realrating", -1 }
 						};
 					}
-
 					if (rd.GetInt32("difficulty_ftr") != -1)
 					{
 						if (!rd.IsDBNull(22) && !string.IsNullOrEmpty(rd.GetString("chart_designer_ftr")))
@@ -636,7 +594,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						{
 							diff_ftr.Add("chartDesigner", string.Empty);
 						}
-						
 						if (!rd.IsDBNull(26) && !string.IsNullOrEmpty(rd.GetString("jacket_designer_ftr")))
 						{
 							diff_ftr.Add("jacketDesigner", rd.GetString("jacket_designer_ftr").Replace("\\n", "\n"));
@@ -645,30 +602,26 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						{
 							diff_ftr.Add("jacketDesigner", string.Empty);
 						}
-
 						diff_ftr.Add("jacketOverride", false);
-
 						diff_ftr.Add("realrating", rd.GetInt32("rating_ftr"));
 					}
 					else
 					{
 						diff_ftr = new JObject()
 						{
-							{"ratingClass", 2},
-							{"jacketDesigner", string.Empty},
-							{"chartDesigner", string.Empty},
-							{"jacketOverride", false},
-							{"realrating", -1}
+							{ "ratingClass", 2 },
+							{ "jacketDesigner", string.Empty },
+							{ "chartDesigner", string.Empty },
+							{ "jacketOverride", false },
+							{ "realrating", -1 }
 						};
 					}
-
 					if (rd.GetInt32("difficulty_byd") != -1)
 					{
 						diff_byd = new JObject()
 						{
 							{"ratingClass", 3}
 						};
-						
 						if (!rd.IsDBNull(23) && !string.IsNullOrEmpty(rd.GetString("chart_designer_byd")))
 						{
 							diff_byd.Add("chartDesigner", rd.GetString("chart_designer_byd").Replace("\\n", "\n"));
@@ -677,7 +630,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						{
 							diff_byd.Add("chartDesigner", string.Empty);
 						}
-						
 						if (!rd.IsDBNull(27) && !string.IsNullOrEmpty(rd.GetString("jacket_designer_byd")))
 						{
 							diff_byd.Add("jacketDesigner", rd.GetString("jacket_designer_byd").Replace("\\n", "\n"));
@@ -686,12 +638,9 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						{
 							diff_byd.Add("jacketDesigner", string.Empty);
 						}
-						
 						diff_byd.Add("jacketOvrride", false);
-						
 						diff_byd.Add("realrating", rd.GetInt32("rating_byd"));
 					}
-
 					difficulties.Add(diff_pst);
 					difficulties.Add(diff_prs);
 					difficulties.Add(diff_ftr);
@@ -699,7 +648,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					{
 						difficulties.Add(diff_byd);
 					}
-
 					r.Add("difficulties", difficulties);
 					rd.Close();
 					return r;
