@@ -19,7 +19,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 	/// </summary>
 	public static class Serve
 	{
-		private static readonly string[] SongFileList = { "0.aff", "1.aff", "2.aff", "3.aff", "base.ogg" };
+		private static readonly string[] SongFileList = { "0.aff", "1.aff", "2.aff", "3.aff", "0.ogg", "1.ogg", "2.ogg", "3.ogg", "base.ogg" };
 		public static JObject GetDownloadAvailableSongs(uint userId, IEnumerable<string>? customSongIds = null, bool isUrlMode = true)
 		{
 			if (isUrlMode)

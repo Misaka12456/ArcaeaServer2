@@ -5,14 +5,9 @@ using MySql.Data.MySqlClient;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-
-using System.IO;
 using Team123it.Arcaea.MarveCube.Processors.Background;
-using System.Text;
 using Team123it.Arcaea.MarveCube.Processors.Front;
 using World = Team123it.Arcaea.MarveCube.Processors.Background.World;
-using Org.BouncyCastle.Crypto.Agreement;
-using Org.BouncyCastle.Asn1.Esf;
 
 namespace Team123it.Arcaea.MarveCube.Core
 {
@@ -380,75 +375,6 @@ namespace Team123it.Arcaea.MarveCube.Core
 		public JArray? PurchasedItemsList { get; set; }
 
 		public JArray? ClaimedPresentsList { get; set; }
-
-		public JArray UnlockList
-		{
-			get
-			{
-				var unlocks = JObject.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "data", "static", "unlocks.json"))).Value<JArray>("unlocks");
-				var r = new JArray();
-				using var conn = new MySqlConnection(DatabaseConnectURL);
-				conn.Open();
-				var cmd = conn.CreateCommand();
-				foreach (JObject song in unlocks)
-				{
-					string sid = song.Value<string>("songId");
-					int diff = song.Value<int>("ratingClass");
-					bool isUnlocked = false;
-					cmd.CommandText = $"SELECT COUNT(score) FROM bests WHERE user_id={UserId!.Value} AND song_id='{sid}' " +
-						$"AND difficulty={diff} AND clear_type > 0;";
-					if (Convert.ToInt32(cmd.ExecuteScalar()) == 1) isUnlocked = true;
-					var conditions = song.Value<JArray>("conditions");
-					foreach (JObject condition in conditions)
-					{
-						var unlockKey = new StringBuilder();
-						unlockKey.Append(sid).Append(@"|").Append(diff).Append(@"|");
-						bool isUnlockNeedStore = true;
-						switch (condition.Value<int>("type"))
-						{
-							case 0:
-								// sid|2|0
-								unlockKey.Append("0");
-								break;
-							case 3:
-								// sid|2|3|preposition|2
-								unlockKey.Append(@"3|").Append(condition.Value<string>("song_id")).Append(@"|").Append(condition.Value<int>("song_difficulty"));
-								break;
-							case 4:
-								var subConditions = condition.Value<JArray>("conditions");
-								string subConditionSid = string.Empty;
-								int subConditionDiff = 0;
-								foreach (JObject subCondition in subConditions)
-								{
-									subConditionSid = subCondition.Value<string>("song_id");
-									subConditionDiff = subCondition.Value<int>("song_difficulty");
-									break;
-								}
-								// sid|2|3|subcondition_preposition|2
-								unlockKey.Append(@"3|").Append(subConditionSid).Append(@"|").Append(subConditionDiff);
-								break;
-							case 101:
-								// sid|2|101
-								unlockKey.Append("101");
-								break;
-							default:
-								isUnlockNeedStore = false;
-								break;
-						}
-						if (isUnlockNeedStore)
-						{
-							r.Add(new JObject()
-							{
-								{ "complete",isUnlocked ? 1 : 0 },
-								{ "unlock_key", unlockKey.ToString() }
-							});
-						}
-					}
-				}
-				conn.Close();
-				return r;
-			}
-		}
 
 		/// <summary>
 		/// 玩家的个人潜力值(API/数据库版)。
@@ -983,74 +909,5 @@ namespace Team123it.Arcaea.MarveCube.Core
 			var now = DateTime.Now;
 			return now >= AprilFoolsStartTime && now <= new DateTime(now.Year, 4, 2, 0, 0, 0);
 		}
-
-		#region "Unused Codes"
-#pragma warning disable CS8602, CS8629
-		/// <summary>
-		/// 玩家的Best30数据。
-		/// </summary>
-		[Obsolete("不再支持读取Best30数据(系统将自动通过Best29+Recent1计算个人潜力值)。", true)]
-		public List<SingleScore>? Best30 { get; set; }
-
-		/// <summary>
-		/// 玩家的Recent10数据。
-		/// </summary>
-		[Obsolete("不再支持读取Recent10数据(系统将自动通过Best29+Recent1计算个人潜力值)。", true)]
-		public List<SingleScore>? Recent10 { get; set; }
-
-		/// <summary>
-		/// 使用当前 <see cref="PlayerInfo"/> 实例的 <see cref="Best30"/> 及 <see cref="Recent10"/> 刷新当前玩家的个人潜力值。
-		/// </summary>
-		/// <returns>刷新成功与否的结果。</returns>
-		[Obsolete("不再支持Best30+Recent10算法计算个人潜力值。请改用 RefreshPotential() 方法。",true)]
-		public bool BestRecentRefreshPotential()
-		{
-			/*
-			try
-			{
-				Best30 = (from singleBest in Best30 orderby singleBest.ScoreRating descending select singleBest).ToList();
-				var conn = new MySqlConnection(DatabaseConnectURL);
-				conn.Open();
-				var cmd = conn.CreateCommand();
-				cmd.CommandText = $"DELETE FROM best30 WHERE user_id={UserId};"; //移除现有Best30数据
-				cmd.ExecuteNonQuery();
-				
-				cmd.CommandText = $"DELETE FROM recent10 WHERE user_id={UserId};"; //移除现有Recent10数据
-				cmd.ExecuteNonQuery();
-				
-				StringBuilder b30 = new StringBuilder();
-				StringBuilder b30_values = new StringBuilder();
-				for (int i = 0; i < Best30.Count; i++)
-				{
-					b30.Append($",'b{i}','song_id{i}','song_diff{i}'");
-					b30_values.Append($",{Best30[i].ScoreRating.Value},'{Best30[i].SongId}',{(int)Best30[i].Difficulty}");
-				}
-				cmd.CommandText = $"INSERT INTO best30 ('user_id'{b30}) VALUES ({UserId}{b30_values})";
-				cmd.ExecuteNonQuery();
-				
-				StringBuilder r10 = new StringBuilder();
-				StringBuilder r10_values = new StringBuilder();
-				for (int i = 0; i < Recent10.Count; i++)
-				{
-					r10.Append($",'r{i}','song_id{i}','song_diff{i}'");
-					r10_values.Append($",{Recent10[i].ScoreRating.Value},'{Recent10[i].SongId}',{(int)Recent10[i].Difficulty}");
-				}
-				cmd.CommandText = $"INSERT INTO recent10 ('user_id'{r10}) VALUES ({UserId}{r10_values})";
-				cmd.ExecuteNonQuery();
-				_potentialint = Player.CalculatePotentialInt(Best30,Recent10); //按照B30均值:R10均值为3:1比例计算新的个人潜力值
-				
-				cmd.CommandText = $"UPDATE users SET user_rating={PotentialInt} WHERE user_id={UserId}";
-				cmd.ExecuteNonQuery();
-				conn.Close();
-				return true;
-			//}
-			//catch
-			//{
-			//	return false;
-			//}
-			*/
-			return false;
-		}
-		#endregion
 	}
 }

@@ -9,7 +9,6 @@ using Team123it.Arcaea.MarveCube.Processors.Background;
 using World2 = Team123it.Arcaea.MarveCube.Processors.Background.World;
 using static Team123it.Arcaea.MarveCube.Processors.Background.LeaderBoard;
 using System.Text;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using System.Security.Cryptography;
 
 namespace Team123it.Arcaea.MarveCube.Processors.Front

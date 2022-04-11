@@ -292,3 +292,9 @@ CREATE TABLE `bots`  (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `UniqueApikey`(`apikey`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+INSERT INTO `fixed_properties` (`key`, `value`) VALUES ('core_exp', '250');
+INSERT INTO `fixed_properties` (`key`, `value`) VALUES ('is_byd_chapter_unlocked', '1');
+INSERT INTO `fixed_properties` (`key`, `value`) VALUES ('level_steps', '[50,100,150,200,250,300,400,500,800,1000,2000,3000,5000,7000,10000,12000,14000,16000,18000,20000,21000,22000,23000,24000,25000,26000,27000,28000,29000,30000]');
+INSERT INTO `fixed_properties` (`key`, `value`) VALUES ('max_stamina', '12');
+INSERT INTO `fixed_properties` (`key`, `value`) VALUES ('stamina_recover_tick', '1800000');
+INSERT INTO `fixed_properties` (`key`, `value`) VALUES ('world_ranking_enabled', '1');

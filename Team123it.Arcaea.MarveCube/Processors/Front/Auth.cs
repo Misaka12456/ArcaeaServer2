@@ -31,7 +31,11 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 			{
 				conn.Open();
 				string passEncrypted = BitConverter.ToString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(password))).Replace("-","").ToLower();
-				var cmd = new MySqlCommand($"SELECT COUNT(*),user_id FROM users WHERE name='{username}' AND password='{passEncrypted}'", conn);
+				var cmd = new MySqlCommand($"SELECT COUNT(*),user_id FROM users WHERE name=?username AND password='{passEncrypted}'", conn);
+				cmd.Parameters.Add(new MySqlParameter("?username", MySqlDbType.VarChar)
+				{
+					Value = username
+				});
 				var data = cmd.ExecuteReader();
 				data.Read();
 				int result = data.GetInt32(0);

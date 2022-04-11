@@ -2,17 +2,13 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.ComponentModel;
 using System.Enhance;
-using System.Net;
-using System.Net.Mail;
 using System.Collections.Generic;
-using static Team123it.Arcaea.MarveCube.GlobalProperties;
-using System.Text;
 using System.Enhance.Web.Json;
 
 namespace Team123it.Arcaea.MarveCube.Core
 {
 	/// <summary>
-	/// 表示Arcaea Bot API返回的异常。
+	/// 表示Arcaea Server 2 BotAPI返回的异常。
 	/// <para>异常对应id请参考 <see cref="APIExceptionType"/> 枚举的注释。</para>
 	/// </summary>
 	public class BotAPIException : Exception
@@ -35,35 +31,6 @@ namespace Team123it.Arcaea.MarveCube.Core
 		{
 			Type = type;
 			Description = type.GetDescription()!;
-			if (Type == APIExceptionType.DangerousArguments && ReportEmail != null)
-			{ //如果是Dangerous Arguments而且设置了自动发送异常信息的邮箱
-				using var msg = new MailMessage();
-				var fromAddr = new MailAddress(ReportEmail!);
-				msg.From = fromAddr;
-				msg.To.Add(ReportDescEmail!);
-				msg.Subject = "[Auto][WARNING][123 MarveCube] A bot api visitor is trying to visit the api with dangerous arguments";
-				var body = new StringBuilder("A bot api visitor is trying to visit the api with dangerous arguments.<br />")
-					.Append("If this is the vistor who mistyped the query string, ask s/he to correct the query string.<br >")
-					.Append("If the visitor is unknown visitor and/or this keeps happening, it is recommended to ban the api key of the bot.<br />")
-					.Append("Details:<br />")
-					.Append("Time: ").Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")).Append("<br />")
-					.Append("Bot Api Key: ").Append(tag!.Value.Key).Append("<br />")
-					.Append("Attempt query api url: ").Append(tag!.Value.Value["url"]).Append("<br />")
-					.Append("Query strings:<br />");
-				foreach(var queryStr in tag!.Value.Value)
-				{
-					if (queryStr.Key != "url")
-					{
-						body.Append(queryStr.Key).Append("=").Append(queryStr.Value).Append("<br />");
-					}
-				}
-				body.Append($"<br />(C)Copyright 2015-{DateTime.Now.Year} 123 Open-Source Organization(Team123it). All rights reserved.");
-				msg.Body = body.ToString();
-				using var client = new SmtpClient(ReportEmailSmtp!.Split(':')[0], int.Parse(ReportEmailSmtp!.Split(':')[1]));
-				client.Credentials = new NetworkCredential(ReportEmail!, ReportEmailPswd!);
-				client.EnableSsl = true;
-				client.Send(msg);
-			}
 		}
 
 		/// <summary>
@@ -172,17 +139,7 @@ namespace Team123it.Arcaea.MarveCube.Core
 			/// Bot账号被封禁
 			/// </summary>
 			[Description("Your bot account is blocked. Please contact Lowiro to get more details or to appeal misblock action.")]
-			BotIsBlocked = -401,
-			/// <summary>
-			/// 查询频率(QPS)过高
-			/// </summary>
-			[Description("You queried too frequently, please slow down your query frequency, or you may be blocked.")]
-			QueryTooFrequently = -402,
-			/// <summary>
-			/// 危险的参数(试图进行SQL注入攻击等)
-			/// </summary>
-			[Description("You tried to execute api with dangerous argument(s). Please do not execute with dangerous argument(s), or you may be blocked.")]
-			DangerousArguments = -403
+			BotIsBlocked = -401
 		}
 	}
 }

@@ -7,9 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Team123it.Arcaea.MarveCube.FirstStart;
-using System.Text;
-using MySql.Data.MySqlClient;
 
 namespace Team123it.Arcaea.MarveCube
 {

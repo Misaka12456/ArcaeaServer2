@@ -30,14 +30,23 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 			using var conn = new MySqlConnection(DatabaseConnectURL);
 			conn.Open();
 			var cmd = conn.CreateCommand();
-			cmd.CommandText = $"SELECT COUNT(*) FROM users WHERE name='{name}'";
+			cmd.CommandText = $"SELECT COUNT(*) FROM users WHERE name=?name";
+			cmd.Parameters.Add(new MySqlParameter("?name", MySqlDbType.VarChar)
+			{
+				Value = name
+			});
 			bool isNameDuplicated = ((long)cmd.ExecuteScalar() == 1) ? true : false; //检查是否用户名重复
 			if (isNameDuplicated)
 			{
 				conn.Close();
 				throw new ArcaeaAPIException(ArcaeaAPIException.APIExceptionType.UsernameExists);
 			}
-			cmd.CommandText = $"SELECT COUNT(*) FROM users WHERE email='{email}'";
+			cmd.Parameters.Clear();
+			cmd.CommandText = $"SELECT COUNT(*) FROM users WHERE email=?email";
+			cmd.Parameters.Add(new MySqlParameter("?email", MySqlDbType.VarChar)
+			{
+				Value = email
+			});
 			bool isEmailDuplicated = ((long)cmd.ExecuteScalar() == 1) ? true : false; //检查是否E-mail重复
 			if (isEmailDuplicated)
 			{
@@ -54,9 +63,18 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				user_code = "0" + user_code;
 			}
 			cmd.CommandText = $"INSERT INTO users (user_code,name,email,password,join_date,favorite_character) VALUES " +
-				$"('{user_code}','{name}','{email}','{passSHA256}',{(long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds},-1)";
+				$"('{user_code}',?name,?email,'{passSHA256}',{(long)(DateTime.UtcNow - new DateTime(1970, 1, 1)).TotalMilliseconds},-1)";
+			cmd.Parameters.Add(new MySqlParameter("?name", MySqlDbType.VarChar)
+			{
+				Value = name
+			});
 			cmd.ExecuteNonQuery();
-			cmd.CommandText = $"SELECT user_id FROM users WHERE name='{name}'";
+			cmd.Parameters.Clear();
+			cmd.CommandText = $"SELECT user_id FROM users WHERE name=?name";
+			cmd.Parameters.Add(new MySqlParameter("?name", MySqlDbType.VarChar)
+			{
+				Value = name
+			});
 			int user_id = (int)cmd.ExecuteScalar();
 			cmd.CommandText = $"INSERT INTO user_chars (user_id,character_id,level,exp,level_exp,frag,prog,overdrive,skill_id) VALUES ({user_id},0,1,0,50,50,50,50,'gauge_easy');";
 			cmd.ExecuteNonQuery();

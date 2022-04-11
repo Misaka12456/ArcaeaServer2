@@ -1,13 +1,11 @@
 #nullable enable
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Team123it.Arcaea.MarveCube.Core;
 using Team123it.Arcaea.MarveCube.Bots;
 using Newtonsoft.Json.Linq;
 using static Team123it.Arcaea.MarveCube.Core.BotAPIException;
-using System.Text.RegularExpressions;
 using Team123it.Arcaea.MarveCube.Processors.Front;
 using System.Enhance.Web.Json;
 
@@ -27,36 +25,23 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			return Task.Run(new Func<JObjectResult>(() =>
 			{
 				if (apikey == null) return new BotAPIException(APIExceptionType.InvalidApiKey, null);
-				if (!Request.DoQueryLimit(apikey)) return new BotAPIException(APIExceptionType.QueryTooFrequently, null);
-				if (IsSafeArgument(apikey) && IsSafeArgument(user))
+				try
 				{
-					try
-					{
-						Background.CheckApiKey(apikey);
-						var r = new JObject()
+					Background.CheckApiKey(apikey);
+					var r = new JObject()
 						{
 							{"status",0 },
 							{"content", Bot.PlayerInfo(user)}
 						};
-						return new JObjectResult(r);
-					}
-					catch (BotAPIException ex)
-					{
-						return ex;
-					}
-					catch
-					{
-						return new BotAPIException(APIExceptionType.Others, null);
-					}
+					return new JObjectResult(r);
 				}
-				else
+				catch (BotAPIException ex)
 				{
-					var arguments = new Dictionary<string, string>();
-					foreach (var arg in Request.Query)
-					{
-						arguments.Add(arg.Key, arg.Value);
-					}
-					return new BotAPIException(APIExceptionType.DangerousArguments, new KeyValuePair<string, Dictionary<string, string>>(apikey, arguments));
+					return ex;
+				}
+				catch
+				{
+					return new BotAPIException(APIExceptionType.Others, null);
 				}
 			}));
 		}
@@ -67,40 +52,27 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			return Task.Run(new Func<JObjectResult>(() => 
 			{
 				if (apikey == null) return new BotAPIException(APIExceptionType.InvalidApiKey, null);
-				if (!Request.DoQueryLimit(apikey)) return new BotAPIException(APIExceptionType.QueryTooFrequently, null);
-				if (Request.IsSafeArgument())
+				try
 				{
-					try
-					{
-						Background.CheckApiKey(apikey);
-						int diff;
-						if (!difficulty.HasValue) diff = 2;
-						else if (difficulty!.Value != 0 && difficulty!.Value != 1 && difficulty!.Value != 2 && difficulty!.Value != 3) throw new BotAPIException(APIExceptionType.DifficultyIsNotExist, null);
-						else diff = difficulty!.Value;
-						var r = new JObject()
+					Background.CheckApiKey(apikey);
+					int diff;
+					if (!difficulty.HasValue) diff = 2;
+					else if (difficulty!.Value != 0 && difficulty!.Value != 1 && difficulty!.Value != 2 && difficulty!.Value != 3) throw new BotAPIException(APIExceptionType.DifficultyIsNotExist, null);
+					else diff = difficulty!.Value;
+					var r = new JObject()
 						{
 							{"status",0 },
 							{"content",Bot.QueryPlayerBestScore(user,songid,(SongDifficulty)diff)}
 						};
-						return new JObjectResult(r);
-					}
-					catch (BotAPIException ex)
-					{
-						return ex;
-					}
-					catch
-					{
-						return new BotAPIException(APIExceptionType.Others, null);
-					}
+					return new JObjectResult(r);
 				}
-				else
+				catch (BotAPIException ex)
 				{
-					var arguments = new Dictionary<string, string>();
-					foreach (var arg in Request.Query)
-					{
-						arguments.Add(arg.Key, (string)arg.Value);
-					}
-					return new BotAPIException(APIExceptionType.DangerousArguments, new KeyValuePair<string, Dictionary<string, string>>(apikey, arguments));
+					return ex;
+				}
+				catch
+				{
+					return new BotAPIException(APIExceptionType.Others, null);
 				}
 			}));
 		}
@@ -111,36 +83,23 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			return Task.Run(new Func<JObjectResult>(() => 
 			{
 				if (apikey == null) return new BotAPIException(APIExceptionType.InvalidApiKey, null);
-				if (!Request.DoQueryLimit(apikey)) return new BotAPIException(APIExceptionType.QueryTooFrequently, null);
-				if (Request.IsSafeArgument())
+				try
 				{
-					try
-					{
-						Background.CheckApiKey(apikey);
-						var r = new JObject()
+					Background.CheckApiKey(apikey);
+					var r = new JObject()
 							{
 								{"status",0 },
 								{"content",Bot.QueryPlayerRecentScore(user)}
 							};
-						return new JObjectResult(r);
-					}
-					catch (BotAPIException ex)
-					{
-						return ex;
-					}
-					catch
-					{
-						return new BotAPIException(APIExceptionType.Others, null);
-					}
+					return new JObjectResult(r);
 				}
-				else
+				catch (BotAPIException ex)
 				{
-					var arguments = new Dictionary<string, string>();
-					foreach (var arg in Request.Query)
-					{
-						arguments.Add(arg.Key, (string)arg.Value);
-					}
-					return new BotAPIException(APIExceptionType.DangerousArguments, new KeyValuePair<string, Dictionary<string, string>>(apikey, arguments));
+					return ex;
+				}
+				catch
+				{
+					return new BotAPIException(APIExceptionType.Others, null);
 				}
 			}));
 		}
@@ -151,37 +110,24 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			return Task.Run(new Func<JObjectResult>(() =>
 			{
 				if (apikey == null) return new BotAPIException(APIExceptionType.InvalidApiKey, null);
-				if (!Request.DoQueryLimit(apikey)) return new BotAPIException(APIExceptionType.QueryTooFrequently, null);
-				if (Request.IsSafeArgument())
+				try
 				{
-					try
-					{
-						Background.CheckApiKey(apikey);
-						var r = new JObject()
+					Background.CheckApiKey(apikey);
+					var r = new JObject()
 						{
 							{"status",0 },
 							{"content",Bot.QueryPlayerBest30(user)}
 						};
-						return new JObjectResult(r);
-					}
-					catch (BotAPIException ex)
-					{
-						return ex;
-					}
-					catch(Exception ex)
-					{
-						Console.WriteLine(ex.ToString());
-						return new BotAPIException(APIExceptionType.Others, null);
-					}
+					return new JObjectResult(r);
 				}
-				else
+				catch (BotAPIException ex)
 				{
-					var arguments = new Dictionary<string, string>();
-					foreach (var arg in Request.Query)
-					{
-						arguments.Add(arg.Key, (string)arg.Value);
-					}
-					return new BotAPIException(APIExceptionType.DangerousArguments, new KeyValuePair<string, Dictionary<string, string>>(apikey, arguments));
+					return ex;
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine(ex.ToString());
+					return new BotAPIException(APIExceptionType.Others, null);
 				}
 			}));
 		}
@@ -192,58 +138,26 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			return Task.Run(new Func<JObjectResult>(() =>
 			{
 				if (apikey == null) return new BotAPIException(APIExceptionType.InvalidApiKey, null);
-				if (!Request.DoQueryLimit(apikey)) return new BotAPIException(APIExceptionType.QueryTooFrequently, null);
-				if (Request.IsSafeArgument())
+				try
 				{
-					try
-					{
-						Background.CheckApiKey(apikey);
-						var r = new JObject()
+					Background.CheckApiKey(apikey);
+					var r = new JObject()
 						{
 							{"status",0 },
 							{"content", Bot.SongInfo(songid) }
 						};
-						return new JObjectResult(r);
-					}
-					catch (BotAPIException ex)
-					{
-						return ex;
-					}
-					catch (Exception ex)
-					{
-						Console.WriteLine(ex.ToString());
-						return new BotAPIException(APIExceptionType.Others, null);
-					}
+					return new JObjectResult(r);
 				}
-				else
+				catch (BotAPIException ex)
 				{
-					var arguments = new Dictionary<string, string>();
-					foreach (var arg in Request.Query)
-					{
-						arguments.Add(arg.Key, (string)arg.Value);
-					}
-					return new BotAPIException(APIExceptionType.DangerousArguments, new KeyValuePair<string, Dictionary<string, string>>(apikey, arguments));
+					return ex;
+				}
+				catch (Exception ex)
+				{
+					Console.WriteLine(ex.ToString());
+					return new BotAPIException(APIExceptionType.Others, null);
 				}
 			}));
-		}
-		public static bool IsSafeArgument(string arg)
-		{
-			if (arg.Contains(';') || arg.Contains('"') || arg.Contains('\'')
-				|| arg.ToLower().Contains("insert") || arg.ToLower().Contains("update") 
-				|| arg.ToLower().Contains("select") || arg.ToLower().Contains("delete") 
-				|| arg.ToLower().Contains("chr") || arg.ToLower().Contains("mid")
-				|| arg.ToLower().Contains("master") || arg.ToLower().Contains("truncate")
-				|| arg.ToLower().Contains("char") || arg.ToLower().Contains("declare") 
-				|| arg.ToLower().Contains("join") || arg.ToLower().Contains("and")
-				|| arg.ToLower().Contains("exec") || arg.ToLower().Contains("drop"))
-			{
-				return false;
-			}
-			else
-			{
-				var regex = new Regex("[^0-9a-zA-Z]");
-				return !regex.IsMatch(arg);
-			}
 		}
 	}
 }

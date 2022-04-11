@@ -164,7 +164,11 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 				using var conn = new MySqlConnection(DatabaseConnectURL);
 				conn.Open();
 				var cmd = conn.CreateCommand();
-				cmd.CommandText = $"SELECT * FROM user_world WHERE user_id={userid} AND map_id='{mapid}'";
+				cmd.CommandText = $"SELECT * FROM user_world WHERE user_id={userid} AND map_id=?mapId";
+				cmd.Parameters.Add(new MySqlParameter("?mapId", MySqlDbType.VarChar)
+				{
+					Value = mapid
+				});
 				var rd = cmd.ExecuteReader();
 				r.Add("user_id", userid);
 				r.Add("map_id", mapid);
@@ -178,7 +182,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 				else //如果玩家没有该地图数据
 				{
 					rd.Close();
-					cmd.CommandText = $"INSERT INTO user_world (user_id,map_id,is_locked) VALUES ({userid},'{mapid}',1);";
+					cmd.CommandText = $"INSERT INTO user_world (user_id,map_id,is_locked) VALUES ({userid},?mapId,1);";
 					cmd.ExecuteNonQuery();
 					r.Add("curr_position", 0);
 					r.Add("curr_capture", 0m);
@@ -320,9 +324,13 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 				if (stamina_multiply.HasValue) stamina_mtp = stamina_multiply.Value;
 				if (fragment_multiply.HasValue) frag_mtp = fragment_multiply.Value;
 				if (prog_boost_multiply.HasValue) prog_boost_mtp = prog_boost_multiply.Value;
-				cmd.CommandText = $"DELETE FROM world_songplay WHERE user_id={userid} AND song_id='{songid}' AND difficulty={(int)difficulty};";
+				cmd.CommandText = $"DELETE FROM world_songplay WHERE user_id={userid} AND song_id=?sid AND difficulty={(int)difficulty};";
+				cmd.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
+				{
+					Value = songid
+				});
 				cmd.ExecuteNonQuery(); //删除上次世界(World)模式游玩的占位数据(如果存在)
-				cmd.CommandText = $"INSERT INTO world_songplay VALUES ({userid},'{songid}',{(int)difficulty},{stamina_mtp},{frag_mtp},{prog_boost_mtp});";
+				cmd.CommandText = $"INSERT INTO world_songplay VALUES ({userid},?sid,{(int)difficulty},{stamina_mtp},{frag_mtp},{prog_boost_mtp});";
 				cmd.ExecuteNonQuery(); //添加本次世界(World)模式游玩的占位数据
 				cmd.CommandText = $"UPDATE users SET world_time_fullrecharged='{fullRechargedTime:yyyy-M-d H:mm:ss.fff}' , overflow_staminas={overflowStaminas} WHERE user_id={userid}";
 				cmd.ExecuteNonQuery(); //更新时间戳

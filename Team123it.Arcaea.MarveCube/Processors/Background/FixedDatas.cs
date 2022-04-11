@@ -1,7 +1,6 @@
 ﻿using static Team123it.Arcaea.MarveCube.GlobalProperties;
 using Newtonsoft.Json.Linq;
 using MySql.Data.MySqlClient;
-using System.Linq;
 
 namespace Team123it.Arcaea.MarveCube.Processors.Background
 {

@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Team123it.Arcaea.MarveCube.Core;
 
 namespace Team123it.Arcaea.MarveCube
 {
