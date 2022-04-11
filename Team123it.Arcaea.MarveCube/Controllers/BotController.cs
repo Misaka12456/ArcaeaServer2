@@ -16,7 +16,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 	/// 对应处理类: <see cref="Bot"/>
 	/// </summary>
 	[ApiController]
-	[Route("bot")]
+	[Route("botarcapi")]
 	public class BotController : ControllerBase
 	{
 		[HttpGet("user")]
@@ -104,8 +104,8 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			}));
 		}
 
-		[HttpPost("user/best30")]
-		public Task<JObjectResult> GetPlayerBest30([FromForm]string? apikey,[FromForm]string user)
+		[HttpGet("user/best30")]
+		public Task<JObjectResult> GetPlayerBest30([FromQuery]string? apikey,[FromQuery]string user)
 		{
 			return Task.Run(new Func<JObjectResult>(() =>
 			{

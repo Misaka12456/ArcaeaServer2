@@ -12,7 +12,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 {
 	/// <summary>
 	/// 查分Bot相关API。<br />
-	/// 对应API前缀:/bot/
+	/// 对应API前缀:/botarcapi/
 	/// </summary>
 	public static class Bot
 	{
@@ -159,25 +159,29 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						conn2.Open();
 						var cmd2 = conn2.CreateCommand();
 						cmd2.CommandText = $"SELECT character_id FROM users WHERE user_id={p.UserId!.Value};";
-						r.Add("user_id", p.UserId!.Value);
-						r.Add("song_id", sid);
-						r.Add("difficulty", (int) difficulty);
-						r.Add("score", rd.GetInt32(3));
-						r.Add("shiny_perfect_count", rd.GetInt32(4));
-						r.Add("perfect_count", rd.GetInt32(5));
-						r.Add("near_count", rd.GetInt32(6));
-						r.Add("miss_count", rd.GetInt32(7));
-						r.Add("health", rd.GetInt32(8));
-						r.Add("modifier", rd.GetInt32(9));
-						r.Add("time_played", rd.GetInt64(10));
-						r.Add("best_clear_type", rd.GetInt32(11));
-						r.Add("clear_type", rd.GetInt32(12));
-						r.Add("name", p.UserName!);
-						r.Add("character", (int) cmd2.ExecuteScalar());
-						r.Add("rating", rd.GetDecimal(13));
+						var record = new JObject()
+						{
+							{"song_id", sid},
+							{"difficulty", (int) difficulty},
+							{"score", rd.GetInt32(3)},
+							{"shiny_perfect_count", rd.GetInt32(4)},
+							{"perfect_count", rd.GetInt32(5)},
+							{"near_count", rd.GetInt32(6)},
+							{"miss_count", rd.GetInt32(7)},
+							{"health", rd.GetInt32(8)},
+							{"modifier", rd.GetInt32(9)},
+							{"time_played", rd.GetInt64(10)},
+							{"best_clear_type", rd.GetInt32(11)},
+							{"clear_type", rd.GetInt32(12)},
+							{"rating", rd.GetDecimal(13)}
+						};
 						rd.Close();
 						conn2.Close();
 						conn.Close();
+
+						var accountInfo = PlayerInfo(user).GetValue("account_info");
+						r.Add("account_info", accountInfo);
+						r.Add("record", record);
 						return r;
 					}
 					else
@@ -229,14 +233,18 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				{
 					if (p.RecentScore != null)
 					{
-						var r = p.RecentScore!;
+						var r = new JObject();
+						var accountInfo = PlayerInfo(user).GetValue("account_info");
+						var recentScore = new JArray()
+						{
+							p.RecentScore!
+						};
+						r.Add("account_info", accountInfo);
+						r.Add("recent_score", recentScore);
 						using var conn = new MySqlConnection(DatabaseConnectURL);
 						conn.Open();
 						var cmd = conn.CreateCommand();
 						cmd.CommandText = $"SELECT character_id FROM users WHERE user_id={p.UserId!.Value};";
-						r.Add("user_id", p.UserId!.Value);
-						r.Add("name", p.UserName!);
-						r.Add("character", (int) cmd.ExecuteScalar());
 						conn.Close();
 						return r;
 					}
@@ -289,6 +297,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					{
 						var r = new JObject();
 						var r_b30 = new JArray();
+						var accountInfo = PlayerInfo(user).GetValue("account_info");
 						using var conn = new MySqlConnection(DatabaseConnectURL);
 						conn.Open();
 						var cmd = conn.CreateCommand();
@@ -317,8 +326,8 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							b30_avg += singleBest.Value.Value;
 							var data = SingleScore.GetBestScoreJson(p.UserId!.Value, singleBest.Key.Key,
 								(SongDifficulty) singleBest.Key.Value, "bests", out _);
-							data.Add("index", index);
 							data.Remove("name");
+							data.Remove("user_id");
 							data.Remove("character");
 							data.Remove("is_skill_sealed");
 							data.Remove("is_char_uncapped");
@@ -326,15 +335,13 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							r_b30.Add(data);
 							index++;
 						}
-
-						b30_avg /= 30;
 						// 计算Best30中所有单曲潜力值的平均值
-						r.Add("user_id", p.UserId!.Value);
-						r.Add("name", p.UserName!);
-						r.Add("user_code", p.UserCode!);
-						r.Add("user_rating", p.PotentialInt!.Value);
-						r.Add("b30_avg", b30_avg);
-						r.Add("best30", r_b30);
+						b30_avg /= 30;
+						// 添加数据到母Object
+						r.Add("best30_avg", b30_avg);
+						r.Add("account_info", accountInfo);
+						r.Add("best30_list", r_b30);
+						
 						return r;
 					}
 					else
@@ -389,16 +396,22 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					if (!rd.GetBoolean(31))
 					{
 						int userid = rd.GetInt32(0);
-						r = new JObject()
+						r = new JObject();
+						var accountInfo = new JObject()
 						{
-							{"user_id", userid},
-							{"user_code", rd.GetString(1)},
+							{"code", rd.GetString(1)},
 							{"name", rd.GetString(2)},
-							{"character", rd.GetInt32(6)},
+							{"user_id", userid},
+							{"is_mutual", false},
+							{"is_char_uncapped_override", rd.GetBoolean(9)},
+							{"is_char_uncapped", rd.GetBoolean(8)},
+							{"is_skill_sealed", rd.GetBoolean(7)},
 							{"rating", rd.GetBoolean(10) ? -1 : rd.GetInt32(5)}, //id=10:是否隐藏个人潜力值
 							{"join_date", rd.GetInt64(4)},
+							{"character", rd.GetInt32(6)},
 
 						};
+						r.Add("account_info", accountInfo);
 						rd.Close();
 						cmd = conn.CreateCommand();
 						cmd.CommandText =
@@ -560,9 +573,10 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						{
 							diff_pst.Add("jacketDesigner", string.Empty);
 						}
+						
+						diff_pst.Add("jacketOverride", false);
 
-						diff_pst.Add("realrating",
-							SingleScore.GetRealSongRatingFromDatabaseSongRating(rd.GetInt32("rating_pst")));
+						diff_pst.Add("realrating",rd.GetInt32("rating_pst"));
 					}
 					else
 					{
@@ -571,7 +585,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							{"ratingClass", 0},
 							{"jacketDesigner", string.Empty},
 							{"chartDesigner", string.Empty},
-							{"difficulty", -1},
+							{"jacketOverride", false},
 							{"realrating", -1}
 						};
 					}
@@ -595,9 +609,10 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						{
 							diff_prs.Add("jacketDesigner", string.Empty);
 						}
+						
+						diff_prs.Add("jacketOverride", false);
 
-						diff_prs.Add("realrating",
-							SingleScore.GetRealSongRatingFromDatabaseSongRating(rd.GetInt32("rating_prs")));
+						diff_prs.Add("realrating",rd.GetInt32("rating_prs"));
 					}
 					else
 					{
@@ -606,7 +621,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							{"ratingClass", 1},
 							{"jacketDesigner", string.Empty},
 							{"chartDesigner", string.Empty},
-							{"difficulty", -1},
+							{"jacketOverride", false},
 							{"realrating", -1}
 						};
 					}
@@ -631,8 +646,9 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							diff_ftr.Add("jacketDesigner", string.Empty);
 						}
 
-						diff_ftr.Add("realrating",
-							SingleScore.GetRealSongRatingFromDatabaseSongRating(rd.GetInt32("rating_ftr")));
+						diff_ftr.Add("jacketOverride", false);
+
+						diff_ftr.Add("realrating", rd.GetInt32("rating_ftr"));
 					}
 					else
 					{
@@ -641,6 +657,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							{"ratingClass", 2},
 							{"jacketDesigner", string.Empty},
 							{"chartDesigner", string.Empty},
+							{"jacketOverride", false},
 							{"realrating", -1}
 						};
 					}
@@ -670,8 +687,9 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							diff_byd.Add("jacketDesigner", string.Empty);
 						}
 						
-						diff_byd.Add("realrating",
-							SingleScore.GetRealSongRatingFromDatabaseSongRating(rd.GetInt32("rating_byd")));
+						diff_byd.Add("jacketOvrride", false);
+						
+						diff_byd.Add("realrating", rd.GetInt32("rating_byd"));
 					}
 
 					difficulties.Add(diff_pst);
