@@ -168,13 +168,13 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						rd.Close();
 						conn2.Close();
 						conn.Close();
-						var playerInfo = PlayerInfo(user);
+						var playerInfo = GetPlayerInfo(user);
 						r.Add("account_info", playerInfo.GetValue("account_info"));
 						r.Add("record", record);
 						if (withsonginfo)
 						{
 							var totalSongInfo = new JArray();
-							var queriedSongInfo = SongInfo(record.Value<string>("song_id"));
+							var queriedSongInfo = GetSongInfo(record.Value<string>("song_id"));
 							totalSongInfo.Add(queriedSongInfo);
 							r.Add("songinfo", totalSongInfo);
 						}
@@ -184,7 +184,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							r.Add("recent_score", recentScore);
 							if (withsonginfo)
 							{
-								var queriedSongInfo = SongInfo(recentScore.Value<string>("song_id"));
+								var queriedSongInfo = GetSongInfo(recentScore.Value<string>("song_id"));
 								r.Add("recent_songinfo", queriedSongInfo);
 							}
 						}
@@ -238,7 +238,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					if (p.RecentScore != null)
 					{
 						var r = new JObject();
-						var accountInfo = PlayerInfo(user).GetValue("account_info");
+						var accountInfo = GetPlayerInfo(user).GetValue("account_info");
 						var recentScore = new JArray()
 						{
 							p.RecentScore!
@@ -255,7 +255,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							var totalSongInfo = new JArray();
 							foreach (var score in recentScore)
 							{
-								var queriedSongInfo = SongInfo(score.Value<string>("song_id"));
+								var queriedSongInfo = GetSongInfo(score.Value<string>("song_id"));
 								totalSongInfo.Add(queriedSongInfo);
 							}
 							r.Add("songinfo", totalSongInfo);
@@ -309,7 +309,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					{
 						var r = new JObject();
 						var r_b30 = new JArray();
-						var playerInfo = PlayerInfo(user);
+						var playerInfo = GetPlayerInfo(user);
 						using var conn = new MySqlConnection(DatabaseConnectURL);
 						conn.Open();
 						var cmd = conn.CreateCommand();
@@ -353,7 +353,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							var totalSongInfo = new JArray();
 							foreach (var name in r_b30)
 							{
-								var queriedSongInfo = SongInfo(name.Value<string>("song_id"));
+								var queriedSongInfo = GetSongInfo(name.Value<string>("song_id"));
 								totalSongInfo.Add(queriedSongInfo);
 							}
 							r.Add("best30_songinfo", totalSongInfo);
@@ -364,7 +364,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							r.Add("recent_score", recentScore);
 							if (withsonginfo)
 							{
-								var queriedSongInfo = SongInfo(recentScore.Value<string>("song_id"));
+								var queriedSongInfo = GetSongInfo(recentScore.Value<string>("song_id"));
 								r.Add("recent_songinfo", queriedSongInfo);
 							}
 						}
@@ -397,7 +397,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		/// <param name="userNameOrCode">玩家的9位好友id。</param>
 		/// <returns>包含玩家完整的个人信息的 <see cref="JObject"/> 类实例。</returns>
 		/// <exception cref="BotAPIException" />
-		public static JObject PlayerInfo(string userNameOrCode)
+		public static JObject GetPlayerInfo(string userNameOrCode)
 		{
 			using var conn = new MySqlConnection(DatabaseConnectURL);
 			try
@@ -515,7 +515,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		/// <param name="songid">曲目的id。</param>
 		/// <returns>包含曲目完整信息的 <see cref="JObject"/> 类实例。</returns>
 		/// <exception cref="BotAPIException" />
-		public static JObject SongInfo(string songid)
+		public static JObject GetSongInfo(string songid)
 		{
 			using var conn = new MySqlConnection(DatabaseConnectURL);
 			try

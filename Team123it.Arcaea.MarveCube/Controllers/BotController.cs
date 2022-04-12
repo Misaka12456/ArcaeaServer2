@@ -31,7 +31,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 					var r = new JObject()
 					{
 						{"status",0 },
-						{"content", Bot.PlayerInfo(user)}
+						{"content", Bot.GetPlayerInfo(user)}
 					};
 					return new JObjectResult(r);
 				}
@@ -144,7 +144,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 					var r = new JObject()
 					{
 						{"status",0 },
-						{"content", Bot.SongInfo(songid) }
+						{"content", Bot.GetSongInfo(songid) }
 					};
 					return new JObjectResult(r);
 				}
