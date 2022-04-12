@@ -47,7 +47,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 		}
 
 		[HttpGet("user/best")]
-		public Task<JObjectResult> GetPlayerSongBest([FromQuery] string? apikey,[FromQuery]string user,[FromQuery]string songid,[FromQuery]int? difficulty)
+		public Task<JObjectResult> GetPlayerSongBest([FromQuery] string? apikey,[FromQuery]string user,[FromQuery]string songid,[FromQuery]int? difficulty, [FromQuery]bool withsonginfo, [FromQuery]bool withrecent)
 		{
 			return Task.Run(new Func<JObjectResult>(() => 
 			{
@@ -62,7 +62,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 					var r = new JObject()
 					{
 						{"status",0 },
-						{"content",Bot.QueryPlayerBestScore(user,songid,(SongDifficulty)diff)}
+						{"content",Bot.QueryPlayerBestScore(user,songid,(SongDifficulty)diff, withsonginfo, withrecent)}
 					};
 					return new JObjectResult(r);
 				}
@@ -78,7 +78,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 		}
 
 		[HttpGet("user/info")]
-		public Task<JObjectResult> GetPlayerRecentScore([FromQuery] string? apikey,[FromQuery]string user)
+		public Task<JObjectResult> GetPlayerRecentScore([FromQuery] string? apikey,[FromQuery]string user, [FromQuery]bool withsonginfo)
 		{
 			return Task.Run(new Func<JObjectResult>(() => 
 			{
@@ -89,7 +89,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 					var r = new JObject()
 					{
 						{"status",0 },
-						{"content",Bot.QueryPlayerRecentScore(user)}
+						{"content",Bot.QueryPlayerRecentScore(user, withsonginfo)}
 					};
 					return new JObjectResult(r);
 				}
@@ -105,7 +105,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 		}
 
 		[HttpGet("user/best30")]
-		public Task<JObjectResult> GetPlayerBest30([FromQuery]string? apikey,[FromQuery]string user)
+		public Task<JObjectResult> GetPlayerBest30([FromQuery]string? apikey,[FromQuery]string user, [FromQuery]bool withsonginfo = false, [FromQuery]bool withrecent = false)
 		{
 			return Task.Run(new Func<JObjectResult>(() =>
 			{
@@ -116,7 +116,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 					var r = new JObject()
 					{
 						{"status",0 },
-						{"content",Bot.QueryPlayerBest30(user)}
+						{"content",Bot.QueryPlayerBest30(user, withsonginfo, withrecent)}
 					};
 					return new JObjectResult(r);
 				}

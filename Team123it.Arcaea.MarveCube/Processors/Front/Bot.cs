@@ -22,9 +22,11 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		/// <param name="user">玩家的好友id或昵称。</param>
 		/// <param name="songid">要查询的曲目id。</param>
 		/// <param name="difficulty">要查询的曲目难度。</param>
+		/// <param name="withsonginfo">是否需要包含SongInfo</param>
+		/// <param name="withrecent">是否附有最近成绩数据</param>
 		/// <returns>包含玩家基本个人信息及查询到的玩家最佳成绩数据的 <see cref="JObject"/> 类实例。</returns>
 		/// <exception cref="BotAPIException" />
-		public static JObject QueryPlayerBestScore(string user, string songid, SongDifficulty difficulty)
+		public static JObject QueryPlayerBestScore(string user, string songid, SongDifficulty difficulty, bool withsonginfo, bool withrecent)
 		{
 			try
 			{
@@ -166,9 +168,26 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						rd.Close();
 						conn2.Close();
 						conn.Close();
-						var accountInfo = PlayerInfo(user).GetValue("account_info");
-						r.Add("account_info", accountInfo);
+						var playerInfo = PlayerInfo(user);
+						r.Add("account_info", playerInfo.GetValue("account_info"));
 						r.Add("record", record);
+						if (withsonginfo)
+						{
+							var totalSongInfo = new JArray();
+							var queriedSongInfo = SongInfo(record.Value<string>("song_id"));
+							totalSongInfo.Add(queriedSongInfo);
+							r.Add("songinfo", totalSongInfo);
+						}
+						if (withrecent)
+						{
+							var recentScore = playerInfo.GetValue("recent_score");
+							r.Add("recent_score", recentScore);
+							if (withsonginfo)
+							{
+								var queriedSongInfo = SongInfo(recentScore.Value<string>("song_id"));
+								r.Add("recent_songinfo", queriedSongInfo);
+							}
+						}
 						return r;
 					}
 					else
@@ -200,7 +219,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		/// <param name="user">玩家的好友id或昵称。</param>
 		/// <returns>包含玩家基本个人信息及玩家最近游玩成绩数据的 <see cref="JObject"/> 类实例。</returns>
 		/// <exception cref="BotAPIException" />
-		public static JObject QueryPlayerRecentScore(string user)
+		public static JObject QueryPlayerRecentScore(string user, bool withsonginfo)
 		{
 			try
 			{
@@ -231,6 +250,16 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						var cmd = conn.CreateCommand();
 						cmd.CommandText = $"SELECT character_id FROM users WHERE user_id={p.UserId!.Value};";
 						conn.Close();
+						if (withsonginfo)
+						{
+							var totalSongInfo = new JArray();
+							foreach (var score in recentScore)
+							{
+								var queriedSongInfo = SongInfo(score.Value<string>("song_id"));
+								totalSongInfo.Add(queriedSongInfo);
+							}
+							r.Add("songinfo", totalSongInfo);
+						}
 						return r;
 					}
 					else
@@ -260,7 +289,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		/// <param name="user">玩家的好友id或昵称。</param>
 		/// <returns>包含玩家基本个人信息及Best30相关数据的 <see cref="JObject"/> 类实例。</returns>
 		/// <exception cref="BotAPIException" />
-		public static JObject QueryPlayerBest30(string user)
+		public static JObject QueryPlayerBest30(string user, bool withsonginfo, bool withrecent)
 		{
 			try
 			{
@@ -280,7 +309,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					{
 						var r = new JObject();
 						var r_b30 = new JArray();
-						var accountInfo = PlayerInfo(user).GetValue("account_info");
+						var playerInfo = PlayerInfo(user);
 						using var conn = new MySqlConnection(DatabaseConnectURL);
 						conn.Open();
 						var cmd = conn.CreateCommand();
@@ -317,8 +346,28 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						b30_avg /= 30;
 						// 添加数据到母Object
 						r.Add("best30_avg", b30_avg);
-						r.Add("account_info", accountInfo);
+						r.Add("account_info", playerInfo.GetValue("account_info"));
 						r.Add("best30_list", r_b30);
+						if (withsonginfo)
+						{
+							var totalSongInfo = new JArray();
+							foreach (var name in r_b30)
+							{
+								var queriedSongInfo = SongInfo(name.Value<string>("song_id"));
+								totalSongInfo.Add(queriedSongInfo);
+							}
+							r.Add("best30_songinfo", totalSongInfo);
+						}
+						if (withrecent)
+						{
+							var recentScore = playerInfo.GetValue("recent_score");
+							r.Add("recent_score", recentScore);
+							if (withsonginfo)
+							{
+								var queriedSongInfo = SongInfo(recentScore.Value<string>("song_id"));
+								r.Add("recent_songinfo", queriedSongInfo);
+							}
+						}
 						return r;
 					}
 					else
