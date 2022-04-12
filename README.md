@@ -76,7 +76,7 @@
 
 * 接口存在于以下位置
 ```url
-{api_endpoint}/botarcapi
+{API_ENDPOINT}/botarcapi
 ```
 
 
