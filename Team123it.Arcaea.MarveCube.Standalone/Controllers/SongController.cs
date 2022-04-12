@@ -23,6 +23,7 @@ namespace Team123it.Arcaea.MarveCube.Standalone.Controllers
 				{
 					if (!string.IsNullOrWhiteSpace(sid) && !string.IsNullOrWhiteSpace(file) && !string.IsNullOrWhiteSpace(token))
 					{
+						token = token.Replace(" ", string.Empty);
 						string plainToken = RC4Helper.Decrypt(token, StandaloneTokenHelper.GetToken().Result);
 						// plainToken格式: "{userId}-{songId}-{DateTime.Now:yyyyMMddHHmmssfff}"
 						int userId = int.Parse(plainToken.Split('-')[0]);

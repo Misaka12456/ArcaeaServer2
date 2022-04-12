@@ -184,7 +184,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							r.Add("recent_score", recentScore);
 							if (withsonginfo)
 							{
-								var queriedSongInfo = GetSongInfo(recentScore.Value<string>("song_id"));
+								var queriedSongInfo = GetSongInfo(recentScore!.Value<string>("song_id"));
 								r.Add("recent_songinfo", queriedSongInfo);
 							}
 						}
@@ -364,7 +364,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							r.Add("recent_score", recentScore);
 							if (withsonginfo)
 							{
-								var queriedSongInfo = GetSongInfo(recentScore.Value<string>("song_id"));
+								var queriedSongInfo = GetSongInfo(recentScore!.Value<string>("song_id"));
 								r.Add("recent_songinfo", queriedSongInfo);
 							}
 						}
