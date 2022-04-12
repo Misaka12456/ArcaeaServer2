@@ -70,6 +70,16 @@
 * 当前暂时不支持Link Play游玩，还请等待后续更新。
 
 
+##### 关于Bot查分接口
+
+* Arcaea Server 2 服务端支持和 ArcaeaUnlimitedAPI 同样格式的数据查询，可以让QQ查分机器人接入服务器进行查分操作
+
+* 接口存在于以下位置
+```url
+{api_endpoint}/botarcapi
+```
+
+
 ##### 开源协议
 
 本企划基于[123 Open-Source Organization MIT Public License 2.0](https://team123it.github.io/LICENSE.html)许可协议开源。
