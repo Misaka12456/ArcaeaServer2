@@ -2,7 +2,6 @@
 
 | arguments  | description                                                                | optional                                        |
 |:-----------|:---------------------------------------------------------------------------|-------------------------------------------------|
-| songname   | any song name for fuzzy querying                                           | true when songid is not null, otherwise false   |
 | songid     | sid in Arcaea songlist                                                     | true when songname is not null, otherwise false |
 
 #### Example

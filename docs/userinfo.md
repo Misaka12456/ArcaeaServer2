@@ -4,12 +4,11 @@
 |:-------------|:----------------------------------------------------------------|-------------------------------------------------|
 | user         | user name or 9-digit user code                                  | true when usercode is not null, otherwise false |
 | usercode     | 9-digit user code                                               | true when user is not null, otherwise false     |
-| recent       | number, range 0-7. The number of recently played songs expected | true                                            |
 | withsonginfo | boolean. if true, will reply with songinfo                      | true                                            |
 
 #### Example
 
-+ `{apiurl}/botarcapi/user/info?user=ToasterKoishi&recent=2&withsonginfo=true`
++ `{apiurl}/botarcapi/user/info?user=ToasterKoishi&withsonginfo=true`
 
 ###### Return data
 
@@ -44,21 +43,6 @@
         "miss_count": 1,
         "perfect_count": 928,
         "shiny_perfect_count": 833
-      },
-      {
-        "score": 9893013,
-        "health": 100,
-        "rating": 12.465065,
-        "song_id": "aegleseeker",
-        "modifier": 0,
-        "difficulty": 2,
-        "clear_type": 1,
-        "best_clear_type": 5,
-        "time_played": 1646960716486,
-        "near_count": 16,
-        "miss_count": 9,
-        "perfect_count": 1543,
-        "shiny_perfect_count": 1432
       }
     ],
     "songinfo": [
@@ -106,49 +90,6 @@
           }
         ]
       },
-      {
-        "id": "aegleseeker",
-        "title_localized": {
-          "en": "Aegleseeker"
-        },
-        "artist": "Silentroom vs Frums",
-        "bpm": "234",
-        "bpm_base": 234.0,
-        "set": "observer",
-        "set_friendly": "Esoteric Order",
-        "world_unlock": false,
-        "remote_dl": true,
-        "side": 0,
-        "time": 147,
-        "date": 1620691204,
-        "version": "3.6",
-        "difficulties": [
-          {
-            "ratingClass": 0,
-            "chartDesigner": "⟨RECORD START⟩ 0:",
-            "jacketDesigner": "シエラ",
-            "jacketOverride": false,
-            "realrating": 55,
-            "totalNotes": 973
-          },
-          {
-            "ratingClass": 1,
-            "chartDesigner": "⟨OBSRV⟩ boundary(?°a,?°A)",
-            "jacketDesigner": "シエラ",
-            "jacketOverride": false,
-            "realrating": 88,
-            "totalNotes": 1235
-          },
-          {
-            "ratingClass": 2,
-            "chartDesigner": "L₆ː The Void",
-            "jacketDesigner": "シエラ",
-            "jacketOverride": false,
-            "realrating": 110,
-            "totalNotes": 1568
-          }
-        ]
-      }
     ]
   }
 }

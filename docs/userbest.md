@@ -3,16 +3,14 @@
 | arguments    | description                                                                | optional                                        |
 |:-------------|:---------------------------------------------------------------------------|-------------------------------------------------|
 | user         | user name or 9-digit user code                                             | true when usercode is not null, otherwise false |
-| usercode     | 9-digit user code                                                          | true when user is not null, otherwise false     |
-| songname     | any song name for fuzzy querying                                           | true when songid is not null, otherwise false   |
 | songid       | sid in Arcaea songlist                                                     | true when songname is not null, otherwise false |
-| difficulty   | accept format are 0/1/2/3 or pst/prs/ftr/byn or past/present/future/beyond | false                                           |
+| difficulty   | accept format are 0/1/2/3                                                  | false                                           |
 | withrecent   | boolean. if true, will reply with recent_score                             | true                                            |
 | withsonginfo | boolean. if true, will reply with songinfo                                 | true                                            |
 
 #### Example
 
-+ `{apiurl}/botarcapi/user/best?user=ToasterKoishi&songid=ifi&difficulty=ftr&withrecent=true&withsonginfo=true`
++ `{apiurl}/botarcapi/user/best?user=ToasterKoishi&songid=ifi&difficulty=2&withrecent=true&withsonginfo=true`
 
 ###### Return data
 

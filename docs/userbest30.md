@@ -3,14 +3,12 @@
 | arguments    | description                                                                     | optional                                        |
 |:-------------|:--------------------------------------------------------------------------------|-------------------------------------------------|
 | user         | user name or 9-digit user code                                                  | true when usercode is not null, otherwise false |
-| usercode     | 9-digit user code                                                               | true when user is not null, otherwise false     |
-| overflow     | number, range 0-10. The number of the	overflow records below the best30 minimum | true                                            |
 | withrecent   | boolean. if true, will reply with recent_score                                  | true                                            |
 | withsonginfo | boolean. if true, will reply with songinfo                                      | true                                            |
 
 #### Example
 
-+ `{apiurl}/botarcapi/user/best30?user=ToasterKoishi&overflow=10&withrecent=true&withsonginfo=true`
++ `{apiurl}/botarcapi/user/best30?user=ToasterKoishi&withrecent=true&withsonginfo=true`
 
 ###### Return data (Edited for readability)
 
@@ -63,23 +61,6 @@
         "perfect_count": 1512,
         "shiny_perfect_count": 1372
       }    
-    ],
-    "best30_overflow": [
-      {
-        "score": 9993863,
-        "health": 100,
-        "rating": 12.469315,
-        "song_id": "ikazuchi",
-        "modifier": 0,
-        "difficulty": 2,
-        "clear_type": 1,
-        "best_clear_type": 2,
-        "time_played": 1584913642898,
-        "near_count": 0,
-        "miss_count": 1,
-        "perfect_count": 1346,
-        "shiny_perfect_count": 1287
-      }
     ],
     "best30_songinfo": [
       {
@@ -173,52 +154,6 @@
             "jacketOverride": true,
             "realrating": 115,
             "totalNotes": 1540
-          }
-        ]
-      }
-    ],
-    "best30_overflow_songinfo": [
-      {
-        "id": "ikazuchi",
-        "title_localized": {
-          "en": "Ikazuchi",
-          "ja": "怒槌"
-        },
-        "artist": "光吉猛修",
-        "bpm": "200",
-        "bpm_base": 200.0,
-        "set": "chunithm",
-        "set_friendly": "CHUNITHM Collaboration",
-        "world_unlock": false,
-        "remote_dl": true,
-        "side": 1,
-        "time": 150,
-        "date": 1558573201,
-        "version": "2.1",
-        "difficulties": [
-          {
-            "ratingClass": 0,
-            "chartDesigner": "先史の機械神【夜浪】",
-            "jacketDesigner": "",
-            "jacketOverride": false,
-            "realrating": 35,
-            "totalNotes": 656
-          },
-          {
-            "ratingClass": 1,
-            "chartDesigner": "先史の機械神【夜浪】",
-            "jacketDesigner": "",
-            "jacketOverride": false,
-            "realrating": 75,
-            "totalNotes": 976
-          },
-          {
-            "ratingClass": 2,
-            "chartDesigner": "先史の機械神【夜浪】",
-            "jacketDesigner": "",
-            "jacketOverride": false,
-            "realrating": 105,
-            "totalNotes": 1347
           }
         ]
       }

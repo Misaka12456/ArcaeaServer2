@@ -79,6 +79,11 @@
 {API_ENDPOINT}/botarcapi
 ```
 
+* 接口文档
++[user/best30](/docs/userbest30.md)
++[user/best](/docs/userbest.md)
++[user/info](/docs/userinfo.md)
++[song/info](/docs/songinfo.md)
 
 ##### 开源协议
 
