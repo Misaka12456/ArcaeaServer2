@@ -19,7 +19,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 	/// </summary>
 	public static class Serve
 	{
-		private static readonly string[] SongFileList = { "0.aff", "1.aff", "2.aff", "3.aff", "0.ogg", "1.ogg", "2.ogg", "3.ogg", "base.ogg" };
+		private static readonly string[] SongFileList = { "0.aff", "1.aff", "2.aff", "3.aff", "3.ogg", "base.ogg" };
 		public static JObject GetDownloadAvailableSongs(uint userId, IEnumerable<string>? customSongIds = null, bool isUrlMode = true)
 		{
 			if (isUrlMode)
@@ -80,7 +80,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				}
 				conn.Open();
 				var r = new JObject();
-				var audio = new JObject();
+				var audios = new JObject();
 				var charts = new JObject();
 				var songDirInfo = new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, "data", "static", "Songs", songId));
 				var songFiles = from songFile in songDirInfo.GetFiles()
@@ -118,14 +118,29 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 						cmd.Parameters.Remove(checkSumParam);
 					}
 					string url = $"{RemoteDownloadURLPrefix}/song/download?sid={HttpUtility.UrlEncode(songId)}&file={songFile.Name}&token={HttpUtility.UrlEncode(token)}";
-					if (songFile.Name == "base.ogg")
+					if (songFile.Name.EndsWith(".ogg"))
 					{
-						audio.Add("checksum", checkSum);
-						if (isUrlMode)
+						if (songFile.Name == "base.ogg")
 						{
-							audio.Add("url", url);
+							audios.Add("checksum", checkSum);
+							if (isUrlMode)
+							{
+								audios.Add("url", url);
+							}
 						}
-						r.Add("audio", audio);
+						else // audioOverride(难度专用音频)支持
+						{
+							int songNumber = int.Parse(songFile.Name.Split('.')[0]);
+							var song = new JObject()
+							{
+								{ "checksum", checkSum }
+							};
+							if (isUrlMode)
+							{
+								song.Add("url", url);
+							}
+							audios.Add(songNumber.ToString(), song);
+						}
 					}
 					else
 					{
@@ -142,6 +157,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					}
 					cmd.Parameters.RemoveAt("?filename");
 				}
+				r.Add("audio", audios);
 				r.Add("chart", charts);
 				if (isUrlMode)
 				{

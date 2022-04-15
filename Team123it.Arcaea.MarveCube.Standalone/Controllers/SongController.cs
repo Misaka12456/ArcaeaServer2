@@ -12,7 +12,7 @@ namespace Team123it.Arcaea.MarveCube.Standalone.Controllers
 	[ApiController]
 	public class SongController : ControllerBase
 	{
-		private static readonly string[] Files = { "base.ogg", "0.ogg", "1.ogg", "2.ogg", "3.ogg", "0.aff", "1.aff", "2.aff", "3.aff" };
+		private static readonly string[] Files = { "base.ogg", "3.ogg", "0.aff", "1.aff", "2.aff", "3.aff" };
 
 		[HttpGet("download")]
 		public async Task<IActionResult> DownloadSongData([FromQuery]string sid, [FromQuery]string file, [FromQuery]string token)

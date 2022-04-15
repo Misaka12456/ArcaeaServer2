@@ -13,6 +13,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{B676BE8F-4E2A-40FF-8D38-CC55A6516747}"
+	ProjectSection(SolutionItems) = preProject
+		docs\songinfo.md = docs\songinfo.md
+		docs\userbest.md = docs\userbest.md
+		docs\userbest30.md = docs\userbest30.md
+		docs\userinfo.md = docs\userinfo.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -40,6 +48,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B676BE8F-4E2A-40FF-8D38-CC55A6516747} = {C9EAB9AD-D507-4412-96D8-28F68C5B0AA4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {646E1181-A60C-4A0B-AA6D-85C76E0CE72B}
