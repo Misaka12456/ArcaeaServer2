@@ -76,14 +76,14 @@
 
 * 接口存在于以下位置
 ```url
-{API_ENDPOINT}/botarcapi
+{API_ENDPOINT}/botarcapi/
 ```
 
 * 接口文档
-+[user/best30](/docs/userbest30.md)
-+[user/best](/docs/userbest.md)
-+[user/info](/docs/userinfo.md)
-+[song/info](/docs/songinfo.md)
++ [user/best30](/docs/userbest30.md)
++ [user/best](/docs/userbest.md)
++ [user/info](/docs/userinfo.md)
++ [song/info](/docs/songinfo.md)
 
 ##### 开源协议
 
