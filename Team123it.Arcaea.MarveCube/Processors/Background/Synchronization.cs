@@ -230,6 +230,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 			}
 		}
 
+		[Obsolete]
 		private static JArray GetBlankUnlockList()
 		{
 			var unlocks = JObject.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "data", "static", "unlocks.json"))).Value<JArray>("unlocks");

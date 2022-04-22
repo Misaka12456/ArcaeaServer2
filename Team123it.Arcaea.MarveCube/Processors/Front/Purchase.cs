@@ -267,7 +267,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 								if (World2.CalculateCurrentStaminas(worldTimeFullRecharged.AddMinutes(-6 * 30), out bool isOverflowStamina) == World2.FullStaminas)
 								{
 									worldTimeFullRecharged = worldTimeFullRecharged.AddMinutes(-6 * 30);
-									totalStaminas = World2.FullStaminas;
+									totalStaminas = (int)World2.FullStaminas;
 									if (isOverflowStamina)
 									{
 										int addOverflowStaminas = Convert.ToInt32(Math.Floor((DateTime.Now - worldTimeFullRecharged).TotalMinutes / 30));
@@ -313,7 +313,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 									if (World2.CalculateCurrentStaminas(worldTimeFullRecharged.AddMinutes(-6 * 30), out bool isOverflowStamina) == World2.FullStaminas)
 									{
 										worldTimeFullRecharged = worldTimeFullRecharged.AddMinutes(-6 * 30);
-										totalStaminas = World2.FullStaminas;
+										totalStaminas = (int)World2.FullStaminas;
 										if (isOverflowStamina)
 										{
 											int addOverflowStaminas = Convert.ToInt32(Math.Floor((DateTime.Now - worldTimeFullRecharged).TotalMinutes / 30));

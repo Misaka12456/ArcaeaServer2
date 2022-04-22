@@ -67,7 +67,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				var props = new JObject()
 				{
 					{"stamina_recover_tick", 1800000 },
-					{"core_exp",250 },
 					{"curr_ts", Convert.ToInt64((DateTime.Now - DateTime.UnixEpoch).TotalMilliseconds) } // 当前的时间(毫秒为单位)
 				};
 				using var conn = new MySqlConnection(DatabaseConnectURL);
@@ -80,7 +79,9 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 					switch (rd.GetString(0))
 					{
 						case "max_stamina": //世界(World)模式 - 满体力数
-							props.Add("max_stamina", Convert.ToInt32(rd.GetString(1)));
+							string? maxStaminaStr = rd.GetString(1);
+							int convertedMaxStamina = Convert.ToInt32(maxStaminaStr);
+							props.Add("max_stamina", (convertedMaxStamina > 0) ? convertedMaxStamina : 12);
 							break;
 						case "level_steps": //世界(World)模式 - 角色升级经验
 							var level_steps = JArray.Parse(rd.GetString(1));
@@ -102,6 +103,9 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 							break;
 						case "is_byd_chapter_unlocked": //世界(World)模式 - Beyond章节是否已解封
 							props.Add("is_byd_chapter_unlocked", Convert.ToBoolean(int.Parse(rd.GetString(1))));
+							break;
+						case "core_exp": //单位以太之滴的经验值
+							props.Add("core_exp", Convert.ToInt32(rd.GetString(1)));
 							break;
 					}
 				}

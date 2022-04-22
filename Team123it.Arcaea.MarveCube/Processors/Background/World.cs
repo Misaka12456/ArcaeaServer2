@@ -19,7 +19,41 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 		/// <summary>
 		/// 满体力数。
 		/// </summary>
-		public const int FullStaminas = 12;
+		public static uint FullStaminas
+		{
+			get
+			{
+				using var conn = new MySqlConnection(DatabaseConnectURL);
+				try
+				{
+					conn.Open();
+					var cmd = conn.CreateCommand();
+					cmd.CommandText = "SELECT `value` FROM fixed_properties WHERE `key`='max_stamina';";
+					string? rawValue = Convert.ToString(cmd.ExecuteScalar());
+					if (!string.IsNullOrWhiteSpace(rawValue) && uint.TryParse(rawValue, out uint staminas) && staminas > 0)
+					{
+						return staminas;
+					}
+					else
+					{
+						return 12;
+					}
+				}
+				catch
+				{
+					return 12;
+				}
+				finally
+				{
+					conn.Close();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Legacy章节每次游玩消耗的体力数。
+		/// </summary>
+		public const int LegacyStaminaPerCost = 1;
 
 		/// <summary>
 		/// 每次游玩消耗的体力数。
@@ -285,21 +319,30 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 			rd.Read();
 			var fullRechargedTime = rd.GetDateTime("world_time_fullrecharged");
 			int overflowStaminas = rd.GetInt32("overflow_staminas");
-			bool isBeyondChapter = (!rd.IsDBNull(2) && rd.GetString("current_map").ToLower().StartsWith("byd_"));
-			rd.Close();
 			int beforeStaminas = (int)CalculateCurrentStaminas(fullRechargedTime, out _) + overflowStaminas;
-			if (beforeStaminas >= (isBeyondChapter ? BeyondStaminasPerCost : StaminasPerCost)) //如果体力充足
+			int costStaminas = StaminasPerCost;
+			var map = GetMap(rd.GetString("current_map"), out _);
+			rd.Close();
+			if (map.Value<bool>("is_legacy"))
+			{
+				costStaminas = LegacyStaminaPerCost * (stamina_multiply ?? 1);
+			}
+			else if (map.Value<bool>("is_beyond") || map.Value<string>("map_id").ToLower().Trim().StartsWith("byd_"))
+			{
+				costStaminas = BeyondStaminasPerCost;
+			}
+			if (beforeStaminas >= costStaminas) //如果体力充足
 			{
 				if (overflowStaminas > 0)
 				{
-					if (overflowStaminas >= (isBeyondChapter ? BeyondStaminasPerCost : StaminasPerCost))
+					if (overflowStaminas >= costStaminas)
 					{
-						overflowStaminas -= (isBeyondChapter ? BeyondStaminasPerCost : StaminasPerCost); // 直接用多余的体力 不动fullRechargedTime(正常体力完全恢复的时间戳)
+						overflowStaminas -= costStaminas; // 直接用多余的体力 不动fullRechargedTime(正常体力完全恢复的时间戳)
 					}
 					else
 					{
 						overflowStaminas = 0;
-						int afterOverflowCostStaminas = (isBeyondChapter ? BeyondStaminasPerCost : StaminasPerCost) - overflowStaminas;
+						int afterOverflowCostStaminas = costStaminas - overflowStaminas;
 						// 用完多余的体力后剩余需耗费的体力数(如当前体力为正常12体力+多余1体力的情况下,游玩需要2体力的地图, 则该值返回1(用了正常1体力和多余全部体力/结果为正常11体力+多余0体力)
 						fullRechargedTime = DateTime.Now;
 						fullRechargedTime = fullRechargedTime.AddMinutes(afterOverflowCostStaminas * 30);
@@ -312,7 +355,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 					{
 						fullRechargedTime = DateTime.Now;
 					}
-					fullRechargedTime = fullRechargedTime.AddMinutes((isBeyondChapter ? BeyondStaminasPerCost : StaminasPerCost) * 30);
+					fullRechargedTime = fullRechargedTime.AddMinutes(costStaminas * 30);
 					Console.WriteLine("fullRechargedTime = " + fullRechargedTime);
 				}
 				long fullrechargedTimeStamp = Convert.ToInt32((fullRechargedTime - DateTime.UnixEpoch).TotalSeconds);
@@ -335,7 +378,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 				cmd.CommandText = $"UPDATE users SET world_time_fullrecharged='{fullRechargedTime:yyyy-M-d H:mm:ss.fff}' , overflow_staminas={overflowStaminas} WHERE user_id={userid}";
 				cmd.ExecuteNonQuery(); //更新时间戳
 				conn.Close();
-				int afterStaminas = beforeStaminas - (isBeyondChapter ? BeyondStaminasPerCost : StaminasPerCost); //消耗体力
+				int afterStaminas = beforeStaminas - costStaminas; //消耗体力
 				fullRechargedTimeStamp = fullrechargedTimeStamp;
 				return afterStaminas;
 			}
@@ -382,6 +425,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 				int[] speed_limits = new int[step_count]; //所有台阶的限制最高的音符流速列表(0=不限速)
 				int[] plus_staminas = new int[step_count]; //所有台阶的体力赠送数量列表(0=不赠送体力)
 				var gotCharItemPosition = new List<int>();
+				var gotWorldSongItemPositions = new List<int>();
 				var gotBydSongItemPosition = new List<int>();
 				int j = 0;
 				foreach (JObject thisStep in info.Value<JArray>("steps")) //遍历所有台阶
@@ -396,9 +440,16 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 							{
 								gotCharItemPosition.Add(j);
 							}
-							else if (item.Value<string>("type") == "world_song" && (item.Value<string>("id").EndsWith('3') || mapid.ToLower().StartsWith("byd")))
+							else if (item.Value<string>("type") == "world_song")
 							{
-								gotBydSongItemPosition.Add(j);
+								if (item.Value<string>("id").EndsWith('3') || mapid.ToLower().StartsWith("byd"))
+								{
+									gotBydSongItemPosition.Add(j);
+								}
+								else
+								{
+									gotWorldSongItemPositions.Add(j);
+								}
 							}
 						}
 					}
@@ -529,7 +580,6 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 							break;
 						}
 					}
-					Console.WriteLine(j);
 					int k = 0;
 					foreach (int bydSongItemPosition in gotBydSongItemPosition)
 					{
@@ -542,7 +592,18 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 							break;
 						}
 					}
-					Console.WriteLine(k);
+					var ls = new List<int>();
+					foreach (int worldSongItemPosition in gotWorldSongItemPositions)
+					{
+						if (afterPosition >= worldSongItemPosition)
+						{
+							ls.Add(worldSongItemPosition);
+						}
+						else
+						{
+							continue;
+						}
+					}
 					#region "角色奖励获得结算"
 					// if (items[j].Count > 0 && ((JObject)items[j][0]).TryGetValue("type",out JToken? gotCharId) && ((string)gotCharId! == "character"))
 					// if (afterPosition == (uint)(tst - 1))
@@ -655,6 +716,52 @@ namespace Team123it.Arcaea.MarveCube.Processors.Background
 						}
 						conn.Close();
 					}
+					#endregion
+					#region "世界模式曲目获得结算"
+					using var conn3 = new MySqlConnection(DatabaseConnectURL);
+					conn3.Open();
+					var cmd3 = conn3.CreateCommand();
+					var worldSongs = new PlayerInfo(userid, out _).WorldSongsList.ToObject<List<string>>()!;
+					foreach (int l in ls)
+					{
+						if (items[l].Count > 0 && ((JObject)items[l][0]).TryGetValue("type", out var stepType3) && ((string)stepType3! == "world_song"))
+						{
+							string sid = ((JObject)items[l][0]).Value<string>("id").TrimEnd('0').TrimEnd('1').TrimEnd('2').TrimEnd('3');
+							if (!worldSongs.Contains(sid))
+							{
+								cmd3.Parameters.Clear();
+								cmd3.CommandText = "SELECT rating_pst, rating_prs, rating_ftr, rating_byd FROM fixed_songs WHERE sid=?sid;";
+								cmd3.Parameters.Add(new MySqlParameter("?sid", MySqlDbType.VarChar)
+								{
+									Value = sid
+								});
+								var rd = cmd3.ExecuteReader();
+								if (rd.Read() && (rd.GetInt32(0) != -1 || rd.GetInt32(1) != -1 || rd.GetInt32(2) != -1 || rd.GetInt32(3) != -1))
+								{
+									rd.Close();
+									worldSongs.Add(sid);
+									cmd3.Parameters.Clear();
+									cmd3.CommandText = "UPDATE users SET world_songs=?worldSongs WHERE user_id=?uid;";
+									string worldSongsStr = JArray.FromObject(worldSongs).ToString();
+									Console.WriteLine(worldSongsStr);
+									cmd3.Parameters.Add(new MySqlParameter("?worldSongs", MySqlDbType.LongText)
+									{
+										Value = worldSongsStr
+									});
+									cmd3.Parameters.Add(new MySqlParameter("?uid", MySqlDbType.Int32)
+									{
+										Value = userid
+									});
+									cmd3.ExecuteNonQuery();
+								}
+								else
+								{
+									rd.Close();
+								}
+							}
+						}
+					}
+					conn3.Close();
 					#endregion
 				}
 				else // Beyond地图结算

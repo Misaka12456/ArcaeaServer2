@@ -238,8 +238,8 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				int stamina_mtp = rd.GetInt32(0);
 				int frag_mtp = rd.GetInt32(1);
 				int prog_boost_mtp = (rd.GetInt32(2) != 0) ? 300 : 0;
-				decimal climb_steps_mtp = stamina_mtp * (frag_mtp / 100) * ((prog_boost_mtp + 100) / 100); //游玩Step倍数
-				decimal exp_steps_mtp = stamina_mtp * ((prog_boost_mtp + 100) / 100); //经验倍数
+				decimal climb_steps_mtp = stamina_mtp * (frag_mtp / 100M) * ((prog_boost_mtp + 100M) / 100M); //游玩Step倍数
+				decimal exp_steps_mtp = stamina_mtp * ((prog_boost_mtp + 100M) / 100M); //经验倍数
 				rd.Close();
 				cmd.CommandText = $"DELETE FROM world_songplay WHERE user_id={userid} AND song_id='{s.SongId}' AND difficulty={(int)s.Difficulty}";
 				cmd.ExecuteNonQuery(); //移除占位数据

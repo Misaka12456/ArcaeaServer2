@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Team123it.Arcaea.MarveCube.Processors.Background;
 using Team123it.Arcaea.MarveCube.Processors.Front;
 using World = Team123it.Arcaea.MarveCube.Processors.Background.World;
+using System.Linq;
 
 namespace Team123it.Arcaea.MarveCube.Core
 {
@@ -413,6 +414,11 @@ namespace Team123it.Arcaea.MarveCube.Core
 		public bool? Banned { get; private set; }
 
 		/// <summary>
+		/// 玩家获得的世界模式曲目列表(不包括Beyond曲目)。
+		/// </summary>
+		public JArray WorldSongsList { get; set; }
+
+		/// <summary>
 		/// 使用玩家的用户id 初始化 <see cref="PlayerInfo"/> 类的新实例。
 		/// </summary>
 		/// <param name="userid">玩家的用户id(非好友id)。</param>
@@ -422,7 +428,7 @@ namespace Team123it.Arcaea.MarveCube.Core
 			UserId = userid;
 			using var conn = new MySqlConnection(DatabaseConnectURL);
 			conn.Open();
-			var cmd = new MySqlCommand($"SELECT COUNT(*),user_code,name,user_rating,ticket,is_banned,purchases,claimed_presents FROM users WHERE user_id={userid}",conn);
+			var cmd = new MySqlCommand($"SELECT COUNT(*),user_code,name,user_rating,ticket,is_banned,purchases,claimed_presents,world_songs FROM users WHERE user_id={userid}",conn);
 			// var tr = conn.BeginTransaction();
 			var rd = cmd.ExecuteReader();
 			rd.Read();
@@ -435,6 +441,7 @@ namespace Team123it.Arcaea.MarveCube.Core
 				Banned = rd.GetBoolean(5);
 				PurchasedItemsList = (!rd.IsDBNull(6) && !string.IsNullOrWhiteSpace(rd.GetString(6))) ? JArray.Parse(rd.GetString(6)) : null;
 				ClaimedPresentsList = (!rd.IsDBNull(7) && !string.IsNullOrWhiteSpace(rd.GetString(7))) ? JArray.Parse(rd.GetString(7)) : null;
+				WorldSongsList = (!rd.IsDBNull(8) && !string.IsNullOrWhiteSpace(rd.GetString(8))) ? JArray.Parse(rd.GetString(8)) : new JArray();
 				rd.Close();
 				conn.Close();
 				isExists = true;
@@ -450,6 +457,7 @@ namespace Team123it.Arcaea.MarveCube.Core
 				Banned = null;
 				PurchasedItemsList = null;
 				ClaimedPresentsList = null;
+				WorldSongsList = new JArray();
 				isExists = false;
 			}
 		}
@@ -464,7 +472,7 @@ namespace Team123it.Arcaea.MarveCube.Core
 			UserCode = usercode;
 			var conn = new MySqlConnection(DatabaseConnectURL);
 			conn.Open();
-			var cmd = new MySqlCommand($"SELECT COUNT(*),user_id,name,user_rating,ticket,is_banned,purchases,claimed_presents FROM users WHERE user_code=?usercode", conn);
+			var cmd = new MySqlCommand($"SELECT COUNT(*),user_id,name,user_rating,ticket,is_banned,purchases,claimed_presents,world_songs FROM users WHERE user_code=?usercode", conn);
 			cmd.Parameters.Add(new MySqlParameter("?usercode", usercode));
 			var rd = cmd.ExecuteReader();
 			rd.Read();
@@ -477,6 +485,7 @@ namespace Team123it.Arcaea.MarveCube.Core
 				Banned = rd.GetBoolean(5);
 				PurchasedItemsList = (!rd.IsDBNull(6)) ? JArray.Parse(rd.GetString(6)) : new JArray();
 				ClaimedPresentsList = (!rd.IsDBNull(7) && !string.IsNullOrWhiteSpace(rd.GetString(7))) ? JArray.Parse(rd.GetString(7)) : null;
+				WorldSongsList = (!rd.IsDBNull(8) && !string.IsNullOrWhiteSpace(rd.GetString(8))) ? JArray.Parse(rd.GetString(8)) : new JArray();
 				rd.Close();
 				conn.Close();
 				isExists = true;
@@ -491,6 +500,7 @@ namespace Team123it.Arcaea.MarveCube.Core
 				_potentialint = null;
 				_ticket = null;
 				Banned = false;
+				WorldSongsList = new JArray();
 				isExists = false;
 			}
 		}
@@ -585,18 +595,18 @@ namespace Team123it.Arcaea.MarveCube.Core
 				{
 					r.Add("global_rank", rank!.Value);
 				}
+				var worldSongs = WorldSongsList;
 				using var conn = new MySqlConnection(DatabaseConnectURL);
 				conn.Open();
 				var cmd = conn.CreateCommand();
 				cmd.CommandText = $"SELECT value FROM fixed_properties WHERE `key`='is_byd_chapter_unlocked';";
+				Console.WriteLine(worldSongs.ToString());
 				if (Convert.ToBoolean(Convert.ToInt32(cmd.ExecuteScalar())))
 				{
-					r.Add("world_songs", FixedDatas.GetPlayerAllOwnBeyondSongIds(UserId!.Value));
+					worldSongs.Merge(FixedDatas.GetPlayerAllOwnBeyondSongIds(UserId!.Value));
+					Console.WriteLine(worldSongs.ToString());
 				}
-				else
-				{
-					r.Add("world_songs", new JArray());
-				}
+				r.Add("world_songs", worldSongs);
 				cmd.CommandText = $"SELECT * FROM users WHERE user_id={UserId}";
 				var rd = cmd.ExecuteReader();
 				if (rd.Read()) //如果有玩家数据
@@ -640,7 +650,7 @@ namespace Team123it.Arcaea.MarveCube.Core
 					r.Add("stamina", (rd.GetInt32("overflow_staminas") > 0) ? (World.FullStaminas + rd.GetInt32("overflow_staminas")) : World.CalculateCurrentStaminas(rd.IsDBNull(30) ? DateTime.Now : rd.GetDateTime(30), out _));
 					r.Add("max_stamina_ts", (rd.GetInt32("overflow_staminas") > 0 || rd.IsDBNull(30)) ? 0 : Convert.ToInt64((rd.GetDateTime(30) - DateTime.UnixEpoch).TotalMilliseconds));
 					r.Add("characters", characters);
-					r.Add("warning_count", (12 - rd.GetInt32(33) >= 0) ? 0 : Convert.ToInt32((12M - rd.GetInt32(33)) / 3));
+					r.Add("warning_count", (12 - rd.GetInt32(33) <= 0) ? 0 : Convert.ToInt32((12M - rd.GetInt32(33)) / 3));
 					var recent_score = new JArray();
 					if (RecentScore != null)
 					{

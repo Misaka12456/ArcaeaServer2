@@ -113,6 +113,55 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			}));
 		}
 
+		[HttpGet("me")]
+		public Task<JObjectResult> getMyInfo([FromHeader]string Authorization)
+		{
+			return Task.Run(new Func<JObjectResult>(() =>
+			{
+				if (PreparingForRelease(HttpContext.Request)) return new ArcaeaAPIException(ArcaeaAPIException.APIExceptionType.PreparingForRelease);
+				if (Authorization.ToLower().Trim().StartsWith("bearer"))
+				{
+					string token = Authorization.Split(" ")[1];
+					uint? userid = Tokens.GetUserIdByToken(token); //获取token对应的用户id
+					if (Maintaining(out var players))
+					{
+						if (!userid.HasValue || !players.Contains((int)userid.Value))
+						{
+							return new ArcaeaAPIException(ArcaeaAPIException.APIExceptionType.ServerMaintaining);
+						}
+					}
+					if (userid.HasValue) //如果获取到了用户id
+					{
+						try
+						{
+							var p = new PlayerInfo(userid.Value, out _);
+							return new JObjectResult(new JObject()
+							{
+								{ "success", true },
+								{ "value", p.GetUserBaseInfoData() }
+							});
+						}
+						catch (ArcaeaAPIException ex) //如果发生了异常
+						{
+							return ex; //直接返回对应异常的Json
+						}
+						catch (Exception) //发生了未知异常
+						{
+							return new ArcaeaAPIException(ArcaeaAPIException.APIExceptionType.Other);
+						}
+					}
+					else
+					{
+						return new ArcaeaAPIException(ArcaeaAPIException.APIExceptionType.LoggedInAnotherDevice);
+					}
+				}
+				else
+				{
+					return new ArcaeaAPIException(ArcaeaAPIException.APIExceptionType.Other);
+				}
+			}));
+		}
+
 		[HttpGet("me/save")]
 		public Task<JObjectResult> cloudFetch([FromHeader]string Authorization)
 		{
