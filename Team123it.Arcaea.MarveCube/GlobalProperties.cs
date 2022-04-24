@@ -524,6 +524,79 @@ namespace Team123it.Arcaea.MarveCube
 		}
 
 		/// <summary>
+		/// 获取Link Play多人游玩模块的UDP服务器连接端口。
+		/// </summary>
+		public static int? LinkplayPort
+		{
+			get
+			{
+				if (File.Exists(Path.Combine(AppContext.BaseDirectory, "data", "config.json")))
+				{
+					try
+					{
+						var settings = JObject.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "data", "config.json"), Encoding.UTF8));
+						var dbConnURL = new StringBuilder();
+						var config = settings.Value<JObject>("config");
+						if (config!.TryGetValue("linkplayPort", out var LinkplayPort))
+						{
+							return (int?)LinkplayPort;
+						}
+						else
+						{
+							return null;
+						}
+					}
+					catch (Exception ex)
+					{
+						throw new JsonException($"配置文件 {Path.Combine(AppContext.BaseDirectory, "data", "config.json")} 读取失败: {ex.Message}");
+					}
+				}
+				else
+				{
+					throw new FileNotFoundException($"找不到配置文件(config.json): {Path.Combine(AppContext.BaseDirectory, "data", "config.json")}");
+				}
+			}
+		}
+
+		/// <summary>
+		/// 获取Link Play多人游玩模块的UDP服务器终结点(Endpoint)地址。
+		/// <para>
+		/// 注:该项必须填UDP服务器的公网IPv4地址。
+		/// </para>
+		/// </summary>
+		public static string? LinkplayEndpoint
+		{
+			get
+			{
+				if (File.Exists(Path.Combine(AppContext.BaseDirectory, "data", "config.json")))
+				{
+					try
+					{
+						var settings = JObject.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "data", "config.json"), Encoding.UTF8));
+						var dbConnURL = new StringBuilder();
+						var config = settings.Value<JObject>("config");
+						if (config!.TryGetValue("linkplayEndpoint", out var LinkplayEndpoint))
+						{
+							return (string?)LinkplayEndpoint;
+						}
+						else
+						{
+							return null;
+						}
+					}
+					catch (Exception ex)
+					{
+						throw new JsonException($"配置文件 {Path.Combine(AppContext.BaseDirectory, "data", "config.json")} 读取失败: {ex.Message}");
+					}
+				}
+				else
+				{
+					throw new FileNotFoundException($"找不到配置文件(config.json): {Path.Combine(AppContext.BaseDirectory, "data", "config.json")}");
+				}
+			}
+		}
+
+		/// <summary>
 		/// 获取API运行异常自动提示邮件发送的目标邮箱地址。
 		/// </summary>
 		public static string? ReportDescEmail
