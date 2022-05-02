@@ -4,6 +4,7 @@ using StackExchange.Redis;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using MySql.Data.MySqlClient;
 
 namespace Team123it.Arcaea.MarveCube.Processors.Front
 {
@@ -41,7 +42,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 			var random = new Random();
 			var roomCode = RandomString(6);
 			var roomId = random.NextInt64(1000000000000000000, 2000000000000000000);
-			var bytesKey = new byte[16]; random.NextBytes(bytesKey); var key = Convert.ToBase64String(bytesKey);
+			var defaultKey = new byte[]{0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00, 0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00};
 			var playerId = RandomString(6);
 			var orderedAllowSongs = ConvertUnlocks(clientSongMap);
 			var db = conn.GetDatabase();
@@ -50,18 +51,30 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				{ "roomCode", roomCode },
 				{ "roomId", roomId },
 				{ "token", roomId },
-				{ "key", key },
+				{ "key", defaultKey },
 				{ "playerId", new JArray(playerId) },
 				{ "userId", new JArray(userId) },
 				{ "allowSongs", clientSongMap }
 			};
-			db.StringSet($"Arcaea-LinkPlay-{roomCode}", roomRedisData.ToString());
+			using var conn2 = new MySqlConnection(DatabaseConnectURL);
+			conn2.Open();
+			var cmd2 = conn2.CreateCommand();
+			cmd2.CommandText = $"SELECT name FROM users WHERE user_id={userId};";
+			var redisUserData = new JObject()
+			{
+				{"roomId", roomId},
+				{"userName", (string)cmd2.ExecuteScalar()}
+			};
+			conn2.Close();
+			db.StringSet($"Arcaea-LinkPlay-{roomId}", roomRedisData.ToString());
+			db.StringSet($"Arcaea-LinkPlayWrapper-{roomCode}", roomId);
+			db.StringSet($"Arcaea-LinkPlayToken-{roomId}", redisUserData.ToString());
 			var r = new JObject()
 			{
 				{"roomCode", roomCode},
 				{"roomId", roomId},
 				{"token", roomId},
-				{"key", key},
+				{"key", defaultKey},
 				{"playerId", playerId},
 				{"userId", userId},
 				{"endPoint", LinkplayEndpoint},
@@ -74,6 +87,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		/// <summary>
 		/// 加入一个Link Play多人游戏房间。
 		/// </summary>
+		/// <param name="roomCode">要加入的房间的6位随机Code</param>
 		/// <param name="userId">要加入房间的玩家的用户id。</param>
 		/// <param name="clientSongMap">要加入房间的玩家的客户端式Link Play曲目解锁表(使用idx作为曲目的唯一标识符)。</param>
 		/// <returns>
@@ -95,13 +109,16 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		/// </returns>
 		public static JObject JoinRoom(string roomCode, int userId, JObject clientSongMap)
 		{
+			var random = new Random();
 			var playerId = RandomString(6);
 			using var conn = ConnectionMultiplexer.Connect(MDatabaseConnectURL);
 			var db = conn.GetDatabase();
-			var roomRedisData = JObject.Parse(db.StringGet($"Arcaea-LinkPlay-{roomCode}").ToString());
+			var roomId = db.StringGet($"Arcaea-LinkPlayWrapper-{roomCode}");
+			var token = random.NextInt64(1000000000000000000, 2000000000000000000).ToString();
+			var roomRedisData = JObject.Parse(db.StringGet($"Arcaea-LinkPlay-{roomId}").ToString());
 			var storedMap = roomRedisData.Value<JObject>("allowSongs");
 			var finalMap = new JObject();
-			foreach (JProperty prop in clientSongMap.Properties())
+			foreach (var prop in clientSongMap.Properties())
 			{
 				var comp1 = clientSongMap.Value<JArray>(prop.Name);
 				var comp2 = storedMap.Value<JArray>(prop.Name);
@@ -113,6 +130,8 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				}
 				finalMap.Add(prop.Name, final);
 			}
+			var tokensList = roomRedisData.Value<JArray>("token");
+			tokensList.Add(token);
 			var playerIdsList = roomRedisData.Value<JArray>("playerId");
 			playerIdsList.Add(playerId);
 			var userIdsList = roomRedisData.Value<JArray>("userId");
@@ -123,7 +142,18 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 			roomRedisData.Add("playerId", playerIdsList);
 			roomRedisData.Add("userId", userIdsList);
 			roomRedisData.Add("allowSongs", finalMap);
+			using var conn2 = new MySqlConnection(DatabaseConnectURL);
+			conn2.Open();
+			var cmd2 = conn2.CreateCommand();
+			cmd2.CommandText = $"SELECT name FROM users WHERE user_id={userId};";
+			var redisUserData = new JObject()
+			{
+				{"roomId", (string)roomId},
+				{"userName", (string)cmd2.ExecuteScalar()}
+			};
+			conn.Close();
 			db.StringSet($"Arcaea-LinkPlay-{roomCode}", roomRedisData.ToString());
+			db.StringSet($"Arcaea-LinkPlayToken-{token}", redisUserData.ToString());
 			var r = new JObject()
 			{
 				{"roomCode", roomCode},

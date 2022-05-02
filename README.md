@@ -10,6 +10,7 @@
 
 * [Team123it.Arcaea.MarveCube](./Team123it.Arcaea.MarveCube) - Arcaea Server 2 主服务器后端
 * [Team123it.Arcaea.MarveCube.Standalone](./Team123it.Arcaea.MarveCube.Standalone) - Arcaea Server 2 独立下载服务器后端
+* [Team123it.Arcaea.MarveCube.LinkPlay](./Team123it.Arcaea.MarveCube.LinkPlay) - Arcaea Server 2 独立LinkPlay后端
 
 ##### 运行环境（主服务器程序与下载服务器均需要)
 
