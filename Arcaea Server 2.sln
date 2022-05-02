@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{B676BE8F-4
 		docs\userinfo.md = docs\userinfo.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Team123it.Arcaea.MarveCube.LinkPlay", "Team123it.Arcaea.MarveCube.LinkPlay\Team123it.Arcaea.MarveCube.LinkPlay.csproj", "{8C0D9B41-31C4-40DD-A33D-43771F81554C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|ARM64 = Debug|ARM64
@@ -45,6 +47,14 @@ Global
 		{B8AD8196-3878-45D1-B3E3-1092B2A2DFC5}.Release|ARM64.Build.0 = Release|ARM64
 		{B8AD8196-3878-45D1-B3E3-1092B2A2DFC5}.Release|x64.ActiveCfg = Release|x64
 		{B8AD8196-3878-45D1-B3E3-1092B2A2DFC5}.Release|x64.Build.0 = Release|x64
+		{8C0D9B41-31C4-40DD-A33D-43771F81554C}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{8C0D9B41-31C4-40DD-A33D-43771F81554C}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{8C0D9B41-31C4-40DD-A33D-43771F81554C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8C0D9B41-31C4-40DD-A33D-43771F81554C}.Debug|x64.Build.0 = Debug|Any CPU
+		{8C0D9B41-31C4-40DD-A33D-43771F81554C}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{8C0D9B41-31C4-40DD-A33D-43771F81554C}.Release|ARM64.Build.0 = Release|Any CPU
+		{8C0D9B41-31C4-40DD-A33D-43771F81554C}.Release|x64.ActiveCfg = Release|Any CPU
+		{8C0D9B41-31C4-40DD-A33D-43771F81554C}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
