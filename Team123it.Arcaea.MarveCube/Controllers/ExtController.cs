@@ -174,6 +174,7 @@ namespace Team123it.Arcaea.MarveCube.Controllers
 			}));
 		}
 
+		[Obsolete("该API&方法已弃用。请改用 Team123it.Arcaea.MarveCube.Standalone 独立下载服务器程序。")]
 		[HttpGet("song/download/{songId:required}/{fileName:required}")]
 		public async Task<IActionResult> DownloadSongData([FromQuery]string token, [FromRoute]string songId, [FromRoute]string fileName)
 		{

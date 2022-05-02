@@ -55,7 +55,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				{ "userId", new JArray(userId) },
 				{ "allowSongs", clientSongMap }
 			};
-			db.SetAdd($"Arcaea-LinkPlay-{roomCode}", roomRedisData.ToString());
+			db.StringSet($"Arcaea-LinkPlay-{roomCode}", roomRedisData.ToString());
 			var r = new JObject()
 			{
 				{"roomCode", roomCode},
@@ -123,7 +123,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 			roomRedisData.Add("playerId", playerIdsList);
 			roomRedisData.Add("userId", userIdsList);
 			roomRedisData.Add("allowSongs", finalMap);
-			db.SetAdd($"Arcaea-LinkPlay-{roomCode}", roomRedisData.ToString());
+			db.StringSet($"Arcaea-LinkPlay-{roomCode}", roomRedisData.ToString());
 			var r = new JObject()
 			{
 				{"roomCode", roomCode},

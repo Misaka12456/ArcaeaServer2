@@ -45,11 +45,6 @@ namespace Team123it.Arcaea.MarveCube
 
 		public static IHostBuilder CreateHostBuilder(string[] args)
 		{
-			//X509Certificate2? x509ca = null;
-			//if (HttpsCertificatePassword != null)
-			//{
-			//	x509ca = new X509Certificate2(File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "data", "https.pfx")), HttpsCertificatePassword);
-			//}
 			var config = new ConfigurationBuilder()
 				.Build();
 			return Host.CreateDefaultBuilder(args)

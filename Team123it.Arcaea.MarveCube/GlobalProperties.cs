@@ -508,8 +508,13 @@ namespace Team123it.Arcaea.MarveCube
 						var settings = JObject.Parse(File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "data", "config.json"), Encoding.UTF8));
 						var dbConnURL = new StringBuilder();
 						var config = settings.Value<JObject>("config");
-						string mdbConnURL = "localhost:" + config.Value<uint>("redisPort");
-						return mdbConnURL;
+						string redisURL = config.TryGetValue("redisURL", out var redisURLToken) && !string.IsNullOrWhiteSpace((string?)redisURLToken) ? (string)redisURLToken! : "localhost";
+						string mdbConnFullURL = $"{redisURL}:{config.Value<uint>("redisPort")}";
+						if (config.TryGetValue("redisPswd", out var redisPswdToken) && !string.IsNullOrWhiteSpace((string?)redisPswdToken))
+						{
+							mdbConnFullURL += $",password={redisPswdToken}";
+						}
+						return mdbConnFullURL;
 					}
 					catch (Exception ex)
 					{

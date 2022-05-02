@@ -35,7 +35,7 @@ namespace Team123it.Arcaea.MarveCube.Core
                 {
                     limitTimes++;
                     db.KeyDelete(apikey);
-                    db.SetAdd(apikey, limitTimes);
+                    db.StringSet(apikey, limitTimes);
                     db.KeyExpire(apikey, new TimeSpan(0, 0, 1));
                     return true;
                 }
