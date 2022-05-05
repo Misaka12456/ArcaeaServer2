@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using Newtonsoft.Json.Linq;
-using Team123it.Arcaea.MarveCube.LinkPlay.Core;
+using static Team123it.Arcaea.MarveCube.LinkPlay.Core.LinkPlayCrypto;
 using static Team123it.Arcaea.MarveCube.LinkPlay.GlobalProperties;
 
 namespace Team123it.Arcaea.MarveCube.LinkPlay
@@ -132,7 +132,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 				        : new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, "data", "Logs"));
 
 			        var newLog = string.Concat(DateTime.Now.ToString("yyyyMMddHHmmssfff"), ".log");
-			        _logWriter = new ConsoleWriter() {Tag = Path.Combine(AppContext.BaseDirectory, "data", "Logs", newLog)};
+			        _logWriter = new ConsoleWriter {Tag = Path.Combine(AppContext.BaseDirectory, "data", "Logs", newLog)};
 			        _logWriter.OnOutput += SaveLog;
 			        Console.WriteLine($"[{DateTime.Now:yyyy-M-d H:mm:ss}] Information: Detected '--background' argument. All logs will output to file {Path.Combine(AppContext.BaseDirectory, "data", "Logs", newLog)}.");
 			        Console.SetOut(_logWriter);
@@ -163,20 +163,23 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
         /// <param name="data">需要发出的数据包</param>
         /// <param name="token">获取token</param>
         /// <param name="endPoint">数据要到达的终止点，可在ReceiveMsg中获得( <see cref="EndPoint"/> )</param>
-        public static void SendMsg(byte[] data, byte[] token, EndPoint endPoint)
+        public static async void SendMsg(byte[] data, byte[] token, EndPoint endPoint)
         {
+	        const SocketFlags flags = SocketFlags.None;
 	        try
 	        {
-		        var encryptedData = LinkPlayCrypto.EncryptPack(token, data);
-		        _server?.SendTo(encryptedData, endPoint);
+		        var encryptedData = await EncryptPack(token, data);
+		        await _server?.SendToAsync(encryptedData, flags, endPoint)!;
+		        GC.Collect();
 	        }
 	        catch (Exception e) { Console.WriteLine(e); }
         }
         /// <summary>
         /// 接收发送给本机ip对应端口号的数据报
         /// </summary>
-        private static void ReceiveMsg()
+        private static async void ReceiveMsg()
         {
+	        const SocketFlags flags = SocketFlags.None;
 	        try
 	        {            
 		        while (true)
@@ -184,10 +187,10 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 			        EndPoint point = new IPEndPoint(IPAddress.Any, 0);//用来保存发送方的ip和端口号
 			        var buffer = new byte[1024];
 			        if (_server == null) continue;
-			        var length = _server.ReceiveFrom(buffer, ref point);//接收数据报
-			        var message = LinkPlayCrypto.DecryptPack(buffer[..length]);
+			        var rawMessage = await _server.ReceiveFromAsync(buffer, flags, point);//接收数据报
+			        var message = await DecryptPack(buffer[..rawMessage.ReceivedBytes]);
 			        Console.WriteLine(point.ToString() + message);
-			        LinkPlayParser.LinkPlayResp(message, point);
+			        //  LinkPlayParser.LinkPlayResp(message, point);
 		        }
 	        }
 	        catch (Exception e) { Console.WriteLine(e); }
