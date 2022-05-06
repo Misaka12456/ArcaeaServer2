@@ -5,6 +5,24 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
 {
     public static class LinkPlayParser
     {
+        //<summary>
+        // Host transfer from the client, return ClientPack08
+        //</summary>
+        public static ClientPack08 ParseClientPack08(byte[] data)
+        {
+            return new ClientPack08
+            {
+                Prefix = data[..4],
+                Token = data[4..12],
+                Counter = BitConverter.ToUInt32(data.AsSpan()[12..16]),
+                ClientTime = BitConverter.ToUInt64(data.AsSpan()[16..24]),
+                RobinEnabled = BitConverter.ToBoolean(data.AsSpan()[24..])
+            };
+        }
+
+        //<summary>
+        // Ping from the client, return ClientPack09
+        //</summary>
         public static ClientPack09 ParseClientPack09(byte[] data)
         {
             return new ClientPack09
@@ -21,6 +39,27 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 DownloadProgress = data[35],
                 Character = data[36],
                 CharacterUncapped = data[37]
+            };
+        }
+
+        public static ClientPack0A ParseClientPack0A(byte[] data)
+        {
+            return new ClientPack0A
+            {
+                Prefix = data[..4],
+                Token = data[4..12],
+                Counter = BitConverter.ToUInt32(data.AsSpan()[12..16]),
+            };
+        }
+
+        public static ClientPack0B ParseClientPack0B(byte[] data)
+        {
+            return new ClientPack0B
+            {
+                Prefix = data[..4],
+                Token = data[4..12],
+                Counter = BitConverter.ToUInt32(data.AsSpan()[12..16]),
+                SongIdx = BitConverter.ToInt16(data.AsSpan()[16..18])
             };
         }
     }

@@ -2,9 +2,36 @@
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Team123it.Arcaea.MarveCube.LinkPlay.Models;
 
 namespace Team123it.Arcaea.MarveCube.LinkPlay
 {
+	public static class RoomManager
+	{
+		private static Dictionary<string, Room> _rooms = new();
+
+		public static void RegisterRoom(Room room, string roomId)
+		{
+			_rooms.Add(roomId, room);
+		}
+
+		public static void UnRegisterRoom(string roomId)
+		{
+			_rooms.Remove(roomId);
+		}
+
+		public static Room? FetchRoomById(string roomId)
+		{
+			if (_rooms.TryGetValue(roomId, out var room))
+			{
+				return room;
+			}
+			else
+			{
+				return null;
+			}
+		}
+	}
 
 	/// <summary>
 	/// 提供适用于 <see cref="LinkPlay"/> 的全局属性的类。无法继承此类。
