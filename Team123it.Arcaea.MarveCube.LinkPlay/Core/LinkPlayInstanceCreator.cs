@@ -13,18 +13,19 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             
             var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data.Token));
             var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId);
+            var hostId = Convert.ToUInt64(redisRoom.PlayerId[0]);
             if (playerCount == 0)
             {
-                var returnedRoom = new Room()
+                var returnedRoom = new Room
                 {
                     RoomId = redisRoom.RoomId,
                     SongMap = LinkPlayCrypto.ConvertUnlocks(redisRoom.AllowSongs),
-                    HostId = Convert.ToUInt32(redisRoom.PlayerId[0]),
+                    HostId = hostId,
                     ClientTime = data.ClientTime,
                 };
-                var player = new Player()
+                var player = new Player
                 {
-                    PlayerId = Convert.ToUInt32(redisRoom.PlayerId[0]),
+                    PlayerId = hostId,
                     Token = redisRoom.Token[0],
                     Score = data.Score,
                     DownloadProgress = data.DownloadProgress,
@@ -42,9 +43,9 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             {
                 room.SongMap = LinkPlayCrypto.ConvertUnlocks(redisRoom.AllowSongs);
                 var playerIndex = playerCount;
-                var player = new Player()
+                var player = new Player
                 {
-                    PlayerId = Convert.ToUInt32(redisRoom.PlayerId[playerIndex]),
+                    PlayerId = Convert.ToUInt64(redisRoom.PlayerId[playerIndex]),
                     Token = redisRoom.Token[playerIndex],
                     Score = data.Score,
                     DownloadProgress = data.DownloadProgress,
@@ -61,4 +62,3 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
         }
     }
 }
-

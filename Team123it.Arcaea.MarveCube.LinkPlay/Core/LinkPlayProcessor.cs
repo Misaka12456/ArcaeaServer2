@@ -10,9 +10,21 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
         public static async Task ProcessPacket(byte[] packet, EndPoint endPoint)
         {
             Console.WriteLine(BitConverter.ToString(packet[..4]));
+            if (packet[2] == 0x08) await Command08Handler(packet, endPoint);
             if (packet[2] == 0x09) await Command09Handler(packet, endPoint);
         }
 
+        private static async Task Command08Handler(byte[] data, EndPoint endPoint)
+        {
+            var linkPlayToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data[4..12]));
+            var room = (Room) FetchRoomById(linkPlayToken.RoomId)!;
+            var robinObject = LinkPlayParser.ParseClientPack08(data);
+            room.RoundRobin = robinObject.RobinEnabled;
+            await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room);
+            room.Counter++;
+            ReassignRoom(room.RoomId, room);
+        }
+        
         private static async Task Command09Handler(byte[] data, EndPoint endPoint)
         {
             var room = new Room();
@@ -37,11 +49,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 newRoom.Counter++;
             }
 
-            if (FetchRoomById(linkPlayToken.RoomId) is not null)
-            {
-                UnRegisterRoom(newRoom.RoomId); 
-                RegisterRoom(newRoom, newRoom.RoomId);
-            }
+            if (FetchRoomById(linkPlayToken.RoomId) is not null) ReassignRoom(newRoom.RoomId, newRoom);
             else RegisterRoom(newRoom, newRoom.RoomId);
         }
 

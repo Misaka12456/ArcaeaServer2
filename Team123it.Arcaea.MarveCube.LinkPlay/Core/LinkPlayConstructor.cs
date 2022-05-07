@@ -44,12 +44,12 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
         public static byte[] RoomInfoSchema(Room room)
         {
             var returnedBytes = new List<byte>();
-            returnedBytes.Add((byte)room.RoomState); // [0]
+            returnedBytes.Add((byte)(uint)room.RoomState); // [0]
             returnedBytes.AddRange(BitConverter.GetBytes(room.CountDown)); // [1, 5)
-            returnedBytes.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks)); // [5, 13)
+            returnedBytes.AddRange(BitConverter.GetBytes((ulong)(DateTime.Now.Ticks*10))); // [5, 13)
             returnedBytes.AddRange(BitConverter.GetBytes(room.SongIdx)); // [13, 15)
             returnedBytes.AddRange(BitConverter.GetBytes((ushort)1000)); // [15, 17)
-            returnedBytes.AddRange(BitConverter.GetBytes((long)100)[..7]); // [17, 24)
+            returnedBytes.AddRange(BitConverter.GetBytes((ulong)100)[..7]); // [17, 24)
             foreach (var roomPlayer in room.Players) returnedBytes.AddRange(PlayerScoreSchema(roomPlayer)); // [24, ...)
             returnedBytes.AddRange(BitConverter.GetBytes(room.LastSong));
             returnedBytes.AddRange(BitConverter.GetBytes(room.RoundRobin));
@@ -59,8 +59,8 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
         public static byte[] RoomInfoWithHostSchema(Room room)
         {
             var returnedBytes = new List<byte>();
-            returnedBytes.AddRange(RoomInfoSchema(room)); // [0, ...)
             returnedBytes.AddRange(BitConverter.GetBytes(room.HostId)); // [..., ...+8)
+            returnedBytes.AddRange(RoomInfoSchema(room)); // [0, ...)
             return returnedBytes.ToArray();
         }
     }

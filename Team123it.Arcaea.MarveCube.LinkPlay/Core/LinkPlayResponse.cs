@@ -113,7 +113,6 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             {
                 returnedBytes.AddRange(LinkPlayConstructor.PlayerInfoWithNameSchema(player)); // [16, 176)
             }
-            
             returnedBytes.AddRange(room.SongMap); // [176, 688)
             returnedBytes.AddRange(LinkPlayConstructor.RoomInfoWithHostSchema(room)); // [688, 759)
             return returnedBytes.ToArray();

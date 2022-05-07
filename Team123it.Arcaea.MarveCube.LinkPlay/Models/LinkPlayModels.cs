@@ -51,7 +51,11 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         public void SendUserName(string setName)
         {
             var rawName = Encoding.ASCII.GetBytes(setName).ToList();
-            for (var i = 0; i < 16 - rawName.Count; i++) rawName.Add(0x00);
+            while (rawName.Count != 16)
+            {
+                rawName.Add(0x00);
+            }
+            if (rawName.Count != 16) throw new Exception("Name is too short");
             Name = rawName.ToArray();
         }
     }
