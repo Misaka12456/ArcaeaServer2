@@ -18,11 +18,12 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 {
                     RoomId = redisRoom.RoomId,
                     SongMap = LinkPlayCrypto.ConvertUnlocks(redisRoom.AllowSongs),
-                    HostId = redisRoom.PlayerId[0],
+                    HostId = Convert.ToUInt32(redisRoom.PlayerId[0]),
                     ClientTime = data.ClientTime,
                 };
                 var player = new Player()
                 {
+                    PlayerId = Convert.ToUInt32(redisRoom.PlayerId[0]),
                     Token = redisRoom.Token[0],
                     Score = data.Score,
                     DownloadProgress = data.DownloadProgress,
@@ -39,8 +40,10 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             else
             {
                 room.SongMap = LinkPlayCrypto.ConvertUnlocks(redisRoom.AllowSongs);
+                var playerIndex = room.Players.Length - 1;
                 var player = new Player()
                 {
+                    PlayerId = Convert.ToUInt32(redisRoom.PlayerId[0]),
                     Token = redisRoom.Token[0],
                     Score = data.Score,
                     DownloadProgress = data.DownloadProgress,
@@ -50,7 +53,6 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                     EndPoint = endPoint,
                     Difficulty = (Difficulties)data.Difficulty,
                 };
-                var playerIndex = room.Players.Length - 1;
                 player.SendUserName(redisToken.UserName);
                 room.Players[playerIndex] = player;
                 return (room, playerIndex);
