@@ -7,25 +7,46 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
     public struct Player
     {
         public byte[] Name = Encoding.ASCII.GetBytes("EmptyPlayer\x00\x00\x00\x00\x00");       // buf(16) (string)
-        public uint PlayerId = 0;   // u32
-        public ulong Token = 0;    // u64
-        public uint UserId = 0;     // u32
+        public ulong PlayerId;   // u32
+        public ulong Token;    // u64
+        public uint UserId;     // u32
         public byte[] SongMap = new byte[512];    // buf(512 <- state.common.songMapLen)
 
         public int Character  = -1;
-        public bool CharacterUncapped = false;
+        public bool CharacterUncapped;
         public Difficulties Difficulty = Difficulties.Empty;
-        public uint Score = 0;
-        public uint Timer = 0;
+        public uint Score;
+        public uint Timer;
         public ClearTypes ClearType = ClearTypes.None;
         public PlayerStates PlayerState = PlayerStates.Choosing;
-        public int DownloadProgress = 0;
-        public bool OnlineState = false;
+        public int DownloadProgress;
+        public bool OnlineState;
 
-        public bool PersonalBest = false;
-        public bool Top = false;
+        public bool PersonalBest;
+        public bool Top;
 
         public EndPoint EndPoint = new IPEndPoint(IPAddress.Any, 0);
+
+        public Player()
+        {
+            Name = Encoding.ASCII.GetBytes("EmptyPlayer\x00\x00\x00\x00\x00");
+            PlayerId = 0;
+            Token = 0;
+            UserId = 0;
+            SongMap = new byte[512];
+            Character = -1;
+            CharacterUncapped = false;
+            Difficulty = Difficulties.Empty;
+            Score = 0;
+            Timer = 0;
+            ClearType = ClearTypes.None;
+            PlayerState = PlayerStates.Choosing;
+            DownloadProgress = 0;
+            OnlineState = false;
+            PersonalBest = false;
+            Top = false;
+            EndPoint = new IPEndPoint(IPAddress.Any, 0);
+        }
 
         public void SendUserName(string setName)
         {
@@ -37,19 +58,34 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
     
     public struct Room
     {
-        public ulong RoomId = 0;
-        public Player[] Players = new Player[4];
+        public ulong RoomId;
+        public Player[] Players = { new(), new(), new(), new() };
         public byte[] SongMap = new byte[512];    // buf(512 <- state.common.songMapLen)
 
         public RoomStates RoomState = RoomStates.Locked;
         public uint Counter = 4;
         public int CountDown = -1;
-        public uint HostId = 0;
-        public ulong ClientTime = 0;
+        public ulong HostId;
+        public ulong ClientTime;
 
         public short SongIdx = -1;
         public short LastSong = -1;
-        public bool RoundRobin = false;
+        public bool RoundRobin;
+
+        public Room()
+        {
+            RoomId = 0;
+            Players = new Player[] { new(), new(), new(), new() };
+            SongMap = new byte[512];
+            RoomState = RoomStates.Locked;
+            Counter = 4;
+            CountDown = -1;
+            HostId = 0;
+            ClientTime = 0;
+            SongIdx = -1;
+            LastSong = -1;
+            RoundRobin = false;
+        }
 
         public byte[] GetResendPack(uint clientCounter)
         {
@@ -59,4 +95,3 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         }
     }
 }
-

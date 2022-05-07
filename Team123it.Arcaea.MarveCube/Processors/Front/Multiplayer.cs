@@ -153,7 +153,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				{"userName", (string)cmd2.ExecuteScalar()}
 			};
 			conn2.Close();
-			db.StringSet($"Arcaea-LinkPlay-{roomCode}", roomRedisData.ToString());
+			db.StringSet($"Arcaea-LinkPlay-{roomId}", roomRedisData.ToString());
 			db.StringSet($"Arcaea-LinkPlayToken-{token}", redisUserData.ToString());
 			var r = new JObject()
 			{

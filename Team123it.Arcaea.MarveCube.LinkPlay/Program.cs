@@ -187,10 +187,16 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 			        EndPoint point = new IPEndPoint(IPAddress.Any, 0);//用来保存发送方的ip和端口号
 			        var buffer = new byte[1024];
 			        if (_server == null) continue;
-			        var rawMessage = await _server.ReceiveFromAsync(buffer, flags, point);//接收数据报
+			        var rawMessage =  _server.ReceiveFromAsync(buffer, flags, point).Result;//接收数据报
 			        var message = await DecryptPack(buffer[..rawMessage.ReceivedBytes]);
-			        Console.WriteLine(point.ToString() + message);
-			        await LinkPlayProcessor.ProcessPacket(message, point);
+			        Console.WriteLine(rawMessage.RemoteEndPoint.ToString() + message);
+			        var error = LinkPlayProcessor.ProcessPacket(message, rawMessage.RemoteEndPoint);
+			        await error;
+			        Console.WriteLine(error.IsCompleted);
+			        Console.WriteLine(error.IsFaulted);
+			        if(error.IsFaulted){
+				        Console.WriteLine(error.Exception);
+			        }
 		        }
 	        }
 	        catch (Exception e) { Console.WriteLine(e); }

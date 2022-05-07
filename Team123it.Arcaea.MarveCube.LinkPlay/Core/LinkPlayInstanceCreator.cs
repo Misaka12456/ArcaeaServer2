@@ -7,12 +7,13 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
     {
         public static async Task<(Room, int)> PlayerCreator(Room room, ClientPack09 data, EndPoint endPoint)
         {
+            var playerCount = room.Players.Count(player => player.Token != 0);
             var tokenList = room.Players.Select(player => player.Token).ToList();
             if (tokenList.Contains(BitConverter.ToUInt64(data.Token))) return (room, tokenList.IndexOf(BitConverter.ToUInt64(data.Token)));
             
             var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data.Token));
             var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId);
-            if (room.Players.Length == 0)
+            if (playerCount == 0)
             {
                 var returnedRoom = new Room()
                 {
@@ -34,17 +35,17 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                     Difficulty = (Difficulties)data.Difficulty,
                 };
                 player.SendUserName(redisToken.UserName);
-                returnedRoom.Players[0] = player;
+                returnedRoom.Players.SetValue(player, 0);
                 return (returnedRoom, 0);
             }
             else
             {
                 room.SongMap = LinkPlayCrypto.ConvertUnlocks(redisRoom.AllowSongs);
-                var playerIndex = room.Players.Length - 1;
+                var playerIndex = playerCount;
                 var player = new Player()
                 {
-                    PlayerId = Convert.ToUInt32(redisRoom.PlayerId[0]),
-                    Token = redisRoom.Token[0],
+                    PlayerId = Convert.ToUInt32(redisRoom.PlayerId[playerIndex]),
+                    Token = redisRoom.Token[playerIndex],
                     Score = data.Score,
                     DownloadProgress = data.DownloadProgress,
                     ClearType = (ClearTypes)data.ClearType,
@@ -54,7 +55,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                     Difficulty = (Difficulties)data.Difficulty,
                 };
                 player.SendUserName(redisToken.UserName);
-                room.Players[playerIndex] = player;
+                room.Players.SetValue(player, playerIndex);
                 return (room, playerIndex);
             }
         }

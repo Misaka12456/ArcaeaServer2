@@ -7,7 +7,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
         public static byte[] Resp0CPing(Room room)
         {
             var returnedBytes = new List<byte>();
-            returnedBytes.AddRange(new byte[] {0x06, 0x16, 0x09, 0x09}); // [0, 4)
+            returnedBytes.AddRange(new byte[] {0x06, 0x16, 0x0c, 0x09}); // [0, 4)
             returnedBytes.AddRange(BitConverter.GetBytes(room.RoomId)); // [4, 12)
             returnedBytes.AddRange(BitConverter.GetBytes(room.Counter)); // [12, 16)
             returnedBytes.AddRange(BitConverter.GetBytes(room.ClientTime)); // [16, 24)
@@ -53,7 +53,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             return returnedBytes.ToArray();
         }
 
-        public static byte[] Resp11PlayerInfo(Room room, int playerIndex)
+        public static byte[] Resp11PlayerInfo(Room room)
         {
             var returnedBytes = new List<byte>();
             returnedBytes.AddRange(new byte[] {0x06, 0x16, 0x11, 0x09}); // [0, 4)
