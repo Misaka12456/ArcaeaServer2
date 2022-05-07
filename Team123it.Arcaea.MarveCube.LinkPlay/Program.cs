@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using Team123it.Arcaea.MarveCube.LinkPlay.Core;
 using static Team123it.Arcaea.MarveCube.LinkPlay.Core.LinkPlayCrypto;
 using static Team123it.Arcaea.MarveCube.LinkPlay.GlobalProperties;
 
@@ -163,14 +164,13 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
         /// <param name="data">需要发出的数据包</param>
         /// <param name="token">获取token</param>
         /// <param name="endPoint">数据要到达的终止点，可在ReceiveMsg中获得( <see cref="EndPoint"/> )</param>
-        public static async void SendMsg(byte[] data, byte[] token, EndPoint endPoint)
+        public static async Task SendMsg(byte[] data, byte[] token, EndPoint endPoint)
         {
 	        const SocketFlags flags = SocketFlags.None;
 	        try
 	        {
 		        var encryptedData = await EncryptPack(token, data);
 		        await _server?.SendToAsync(encryptedData, flags, endPoint)!;
-		        GC.Collect();
 	        }
 	        catch (Exception e) { Console.WriteLine(e); }
         }
@@ -190,7 +190,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 			        var rawMessage = await _server.ReceiveFromAsync(buffer, flags, point);//接收数据报
 			        var message = await DecryptPack(buffer[..rawMessage.ReceivedBytes]);
 			        Console.WriteLine(point.ToString() + message);
-			        //  LinkPlayParser.LinkPlayResp(message, point);
+			        await LinkPlayProcessor.ProcessPacket(message, point);
 		        }
 	        }
 	        catch (Exception e) { Console.WriteLine(e); }

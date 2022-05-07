@@ -8,28 +8,16 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 {
 	public static class RoomManager
 	{
-		private static Dictionary<string, Room> _rooms = new();
+		private static Dictionary<ulong, Room> _rooms = new();
 
-		public static void RegisterRoom(Room room, string roomId)
-		{
-			_rooms.Add(roomId, room);
-		}
+		public static void RegisterRoom(Room room, ulong roomId) { _rooms.Add(roomId, room); }
 
-		public static void UnRegisterRoom(string roomId)
-		{
-			_rooms.Remove(roomId);
-		}
+		public static void UnRegisterRoom(ulong roomId) { _rooms.Remove(roomId); }
 
-		public static Room? FetchRoomById(string roomId)
+		public static Room? FetchRoomById(ulong roomId)
 		{
-			if (_rooms.TryGetValue(roomId, out var room))
-			{
-				return room;
-			}
-			else
-			{
-				return null;
-			}
+			if (_rooms.TryGetValue(roomId, out var room)) return room;
+			else return null;
 		}
 	}
 
