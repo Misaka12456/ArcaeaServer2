@@ -29,7 +29,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         public int DownloadProgress { get; set; } // [35]
 
         public int Character { get; set; } // [36]
-        public uint CharacterUncapped { get; set; } // [37]
+        public bool CharacterUncapped { get; set; } // [37]
     }
 
     //<summary>

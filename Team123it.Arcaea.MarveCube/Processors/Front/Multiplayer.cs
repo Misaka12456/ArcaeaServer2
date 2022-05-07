@@ -27,7 +27,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		/// <item><see cref="long"/> roomId - 多人游戏房间的id</item>
 		/// <item><see cref="string"/> roomCode - 多人游戏房间的房间号(其它玩家加入房间使用的唯一代码)</item>
 		/// <item><see cref="string"/> key - 玩家(房主)加入房间使用的Key</item>
-		/// <item><see cref="long"/> token - 玩家(房主)加入房间使用的token(与roomId值一致)</item>
+		/// <item><see cref="ulong"/> token - 玩家(房主)加入房间使用的token(与roomId值一致)</item>
 		/// <item><see cref="string"/> playerId - 房间当中玩家(房主)的Link Play玩家编号(6位随机字符串)</item>
 		/// <item><see cref="int"/> userId - 玩家(房主)账号的用户id</item>
 		/// <item><see cref="string"/> endPoint - Link Play多人游玩模块的UDP服务器终结点(Endpoint)地址</item>
@@ -43,7 +43,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 			var roomCode = RandomString(6);
 			var roomId = random.NextInt64(1000000000000000000, 2000000000000000000);
 			var defaultKey = new byte[] { 0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00, 0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00 };
-			var playerId = random.Next(100000, 999999).ToString();
+			var playerId = random.Next(100000, 999999);
 			var orderedAllowedSongs = ConvertUnlocks(clientSongMap);
 			var db = conn.GetDatabase();
 			var roomRedisData = new JObject()
@@ -75,7 +75,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				{"roomId", roomId.ToString()},
 				{"token", roomId.ToString()},
 				{"key", Convert.ToBase64String(defaultKey)},
-				{"playerId", playerId},
+				{"playerId", playerId.ToString()},
 				{"userId", userId},
 				{"endPoint", LinkplayEndpoint},
 				{"port", LinkplayPort},
@@ -99,7 +99,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		/// <item><see cref="string"/> roomCode - 多人游戏房间的房间号(玩家加入房间使用的唯一代码)</item>
 		/// <item><see cref="string"/> key - 玩家加入房间使用的Key</item>
 		/// <item><see cref="long"/> token - 玩家加入房间使用的token(与roomId值一致)</item>
-		/// <item><see cref="string"/> playerId - 房间当中玩家的Link Play玩家编号(6位随机字符串)</item>
+		/// <item><see cref="int"/> playerId - 房间当中玩家的Link Play玩家编号(6位随机字符串)</item>
 		/// <item><see cref="int"/> userId - 玩家账号的用户id</item>
 		/// <item><see cref="string"/> endPoint - Link Play多人游玩模块的UDP服务器终结点(Endpoint)地址</item>
 		/// <item><see cref="int"/> port - Link Play多人游玩模块的UDP服务器的连接端口</item>
@@ -111,7 +111,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		{
 			var random = new Random();
 			var defaultKey = new byte[] { 0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00, 0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00 };
-			var playerId = random.Next(100000, 999999).ToString();
+			var playerId = random.Next(100000, 999999);
 			using var conn = ConnectionMultiplexer.Connect(MDatabaseConnectURL);
 			var db = conn.GetDatabase();
 			var roomId = db.StringGet($"Arcaea-LinkPlayWrapper-{roomCode}");
@@ -161,7 +161,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				{"roomId", roomRedisData.Value<string>("roomId")},
 				{"token", token},
 				{"key", Convert.ToBase64String(defaultKey)},
-				{"playerId", playerId},
+				{"playerId", playerId.ToString()},
 				{"userId", userId},
 				{"endPoint", LinkplayEndpoint},
 				{"port", LinkplayPort},

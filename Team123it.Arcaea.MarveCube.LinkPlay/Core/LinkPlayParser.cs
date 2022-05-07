@@ -38,7 +38,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 ClearType = data[34],
                 DownloadProgress = data[35],
                 Character = data[36],
-                CharacterUncapped = data[37]
+                CharacterUncapped = BitConverter.ToBoolean(data[36..37])
             };
         }
 
