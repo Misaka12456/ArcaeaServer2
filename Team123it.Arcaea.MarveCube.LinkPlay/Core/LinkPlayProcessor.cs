@@ -10,18 +10,28 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
         public static async Task ProcessPacket(byte[] packet, EndPoint endPoint)
         {
             Console.WriteLine(BitConverter.ToString(packet[..4]));
-            if (packet[2] == 0x08) await Command08Handler(packet, endPoint);
+            if (packet[2] == 0x04) await Command04Handler(packet);
+            if (packet[2] == 0x08) await Command08Handler(packet);
             if (packet[2] == 0x09) await Command09Handler(packet, endPoint);
         }
 
-        private static async Task Command08Handler(byte[] data, EndPoint endPoint)
+        private static async Task Command04Handler(byte[] data)
+        {
+            var linkPlayToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data[4..12]));
+            var room = (Room) FetchRoomById(linkPlayToken.RoomId)!;
+            var kickObject = LinkPlayParser.ParseClientPack04(data);
+            await room.RemovePlayer(BitConverter.ToUInt64(kickObject.Token), kickObject.PlayerId);
+            await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room); room.Counter++;
+            ReassignRoom(room.RoomId, room);
+        }
+        
+        private static async Task Command08Handler(byte[] data)
         {
             var linkPlayToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data[4..12]));
             var room = (Room) FetchRoomById(linkPlayToken.RoomId)!;
             var robinObject = LinkPlayParser.ParseClientPack08(data);
             room.RoundRobin = robinObject.RobinEnabled;
-            await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room);
-            room.Counter++;
+            await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room); room.Counter++;
             ReassignRoom(room.RoomId, room);
         }
         
@@ -40,13 +50,10 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 newRoom.Players[playerIndex].OnlineState = true;
                 if (newRoom.Players.Count(player => player.Token != 0) > 1)
                 {
-                    await Broadcast(LinkPlayResponse.Resp11PlayerInfo(room),newRoom);
-                    newRoom.Counter++;
-                    await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(newRoom, playerIndex), newRoom);
-                    newRoom.Counter++;
+                    await Broadcast(LinkPlayResponse.Resp11PlayerInfo(room),newRoom); newRoom.Counter++;
+                    await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(newRoom, playerIndex), newRoom); newRoom.Counter++;
                 }
-                await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(newRoom), newRoom);
-                newRoom.Counter++;
+                await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(newRoom), newRoom); newRoom.Counter++;
             }
 
             if (FetchRoomById(linkPlayToken.RoomId) is not null) ReassignRoom(newRoom.RoomId, newRoom);

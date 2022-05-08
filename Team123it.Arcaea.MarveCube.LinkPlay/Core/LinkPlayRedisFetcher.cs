@@ -37,5 +37,14 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             await conn.CloseAsync();
             return roomId;
         }
+
+        public static async Task ReassignRedisRoom(LinkPlayRoom roomObject)
+        {
+            var mDatabaseConnectUrl = $"{RedisServerUrl}:{RedisServerPort},password={RedisServerPassword}";
+            var conn = await ConnectionMultiplexer.ConnectAsync(mDatabaseConnectUrl);
+            var db = conn.GetDatabase(); 
+            await db.StringSetAsync($"Arcaea-LinkPlay-{roomObject.RoomId}", JsonConvert.SerializeObject(roomObject));
+            await conn.CloseAsync();
+        }
     }
 }

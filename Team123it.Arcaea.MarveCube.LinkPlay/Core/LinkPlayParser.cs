@@ -5,6 +5,18 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
 {
     public static class LinkPlayParser
     {
+        public static ClientPack04 ParseClientPack04(byte[] data)
+        {
+            return new ClientPack04
+            {
+                Prefix = data[..4],
+                Token = data[4..12],
+                Counter = BitConverter.ToUInt32(data.AsSpan()[12..16]),
+                ClientTime = BitConverter.ToUInt64(data.AsSpan()[16..24]),
+                PlayerId = BitConverter.ToUInt64(data.AsSpan()[24..32])            
+            };
+        }
+
         //<summary>
         // Host transfer from the client, return ClientPack08
         //</summary>
