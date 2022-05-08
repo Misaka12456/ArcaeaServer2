@@ -21,9 +21,12 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             var room = (Room) FetchRoomById(linkPlayToken.RoomId)!;
             var kickObject = LinkPlayParser.ParseClientPack04(data);
             var removeIndex = await room.RemovePlayer(BitConverter.ToUInt64(kickObject.Token), kickObject.PlayerId);
-            await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(room, removeIndex), room);
-            await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room); room.Counter++;
-            ReassignRoom(room.RoomId, room);
+            if (removeIndex != -1)
+            {
+                await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(room, removeIndex), room); room.Counter++;
+                await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room); room.Counter++;
+                ReassignRoom(room.RoomId, room);            
+            }
         }
         
         private static async Task Command08Handler(byte[] data)
@@ -59,7 +62,6 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                         await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(newRoom, playerIndex), newRoom);
                         newRoom.Counter++;
                     }
-
                     await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(newRoom), newRoom);
                     newRoom.Counter++;
                 }

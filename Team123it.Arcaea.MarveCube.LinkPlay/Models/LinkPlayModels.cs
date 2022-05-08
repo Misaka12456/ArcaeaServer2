@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text;
 using Team123it.Arcaea.MarveCube.LinkPlay.Core;
+using static Team123it.Arcaea.MarveCube.LinkPlay.Program;
 
 namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
 {
@@ -104,10 +105,11 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
             var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(token);
             var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId);
             var playerIndex = redisRoom.PlayerId.IndexOf(playerId.ToString());
-            redisRoom.Token.RemoveAt(playerIndex);
-            redisRoom.UserId.RemoveAt(playerIndex);
-            redisRoom.PlayerId.Remove(playerId.ToString());
+            if (playerIndex == -1) return -1;
+            var removedEndPoint = Players[playerIndex].EndPoint;
+            redisRoom.Token.RemoveAt(playerIndex); redisRoom.UserId.RemoveAt(playerIndex); redisRoom.PlayerId.Remove(playerId.ToString());
             for (var i = 0; i < 4; i++) if (Players[i].PlayerId == playerId) Players.SetValue(new Player(), i);
+            await SendMsg(LinkPlayResponse.Resp12PlayerUpdate(this, playerIndex), BitConverter.GetBytes(token), removedEndPoint);
             await LinkPlayRedisFetcher.ReassignRedisRoom(redisRoom);
             return playerIndex;
         }
