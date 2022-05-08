@@ -10,10 +10,21 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
         public static async Task ProcessPacket(byte[] packet, EndPoint endPoint)
         {
             Console.WriteLine(BitConverter.ToString(packet[..4]));
+            if (packet[2] == 0x01) await Command01Handler(packet);
             if (packet[2] == 0x04) await Command04Handler(packet);
             if (packet[2] == 0x08) await Command08Handler(packet);
             if (packet[2] == 0x09) await Command09Handler(packet, endPoint);
             if (packet[2] == 0x0A) await Command0AHandler(packet);
+        }
+
+        private static async Task Command01Handler(byte[] data)
+        {
+            var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data[4..12]));
+            var room = (Room) FetchRoomById(redisToken.RoomId)!;
+            var hostObject = LinkPlayParser.ParseClientPack01(data);
+            room.HostId = hostObject.PlayerId; room.ClientTime = hostObject.ClientTime;
+            await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room); room.Counter++;
+            ReassignRoom(room.RoomId, room);
         }
 
         private static async Task Command04Handler(byte[] data)
@@ -32,8 +43,8 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
         
         private static async Task Command08Handler(byte[] data)
         {
-            var linkPlayToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data[4..12]));
-            var room = (Room) FetchRoomById(linkPlayToken.RoomId)!;
+            var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data[4..12]));
+            var room = (Room) FetchRoomById(redisToken.RoomId)!;
             var robinObject = LinkPlayParser.ParseClientPack08(data);
             room.RoundRobin = robinObject.RobinEnabled;
             await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room); room.Counter++;
