@@ -99,15 +99,17 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
                 : Array.Empty<byte>();
         }
 
-        public async Task RemovePlayer(ulong token, ulong playerId)
+        public async Task<int> RemovePlayer(ulong token, ulong playerId)
         {
             var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(token);
             var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId);
-            redisRoom.Token.RemoveAt(redisRoom.PlayerId.IndexOf(playerId.ToString()));
-            redisRoom.UserId.RemoveAt(redisRoom.PlayerId.IndexOf(playerId.ToString()));
+            var playerIndex = redisRoom.PlayerId.IndexOf(playerId.ToString());
+            redisRoom.Token.RemoveAt(playerIndex);
+            redisRoom.UserId.RemoveAt(playerIndex);
             redisRoom.PlayerId.Remove(playerId.ToString());
-            for (var i = 0; i < 4; i++) if (Players[i].PlayerId == playerId) Players[i] = new Player();
+            for (var i = 0; i < 4; i++) if (Players[i].PlayerId == playerId) Players.SetValue(new Player(), i);
             await LinkPlayRedisFetcher.ReassignRedisRoom(redisRoom);
+            return playerIndex;
         }
     }
 }

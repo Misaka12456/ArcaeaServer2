@@ -180,28 +180,26 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
         private static async void ReceiveMsg()
         {
 	        const SocketFlags flags = SocketFlags.None;
-	        try
-	        {            
-		        while (true)
+	        while (true)
+	        {
+		        try
 		        {
-			        EndPoint point = new IPEndPoint(IPAddress.Any, 0);//用来保存发送方的ip和端口号
+			        EndPoint point = new IPEndPoint(IPAddress.Any, 0); //用来保存发送方的ip和端口号
 			        var buffer = new byte[1024];
 			        if (_server == null) continue;
-			        var rawMessage =  _server.ReceiveFromAsync(buffer, flags, point).Result;//接收数据报
+			        var rawMessage = _server.ReceiveFromAsync(buffer, flags, point).Result; //接收数据报
 			        var message = await DecryptPack(buffer[..rawMessage.ReceivedBytes]);
 			        Console.WriteLine(rawMessage.RemoteEndPoint.ToString() + message);
 			        var error = LinkPlayProcessor.ProcessPacket(message, rawMessage.RemoteEndPoint);
 			        await error;
 			        Console.WriteLine(error.IsCompleted);
 			        Console.WriteLine(error.IsFaulted);
-			        if(error.IsFaulted){
-				        Console.WriteLine(error.Exception);
-			        }
+			        if (error.IsFaulted) Console.WriteLine(error.Exception);
 		        }
+		        catch (Exception e) { Console.WriteLine(e); }
 	        }
-	        catch (Exception e) { Console.WriteLine(e); }
-        }
-        
+	    }
+
         private static void StopServer(object? sender, EventArgs e)
         {
 	        _logWriter?.Dispose();

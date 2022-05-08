@@ -20,7 +20,8 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             var linkPlayToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data[4..12]));
             var room = (Room) FetchRoomById(linkPlayToken.RoomId)!;
             var kickObject = LinkPlayParser.ParseClientPack04(data);
-            await room.RemovePlayer(BitConverter.ToUInt64(kickObject.Token), kickObject.PlayerId);
+            var removeIndex = await room.RemovePlayer(BitConverter.ToUInt64(kickObject.Token), kickObject.PlayerId);
+            await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(room, removeIndex), room);
             await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room); room.Counter++;
             ReassignRoom(room.RoomId, room);
         }
@@ -43,19 +44,26 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             var dataObject = LinkPlayParser.ParseClientPack09(data);
             var (newRoom, playerIndex) = await LinkPlayInstanceCreator.PlayerCreator(room, dataObject, endPoint);
             await SendMsg(LinkPlayResponse.Resp0CPing(newRoom), data[4..12], endPoint);
+            var redisTokenCount = (await LinkPlayRedisFetcher.FetchRoomById(linkPlayToken.RoomId)).Token.Count;
             if (dataObject.Counter > room.Counter) {}
             if (dataObject.Counter < room.Counter) await SendMsg(newRoom.GetResendPack(dataObject.Counter), dataObject.Token!, endPoint);
-            if (newRoom.Players[playerIndex].OnlineState is false)
+            if (redisTokenCount > playerIndex && playerIndex >= 0)
             {
-                newRoom.Players[playerIndex].OnlineState = true;
-                if (newRoom.Players.Count(player => player.Token != 0) > 1)
+                if (newRoom.Players[playerIndex].OnlineState is false)
                 {
-                    await Broadcast(LinkPlayResponse.Resp11PlayerInfo(room),newRoom); newRoom.Counter++;
-                    await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(newRoom, playerIndex), newRoom); newRoom.Counter++;
-                }
-                await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(newRoom), newRoom); newRoom.Counter++;
-            }
+                    newRoom.Players[playerIndex].OnlineState = true;
+                    if (newRoom.Players.Count(player => player.Token != 0) > 1)
+                    {
+                        await Broadcast(LinkPlayResponse.Resp11PlayerInfo(room), newRoom);
+                        newRoom.Counter++;
+                        await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(newRoom, playerIndex), newRoom);
+                        newRoom.Counter++;
+                    }
 
+                    await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(newRoom), newRoom);
+                    newRoom.Counter++;
+                }
+            }
             if (FetchRoomById(linkPlayToken.RoomId) is not null) ReassignRoom(newRoom.RoomId, newRoom);
             else RegisterRoom(newRoom, newRoom.RoomId);
         }

@@ -7,12 +7,17 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
     {
         public static async Task<(Room, int)> PlayerCreator(Room room, ClientPack09 data, EndPoint endPoint)
         {
-            var playerCount = room.Players.Count(player => player.Token != 0);
-            var tokenList = room.Players.Select(player => player.Token).ToList();
-            if (tokenList.Contains(BitConverter.ToUInt64(data.Token))) return (room, tokenList.IndexOf(BitConverter.ToUInt64(data.Token)));
-            
             var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data.Token));
             var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId);
+            var playerCount = room.Players.Count(player => player.Token != 0);
+            var tokenList = room.Players.Select(player => player.Token).ToList();
+            var redisTokenCount = redisRoom.Token.Count;
+            if (tokenList.Contains(BitConverter.ToUInt64(data.Token)) || redisTokenCount == playerCount)
+            {
+                return (room, tokenList.IndexOf(BitConverter.ToUInt64(data.Token)));
+            }
+            
+
             var hostId = Convert.ToUInt64(redisRoom.PlayerId[0]);
             if (playerCount == 0)
             {
