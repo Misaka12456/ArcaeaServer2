@@ -73,7 +73,7 @@ namespace Team123it.Arcaea.MarveCube.Standalone
 			}
 		}
 
-	public static string MainServerURLPrefix
+	public static string? MainServerURLPrefix
 		{
 			get
 			{
@@ -98,7 +98,7 @@ namespace Team123it.Arcaea.MarveCube.Standalone
 			}
 		}
 
-		public static string StandaloneKey
+		public static string? StandaloneKey
 		{
 			get
 			{
