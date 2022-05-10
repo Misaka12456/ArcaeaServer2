@@ -42,19 +42,19 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 			var random = new Random();
 			var roomCode = RandomString(6);
 			var roomId = random.NextInt64(1000000000000000000, 2000000000000000000);
-			var defaultKey = new byte[] { 0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00, 0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00 };
+			var defaultKey = new byte[]
+				{0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00, 0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00};
 			var playerId = random.Next(100000, 999999);
-			var orderedAllowedSongs = ConvertUnlocks(clientSongMap);
 			var db = conn.GetDatabase();
 			var roomRedisData = new JObject()
 			{
-				{ "roomCode", roomCode },
-				{ "roomId", roomId },
-				{ "token", new JArray(roomId) },
-				{ "key", defaultKey },
-				{ "playerId", new JArray(playerId) },
-				{ "userId", new JArray(userId) },
-				{ "allowSongs", clientSongMap }
+				{"roomCode", roomCode},
+				{"roomId", roomId},
+				{"token", new JArray(roomId)},
+				{"key", defaultKey},
+				{"playerId", new JArray(playerId)},
+				{"userId", new JArray(userId)},
+				{"allowSongs", new JArray(ConvertUnlocks(clientSongMap))}
 			};
 			using var conn2 = new MySqlConnection(DatabaseConnectURL);
 			conn2.Open();
@@ -63,7 +63,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 			var redisUserData = new JObject()
 			{
 				{"roomId", roomId},
-				{"userName", (string)cmd2.ExecuteScalar()}
+				{"userName", (string) cmd2.ExecuteScalar()}
 			};
 			conn2.Close();
 			db.StringSet($"Arcaea-LinkPlay-{roomId}", roomRedisData.ToString());
@@ -79,7 +79,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				{"userId", userId},
 				{"endPoint", LinkplayEndpoint},
 				{"port", LinkplayPort},
-				{"orderedAllowedSongs", orderedAllowedSongs}
+				{"orderedAllowedSongs", ConvertUnlocks(clientSongMap)}
 			};
 			return r;
 		}
@@ -110,47 +110,32 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 		public static JObject JoinRoom(string roomCode, int userId, JObject clientSongMap)
 		{
 			var random = new Random();
-			var defaultKey = new byte[] { 0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00, 0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00 };
+			var defaultKey = new byte[]
+				{0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00, 0x11, 0x45, 0x14, 0x19, 0x19, 0x19, 0x18, 0x00};
 			var playerId = random.Next(100000, 999999);
 			using var conn = ConnectionMultiplexer.Connect(MDatabaseConnectURL);
 			var db = conn.GetDatabase();
 			var roomId = db.StringGet($"Arcaea-LinkPlayWrapper-{roomCode}");
 			var token = random.NextInt64(1000000000000000000, 2000000000000000000).ToString();
 			var roomRedisData = JObject.Parse(db.StringGet($"Arcaea-LinkPlay-{roomId}").ToString());
-			var storedMap = roomRedisData.Value<JObject>("allowSongs");
-			var finalMap = new JObject();
-			foreach (var prop in clientSongMap.Properties())
-			{
-				var comp1 = clientSongMap.Value<JArray>(prop.Name);
-				var comp2 = storedMap.Value<JArray>(prop.Name);
-				var final = new JArray();
-				for (var i = 0; i < 4; i++)
-				{
-					if ((bool)comp1[i] && (bool)comp2[i]) final.Add(true);
-					else final.Add(false);
-				}
-				finalMap.Add(prop.Name, final);
-			}
-			var tokensList = roomRedisData.Value<JArray>("token");
-			tokensList.Add(token);
-			var playerIdsList = roomRedisData.Value<JArray>("playerId");
-			playerIdsList.Add(playerId);
-			var userIdsList = roomRedisData.Value<JArray>("userId");
-			userIdsList.Add(userId);
+			var storedMap = roomRedisData.Value<JArray>("allowSongs"); storedMap.Add(ConvertUnlocks(clientSongMap));
+			var tokensList = roomRedisData.Value<JArray>("token"); tokensList.Add(token);
+			var playerIdsList = roomRedisData.Value<JArray>("playerId"); playerIdsList.Add(playerId);
+			var userIdsList = roomRedisData.Value<JArray>("userId"); userIdsList.Add(userId);
 			roomRedisData.Remove("playerId");
 			roomRedisData.Remove("userId");
 			roomRedisData.Remove("allowSongs");
 			roomRedisData.Add("playerId", playerIdsList);
 			roomRedisData.Add("userId", userIdsList);
-			roomRedisData.Add("allowSongs", finalMap);
+			roomRedisData.Add("allowSongs", storedMap);
 			using var conn2 = new MySqlConnection(DatabaseConnectURL);
 			conn2.Open();
 			var cmd2 = conn2.CreateCommand();
 			cmd2.CommandText = $"SELECT name FROM users WHERE user_id={userId};";
 			var redisUserData = new JObject()
 			{
-				{"roomId", (string)roomId},
-				{"userName", (string)cmd2.ExecuteScalar()}
+				{"roomId", (string) roomId},
+				{"userName", (string) cmd2.ExecuteScalar()}
 			};
 			conn2.Close();
 			db.StringSet($"Arcaea-LinkPlay-{roomId}", roomRedisData.ToString());
@@ -165,7 +150,7 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				{"userId", userId},
 				{"endPoint", LinkplayEndpoint},
 				{"port", LinkplayPort},
-				{"orderedAllowedSongs", ConvertUnlocks(finalMap)}
+				{"orderedAllowedSongs", UnlocksAggregation(storedMap)}
 			};
 			return r;
 		}
@@ -199,10 +184,11 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 				{
 					for (var j = 0; j < value.Length; j++)
 					{
-						if (value[j]) userUnlocks[key / 2] += (byte)(1 << (j + 4 * (key % 2)));
+						if (value[j]) userUnlocks[key / 2] += (byte) (1 << (j + 4 * (key % 2)));
 					}
 				}
 			}
+
 			return Convert.ToBase64String(userUnlocks);
 		}
 
@@ -216,6 +202,23 @@ namespace Team123it.Arcaea.MarveCube.Processors.Front
 			const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 			var random = new Random();
 			return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
+		}
+
+		/// <summary>
+		/// 缝合所有Base64形式的解锁表
+		/// </summary>
+		/// <param name="unlocks">要缝合的JArray(里面的元素必须全部为base64 string)</param>
+		/// <returns>生成结果。</returns>
+		private static string UnlocksAggregation(JArray unlocks)
+		{
+			var returnedBytes = new byte[512];
+			for (var i = 0; i < unlocks.Count; i++) { returnedBytes[i] = 0xff; }
+			foreach (var base64 in unlocks)
+			{
+				var bytesUnlocks = Convert.FromBase64String(base64.ToString());
+				for (var j = 0; j < bytesUnlocks.Length; j++)  returnedBytes[j] &= bytesUnlocks[j]; // AND
+			}
+			return Convert.ToBase64String(returnedBytes);
 		}
 	}
 }

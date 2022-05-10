@@ -14,7 +14,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         [JsonProperty("key")] public string Key { get; set; } = "EUUUGRkZGAARRRQZGRkYAA==";
         [JsonProperty("playerId")] public List<string> PlayerId { get; set; }
         [JsonProperty("userId")] public List<uint> UserId { get; set; }
-        [JsonProperty("allowSongs")] public JObject AllowSongs { get; set; }
+        [JsonProperty("allowSongs")] public List<string> AllowSongs { get; set; }
     }
 
     [Serializable]

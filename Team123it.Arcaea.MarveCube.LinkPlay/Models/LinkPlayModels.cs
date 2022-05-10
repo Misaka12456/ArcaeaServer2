@@ -100,14 +100,28 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
                 : Array.Empty<byte>();
         }
 
+        public async Task UpdateUnlocks()
+        {
+            var oldSongMap = SongMap;
+            var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(RoomId);
+            SongMap = LinkPlayCrypto.UnlocksAggregation(redisRoom.AllowSongs);
+            if (oldSongMap != SongMap)
+            {
+                await LinkPlayProcessor.Broadcast(LinkPlayResponse.Resp14SongMapUpdate(this), this);
+                Counter++;
+            }
+        }
+
         public async Task<int> RemovePlayer(ulong token, ulong playerId)
         {
-            var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(token);
-            var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId);
+            var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(RoomId);
             var playerIndex = redisRoom.PlayerId.IndexOf(playerId.ToString());
             if (playerIndex == -1) return -1;
             var removedEndPoint = Players[playerIndex].EndPoint;
-            redisRoom.Token.RemoveAt(playerIndex); redisRoom.UserId.RemoveAt(playerIndex); redisRoom.PlayerId.Remove(playerId.ToString());
+            redisRoom.Token.RemoveAt(playerIndex);
+            redisRoom.UserId.RemoveAt(playerIndex);
+            redisRoom.AllowSongs.RemoveAt(playerIndex);
+            redisRoom.PlayerId.Remove(playerId.ToString());
             for (var i = 0; i < 4; i++) if (Players[i].PlayerId == playerId) Players.SetValue(new Player(), i);
             await SendMsg(LinkPlayResponse.Resp12PlayerUpdate(this, playerIndex), BitConverter.GetBytes(token), removedEndPoint);
             await LinkPlayRedisFetcher.ReassignRedisRoom(redisRoom);

@@ -1,4 +1,5 @@
 using System.Net;
+using Newtonsoft.Json.Linq;
 using Team123it.Arcaea.MarveCube.LinkPlay.Models;
 
 namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
@@ -17,14 +18,13 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 return (room, tokenList.IndexOf(BitConverter.ToUInt64(data.Token)));
             }
             
-
             var hostId = Convert.ToUInt64(redisRoom.PlayerId[0]);
             if (playerCount == 0)
             {
                 var returnedRoom = new Room
                 {
                     RoomId = redisRoom.RoomId,
-                    SongMap = LinkPlayCrypto.ConvertUnlocks(redisRoom.AllowSongs),
+                    SongMap = Convert.FromBase64String(redisRoom.AllowSongs[0]),
                     HostId = hostId,
                     ClientTime = data.ClientTime,
                 };
@@ -39,6 +39,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                     CharacterUncapped = data.CharacterUncapped,
                     EndPoint = endPoint,
                     Difficulty = (Difficulties)data.Difficulty,
+                    SongMap = Convert.FromBase64String(redisRoom.AllowSongs[0])
                 };
                 player.SendUserName(redisToken.UserName);
                 returnedRoom.Players.SetValue(player, 0);
@@ -46,7 +47,6 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             }
             else
             {
-                room.SongMap = LinkPlayCrypto.ConvertUnlocks(redisRoom.AllowSongs);
                 var playerIndex = playerCount;
                 var player = new Player
                 {
@@ -59,6 +59,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                     CharacterUncapped = data.CharacterUncapped,
                     EndPoint = endPoint,
                     Difficulty = (Difficulties)data.Difficulty,
+                    SongMap = Convert.FromBase64String(redisRoom.AllowSongs[playerIndex])
                 };
                 player.SendUserName(redisToken.UserName);
                 room.Players.SetValue(player, playerIndex);

@@ -55,6 +55,18 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             }
             return userUnlocks;
         }
+        
+        public static byte[] UnlocksAggregation(List<string> unlocks)
+        {
+            var returnedBytes = new byte[512];
+            for (var i = 0; i < unlocks.Count; i++) { returnedBytes[i] = 0xff; }
+            foreach (var base64 in unlocks)
+            {
+                var bytesUnlocks = Convert.FromBase64String(base64.ToString());
+                for (var j = 0; j < bytesUnlocks.Length; j++)  returnedBytes[j] &= bytesUnlocks[j]; // AND
+            }
+            return returnedBytes;
+        }
     }
 }
 

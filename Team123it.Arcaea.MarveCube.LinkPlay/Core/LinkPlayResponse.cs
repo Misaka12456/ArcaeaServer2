@@ -29,7 +29,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             return returnedBytes.ToArray();
         }
 
-        public static byte[] Resp0FSongSuggestion(Room room, int playerIndex, int songIndex, Difficulties difficulty)
+        public static byte[] Resp0FSongSuggestion(Room room, int playerIndex, short songIdx)
         {
             var returnedBytes = new List<byte>();
             returnedBytes.AddRange(new byte[] {0x06, 0x16, 0x0f, 0x09}); // [0, 4)
@@ -37,7 +37,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             returnedBytes.AddRange(BitConverter.GetBytes(room.Counter)); // [12, 16)
 
             returnedBytes.AddRange(BitConverter.GetBytes(room.Players[playerIndex].PlayerId)); // [16, 24)
-            returnedBytes.AddRange(BitConverter.GetBytes((ushort) songIndex * 4 + (int) difficulty)); // [24, 26)
+            returnedBytes.AddRange(BitConverter.GetBytes(songIdx)); // [24, 26)
             return returnedBytes.ToArray();
         }
 
@@ -64,7 +64,6 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             {
                 returnedBytes.AddRange(LinkPlayConstructor.PlayerInfoWithNameSchema(player)); // [24, 184)
             }
-
             return returnedBytes.ToArray();
         }
 
