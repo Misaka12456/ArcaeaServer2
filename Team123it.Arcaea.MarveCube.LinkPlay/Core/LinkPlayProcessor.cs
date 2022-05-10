@@ -25,7 +25,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             var room = (Room) FetchRoomById(redisToken.RoomId)!;
             var hostObject = LinkPlayParser.ParseClientPack01(data);
             room.HostId = hostObject.PlayerId; room.ClientTime = hostObject.ClientTime;
-            await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room); room.Counter++;
+            await Broadcast(LinkPlayResponse.Resp10HostTransfer(room), room); room.Counter++;
             ReassignRoom(room.RoomId, room);
         }
 
@@ -53,7 +53,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             var playerIndex = redisRoom.Token.IndexOf(BitConverter.ToUInt64(unlockObject.Token));
             room.Players[playerIndex].SongMap = unlockObject.SongMap!;
             redisRoom.AllowSongs[playerIndex] = Convert.ToBase64String(unlockObject.SongMap!);
-            await room.UpdateUnlocks(); ReassignRoom(room.RoomId, room); await LinkPlayRedisFetcher.ReassignRedisRoom(redisRoom);
+            await room.UpdateUnlocks(); ReassignRoom(room.RoomId, room);
         }
         
         private static async Task Command08Handler(byte[] data)
@@ -105,6 +105,13 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             var room = (Room) FetchRoomById(redisToken.RoomId)!;
             var exitObject = LinkPlayParser.ParseClientPack0A(data);
             var removePlayerId = redisRoom.PlayerId[redisRoom.Token.IndexOf(BitConverter.ToUInt64(data.AsSpan()[4..12]))];
+            if (Convert.ToUInt64(removePlayerId) == room.HostId)
+            {
+                var lastPlayerId = room.Players.First(player => player.Token != 0).PlayerId;
+                room.HostId = lastPlayerId;
+                await Broadcast(LinkPlayResponse.Resp10HostTransfer(room), room);
+                room.Counter++;
+            }
             var removeIndex = await room.RemovePlayer(BitConverter.ToUInt64(exitObject.Token), Convert.ToUInt64(removePlayerId));
             await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(room, removeIndex), room); room.Counter++;
             await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room); room.Counter++;
@@ -119,14 +126,14 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             var room = (Room) FetchRoomById(redisToken.RoomId)!;
             var recommendObject = LinkPlayParser.ParseClientPack0B(data);
             var playerIndex = redisRoom.Token.IndexOf(BitConverter.ToUInt64(recommendObject.Token));
-            await Broadcast(LinkPlayResponse.Resp0FSongSuggestion(room, playerIndex, recommendObject.SongIdx), room); room.Counter++;
+            await Broadcast(LinkPlayResponse.Resp0FSongSuggestion(room, playerIndex, recommendObject.SongIdx), room, room.Players[playerIndex].EndPoint); room.Counter++;
         }
 
-        public static async Task Broadcast(byte[] data, Room room)
+        public static async Task Broadcast(byte[] data, Room room, EndPoint? except = null)
         {
             foreach (var player in room.Players)
             {
-                if (!player.EndPoint.Equals(new IPEndPoint(IPAddress.Any, 0)))
+                if (!player.EndPoint.Equals(new IPEndPoint(IPAddress.Any, 0)) && !player.EndPoint.Equals(except))
                 {
                     await SendMsg(data, BitConverter.GetBytes(player.Token), player.EndPoint);
                 }

@@ -107,8 +107,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
             SongMap = LinkPlayCrypto.UnlocksAggregation(redisRoom.AllowSongs);
             if (oldSongMap != SongMap)
             {
-                await LinkPlayProcessor.Broadcast(LinkPlayResponse.Resp14SongMapUpdate(this), this);
-                Counter++;
+                await LinkPlayProcessor.Broadcast(LinkPlayResponse.Resp14SongMapUpdate(this), this); Counter++;
             }
         }
 
