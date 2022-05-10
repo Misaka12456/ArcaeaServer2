@@ -18,6 +18,15 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         public ulong ClientTime { get; set; } // [16..24)
         public ulong PlayerId { get; set; } // [24..32)
     }
+
+    public class ClientPack07
+    {
+        public byte[]? Prefix { get; set; } // [0, 4) {0x06, 0x16, 0x08, 0x09}
+        public byte[]? Token { get; set; } // [4..12) Player.Token
+        public uint Counter { get; set; } // [12..16)
+        public ulong ClientTime { get; set; } // [16..24)
+        public byte[]? SongMap { get; set; } // [24, 536)
+    }
     
     public class ClientPack08
     {

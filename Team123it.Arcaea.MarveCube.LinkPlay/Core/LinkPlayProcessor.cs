@@ -12,6 +12,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             Console.WriteLine(BitConverter.ToString(packet[..4]));
             if (packet[2] == 0x01) await Command01Handler(packet);
             if (packet[2] == 0x04) await Command04Handler(packet);
+            if (packet[2] == 0x07) await Command07Handler(packet);
             if (packet[2] == 0x08) await Command08Handler(packet);
             if (packet[2] == 0x09) await Command09Handler(packet, endPoint);
             if (packet[2] == 0x0A) await Command0AHandler(packet);
@@ -41,6 +42,18 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 await room.UpdateUnlocks();
                 ReassignRoom(room.RoomId, room);            
             }
+        }
+
+        private static async Task Command07Handler(byte[] data)
+        {
+            var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data.AsSpan()[4..12]));
+            var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId);
+            var room = (Room) FetchRoomById(redisToken.RoomId)!;
+            var unlockObject = LinkPlayParser.ParseClientPack07(data);
+            var playerIndex = redisRoom.Token.IndexOf(BitConverter.ToUInt64(unlockObject.Token));
+            room.Players[playerIndex].SongMap = unlockObject.SongMap!;
+            redisRoom.AllowSongs[playerIndex] = Convert.ToBase64String(unlockObject.SongMap!);
+            await room.UpdateUnlocks(); ReassignRoom(room.RoomId, room); await LinkPlayRedisFetcher.ReassignRedisRoom(redisRoom);
         }
         
         private static async Task Command08Handler(byte[] data)

@@ -28,6 +28,18 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 PlayerId = BitConverter.ToUInt64(data.AsSpan()[24..32])            
             };
         }
+        
+        public static ClientPack07 ParseClientPack07(byte[] data)
+        {
+            return new ClientPack07
+            {
+                Prefix = data[..4],
+                Token = data[4..12],
+                Counter = BitConverter.ToUInt32(data.AsSpan()[12..16]),
+                ClientTime = BitConverter.ToUInt64(data.AsSpan()[16..24]),
+                SongMap = data[24..536]
+            };
+        }
 
         //<summary>
         // Host transfer from the client, return ClientPack08

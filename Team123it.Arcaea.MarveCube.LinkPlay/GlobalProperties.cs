@@ -48,7 +48,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 			}
 		}
 
-		public static string MultiplayerServerUrl
+		public static string? MultiplayerServerUrl
 		{
 			get
 			{

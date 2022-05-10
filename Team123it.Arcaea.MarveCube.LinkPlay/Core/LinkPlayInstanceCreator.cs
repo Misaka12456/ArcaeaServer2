@@ -61,6 +61,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                     Difficulty = (Difficulties)data.Difficulty,
                     SongMap = Convert.FromBase64String(redisRoom.AllowSongs[playerIndex])
                 };
+                await room.UpdateUnlocks();
                 player.SendUserName(redisToken.UserName);
                 room.Players.SetValue(player, playerIndex);
                 return (room, playerIndex);

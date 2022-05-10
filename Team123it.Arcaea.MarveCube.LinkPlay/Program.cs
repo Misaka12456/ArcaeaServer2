@@ -153,7 +153,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
         private static void UdpBuilder()
         {
             _server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _server.Bind(new IPEndPoint(IPAddress.Parse(MultiplayerServerUrl), MultiplayerServerPort));//绑定端口号和IP
+            _server.Bind(new IPEndPoint(IPAddress.Parse(MultiplayerServerUrl!), MultiplayerServerPort));//绑定端口号和IP
             Console.WriteLine("Server Initialized, Now starting to process UDP");
             ReceiveMsg();
         }
