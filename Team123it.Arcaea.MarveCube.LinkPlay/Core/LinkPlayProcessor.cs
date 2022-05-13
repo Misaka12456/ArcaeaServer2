@@ -57,18 +57,6 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             }
         }
 
-        private static async Task Command07Handler(byte[] data)
-        {
-            var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data.AsSpan()[4..12]));
-            var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId);
-            var room = (Room) FetchRoomById(redisToken.RoomId)!;
-            var unlockObject = LinkPlayParser.ParseClientPack07(data);
-            var playerIndex = redisRoom.Token.IndexOf(BitConverter.ToUInt64(unlockObject.Token));
-            room.Players[playerIndex].SongMap = unlockObject.SongMap!;
-            redisRoom.AllowSongs[playerIndex] = Convert.ToBase64String(unlockObject.SongMap!);
-            await room.UpdateUnlocks(); ReassignRoom(room.RoomId, room);
-        }
-        
         private static async Task Command06Handler(byte[] data)
         {
             var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data.AsSpan()[4..12]));
@@ -84,7 +72,18 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room); room.Counter++;
             ReassignRoom(room.RoomId, room);
         }
-        
+        private static async Task Command07Handler(byte[] data)
+        {
+            var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data.AsSpan()[4..12]));
+            var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId);
+            var room = (Room) FetchRoomById(redisToken.RoomId)!;
+            var unlockObject = LinkPlayParser.ParseClientPack07(data);
+            var playerIndex = redisRoom.Token.IndexOf(BitConverter.ToUInt64(unlockObject.Token));
+            room.Players[playerIndex].SongMap = unlockObject.SongMap!;
+            redisRoom.AllowSongs[playerIndex] = Convert.ToBase64String(unlockObject.SongMap!);
+            await room.UpdateUnlocks(); ReassignRoom(room.RoomId, room);
+        }
+
         private static async Task Command08Handler(byte[] data)
         {
             var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data[4..12]));
