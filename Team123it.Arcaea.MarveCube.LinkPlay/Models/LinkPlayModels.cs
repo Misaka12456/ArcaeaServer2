@@ -105,6 +105,11 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
             return (from player in Players where player.Token != 0 select player.OnlineState).All(state => state);
         }
 
+        public bool IsAllReady()
+        {
+            return (from player in Players where player.Token != 0 select player.PlayerState).All(state => state == PlayerStates.Ready);
+        }
+
         public async Task UpdateUnlocks()
         {
             var oldSongMap = SongMap;
