@@ -11,7 +11,9 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
         {
             Console.WriteLine(BitConverter.ToString(packet[..4]));
             if (packet[2] == 0x01) await Command01Handler(packet);
+            if (packet[2] == 0x02) await Command02Handler(packet);
             if (packet[2] == 0x04) await Command04Handler(packet);
+            if (packet[2] == 0x06) await Command06Handler(packet);
             if (packet[2] == 0x07) await Command07Handler(packet);
             if (packet[2] == 0x08) await Command08Handler(packet);
             if (packet[2] == 0x09) await Command09Handler(packet, endPoint);
@@ -26,6 +28,17 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             var hostObject = LinkPlayParser.ParseClientPack01(data);
             room.HostId = hostObject.PlayerId; room.ClientTime = hostObject.ClientTime;
             await Broadcast(LinkPlayResponse.Resp10HostTransfer(room), room); room.Counter++;
+            ReassignRoom(room.RoomId, room);
+        }
+        
+        private static async Task Command02Handler(byte[] data)
+        {
+            var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data.AsSpan()[4..12]));
+            var room = (Room) FetchRoomById(redisToken.RoomId)!;
+            var playObject = LinkPlayParser.ParseClientPack02(data);
+            room.RoomState = RoomStates.NotReady; room.SongIdxWithDiff = playObject.SongIdxWithDiff;
+            await Broadcast(LinkPlayResponse.Resp11PlayerInfo(room), room); room.Counter++;
+            await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room); room.Counter++;
             ReassignRoom(room.RoomId, room);
         }
 
@@ -56,6 +69,22 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             await room.UpdateUnlocks(); ReassignRoom(room.RoomId, room);
         }
         
+        private static async Task Command06Handler(byte[] data)
+        {
+            var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data.AsSpan()[4..12]));
+            var room = (Room) FetchRoomById(redisToken.RoomId)!;
+            for (var i = 0; i < room.Players.Length; i++)
+            {
+                room.Players[i].Score = 0;
+                room.Players[i].ClearType = ClearTypes.None;
+                room.Players[i].DownloadProgress = -1;
+            }
+            room.RoomState = RoomStates.Locked; room.SongIdxWithDiff = -1;
+            await Broadcast(LinkPlayResponse.Resp11PlayerInfo(room), room); room.Counter++;
+            await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(room), room); room.Counter++;
+            ReassignRoom(room.RoomId, room);
+        }
+        
         private static async Task Command08Handler(byte[] data)
         {
             var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data[4..12]));
@@ -77,22 +106,16 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             var redisTokenCount = (await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId)).Token.Count;
             if (dataObject.Counter > room.Counter) {}
             if (dataObject.Counter < room.Counter) await SendMsg(newRoom.GetResendPack(dataObject.Counter), dataObject.Token!, endPoint);
-            if (redisTokenCount > playerIndex && playerIndex >= 0)
+            if (newRoom.Players[playerIndex].OnlineState is false && redisTokenCount > playerIndex && playerIndex >= 0)
             {
-                if (newRoom.Players[playerIndex].OnlineState is false)
+                newRoom.Players[playerIndex].OnlineState = true;
+                if (newRoom.Players.Count(player => player.Token != 0) > 1)
                 {
-                    newRoom.Players[playerIndex].OnlineState = true;
-                    if (newRoom.Players.Count(player => player.Token != 0) > 1)
-                    {
-                        await Broadcast(LinkPlayResponse.Resp11PlayerInfo(room), newRoom);
-                        newRoom.Counter++;
-                        await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(newRoom, playerIndex), newRoom);
-                        newRoom.Counter++;
-                        await newRoom.UpdateUnlocks();
-                    }
-                    await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(newRoom), newRoom);
-                    newRoom.Counter++;
+                    await Broadcast(LinkPlayResponse.Resp11PlayerInfo(room), newRoom); newRoom.Counter++;
+                    await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(newRoom, playerIndex), newRoom); newRoom.Counter++;
+                    await newRoom.UpdateUnlocks();
                 }
+                await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(newRoom), newRoom); newRoom.Counter++;
             }
             if (FetchRoomById(redisToken.RoomId) is not null) ReassignRoom(newRoom.RoomId, newRoom);
             else RegisterRoom(newRoom, newRoom.RoomId);
@@ -109,8 +132,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             {
                 var lastPlayerId = room.Players.First(player => player.Token != 0).PlayerId;
                 room.HostId = lastPlayerId;
-                await Broadcast(LinkPlayResponse.Resp10HostTransfer(room), room);
-                room.Counter++;
+                await Broadcast(LinkPlayResponse.Resp10HostTransfer(room), room); room.Counter++;
             }
             var removeIndex = await room.RemovePlayer(BitConverter.ToUInt64(exitObject.Token), Convert.ToUInt64(removePlayerId));
             await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(room, removeIndex), room); room.Counter++;

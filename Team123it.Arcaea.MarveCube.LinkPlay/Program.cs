@@ -171,6 +171,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 	        {
 		        var encryptedData = await EncryptPack(token, data);
 		        await _server?.SendToAsync(encryptedData, flags, endPoint)!;
+		        Console.WriteLine(endPoint + BitConverter.ToString(data));
 	        }
 	        catch (Exception e) { Console.WriteLine(e); }
         }
@@ -189,7 +190,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 			        if (_server == null) continue;
 			        var rawMessage = _server.ReceiveFromAsync(buffer, flags, point).Result; //接收数据报
 			        var message = await DecryptPack(buffer[..rawMessage.ReceivedBytes]);
-			        Console.WriteLine(rawMessage.RemoteEndPoint.ToString() + message);
+			        Console.WriteLine(rawMessage.RemoteEndPoint+ BitConverter.ToString(message));
 			        var error = LinkPlayProcessor.ProcessPacket(message, rawMessage.RemoteEndPoint);
 			        await error;
 			        Console.WriteLine(error.IsCompleted);

@@ -74,7 +74,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         public ulong HostId;
         public ulong ClientTime;
 
-        public short SongIdx = -1;
+        public short SongIdxWithDiff = -1;
         public short LastSong = -1;
         public bool RoundRobin;
 
@@ -88,7 +88,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
             CountDown = -1;
             HostId = 0;
             ClientTime = 0;
-            SongIdx = -1;
+            SongIdxWithDiff = -1;
             LastSong = -1;
             RoundRobin = false;
         }
@@ -107,7 +107,8 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
             SongMap = LinkPlayCrypto.UnlocksAggregation(redisRoom.AllowSongs);
             if (oldSongMap != SongMap)
             {
-                await LinkPlayProcessor.Broadcast(LinkPlayResponse.Resp14SongMapUpdate(this), this); Counter++;
+                await LinkPlayProcessor.Broadcast(LinkPlayResponse.Resp14SongMapUpdate(this), this);
+                Counter++;
             }
         }
 

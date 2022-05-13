@@ -16,6 +16,19 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 PlayerId = BitConverter.ToUInt64(data.AsSpan()[24..32])            
             };
         }
+
+
+        public static ClientPack02 ParseClientPack02(byte[] data)
+        {
+            return new ClientPack02
+            {
+                Prefix = data[..4],
+                Token = data[4..12],
+                Counter = BitConverter.ToUInt32(data.AsSpan()[12..16]),
+                ClientTime = BitConverter.ToUInt64(data.AsSpan()[16..24]),
+                SongIdxWithDiff = BitConverter.ToInt16(data.AsSpan()[24..26])
+            };
+        }
         
         public static ClientPack04 ParseClientPack04(byte[] data)
         {
@@ -26,6 +39,17 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 Counter = BitConverter.ToUInt32(data.AsSpan()[12..16]),
                 ClientTime = BitConverter.ToUInt64(data.AsSpan()[16..24]),
                 PlayerId = BitConverter.ToUInt64(data.AsSpan()[24..32])            
+            };
+        }
+        
+        public static ClientPack06 ParseClientPack06(byte[] data)
+        {
+            return new ClientPack06
+            {
+                Prefix = data[..4],
+                Token = BitConverter.ToUInt64(data.AsSpan()[4..12]),
+                Counter = BitConverter.ToUInt32(data.AsSpan()[12..16]),
+                ClientTime = BitConverter.ToUInt64(data.AsSpan()[16..24]),
             };
         }
         

@@ -9,7 +9,16 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         public ulong ClientTime { get; set; } // [16..24)
         public ulong PlayerId { get; set; } // [24..32)
     }
-    
+
+    public class ClientPack02
+    {
+        public byte[]? Prefix { get; set; } // [0, 4) {0x06, 0x16, 0x0A, 0x09}
+        public byte[]? Token { get; set; } // [4..12) Player.Token
+        public uint Counter { get; set; } // [12..16)
+        public ulong ClientTime { get; set; } // [16..24)
+        public short SongIdxWithDiff { get; set; } // [24..26)
+    }
+
     public class ClientPack04
     {
         public byte[]? Prefix { get; set; } // [0, 4) {0x06, 0x16, 0x08, 0x09}
@@ -17,6 +26,14 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         public uint Counter { get; set; } // [12..16)
         public ulong ClientTime { get; set; } // [16..24)
         public ulong PlayerId { get; set; } // [24..32)
+    }
+    
+    public class ClientPack06
+    {
+        public byte[]? Prefix { get; set; } // [0, 4) {0x06, 0x16, 0x08, 0x09}
+        public ulong Token { get; set; } // [4..12) Player.Token
+        public uint Counter { get; set; } // [12..16)
+        public ulong ClientTime { get; set; } // [16..24)
     }
 
     public class ClientPack07

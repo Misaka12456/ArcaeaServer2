@@ -47,7 +47,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             returnedBytes.Add((byte)(uint)room.RoomState); // [0]
             returnedBytes.AddRange(BitConverter.GetBytes(room.CountDown)); // [1, 5)
             returnedBytes.AddRange(BitConverter.GetBytes((ulong)(DateTime.Now.Ticks*10))); // [5, 13)
-            returnedBytes.AddRange(BitConverter.GetBytes(room.SongIdx)); // [13, 15)
+            returnedBytes.AddRange(BitConverter.GetBytes(room.SongIdxWithDiff)); // [13, 15)
             returnedBytes.AddRange(BitConverter.GetBytes((ushort)1000)); // [15, 17)
             returnedBytes.AddRange(BitConverter.GetBytes((ulong)100)[..7]); // [17, 24)
             foreach (var roomPlayer in room.Players) returnedBytes.AddRange(PlayerScoreSchema(roomPlayer)); // [24, ...)
