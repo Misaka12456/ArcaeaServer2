@@ -99,6 +99,11 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
                 ? LinkPlayResponse.Resp15FullRoomInfo(this)
                 : Array.Empty<byte>();
         }
+        
+        public bool IsAllOnline()
+        {
+            return (from player in Players where player.Token != 0 select player.OnlineState).All(state => state);
+        }
 
         public async Task UpdateUnlocks()
         {
@@ -107,8 +112,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
             SongMap = LinkPlayCrypto.UnlocksAggregation(redisRoom.AllowSongs);
             if (oldSongMap != SongMap)
             {
-                await LinkPlayProcessor.Broadcast(LinkPlayResponse.Resp14SongMapUpdate(this), this);
-                Counter++;
+                await LinkPlayProcessor.Broadcast(LinkPlayResponse.Resp14SongMapUpdate(this), this); Counter++;
             }
         }
 

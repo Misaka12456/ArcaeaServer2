@@ -114,6 +114,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                     await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(newRoom, playerIndex), newRoom); newRoom.Counter++;
                     await newRoom.UpdateUnlocks();
                 }
+                if (newRoom.IsAllOnline()) newRoom.RoomState = RoomStates.Choosing;
                 await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(newRoom), newRoom); newRoom.Counter++;
             }
             if (FetchRoomById(redisToken.RoomId) is not null) ReassignRoom(newRoom.RoomId, newRoom);
