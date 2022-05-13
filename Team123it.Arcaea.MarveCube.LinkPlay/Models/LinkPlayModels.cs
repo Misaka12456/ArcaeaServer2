@@ -126,7 +126,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
             redisRoom.UserId.RemoveAt(playerIndex);
             redisRoom.AllowSongs.RemoveAt(playerIndex);
             redisRoom.PlayerId.Remove(playerId.ToString());
-            for (var i = 0; i < 4; i++) if (Players[i].PlayerId == playerId) Players.SetValue(new Player(), i);
+            Players[playerIndex] = new Player();
             await SendMsg(LinkPlayResponse.Resp12PlayerUpdate(this, playerIndex), BitConverter.GetBytes(token), removedEndPoint);
             await LinkPlayRedisFetcher.ReassignRedisRoom(redisRoom);
             return playerIndex;
