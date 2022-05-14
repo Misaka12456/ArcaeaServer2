@@ -121,6 +121,16 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
             }
         }
 
+        public async Task AlterState(RoomStates roomState)
+        {
+          var oldState = RoomState;
+          if (roomState != oldState)
+          {
+              RoomState = roomState;
+              await LinkPlayProcessor.Broadcast(LinkPlayResponse.Resp13PartRoomInfo(this), this); Counter++;
+          }
+        }
+
         public async Task<int> RemovePlayer(ulong token, ulong playerId)
         {
             var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(RoomId);

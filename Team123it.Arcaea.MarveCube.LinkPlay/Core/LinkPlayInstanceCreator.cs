@@ -16,6 +16,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             if (tokenList.Contains(BitConverter.ToUInt64(data.Token)) || redisTokenCount == playerCount)
             {
                 return (room, tokenList.IndexOf(BitConverter.ToUInt64(data.Token)));
+                // TODO: Update Packet 12 - PlayerInfo and Validation of flag12
             }
             
             var hostId = Convert.ToUInt64(redisRoom.PlayerId[0]);

@@ -13,6 +13,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             if (packet[2] == 0x01) await Command01Handler(packet);
             if (packet[2] == 0x02) await Command02Handler(packet);
             if (packet[2] == 0x04) await Command04Handler(packet);
+            if (packet[2] == 0x05) Console.WriteLine("Unrecognized signal received");
             if (packet[2] == 0x06) await Command06Handler(packet);
             if (packet[2] == 0x07) await Command07Handler(packet);
             if (packet[2] == 0x08) await Command08Handler(packet);
@@ -98,17 +99,17 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
         {
             var room = new Room();
             var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data.AsSpan()[4..12]));
-            if (FetchRoomById(redisToken.RoomId) is not null) room = (Room) FetchRoomById(redisToken.RoomId)!;
+            var redisTokenCount = (await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId)).Token.Count;
             var dataObject = LinkPlayParser.ParseClientPack09(data);
+            if (FetchRoomById(redisToken.RoomId) is not null) room = (Room) FetchRoomById(redisToken.RoomId)!;
             var (newRoom, playerIndex) = await LinkPlayInstanceCreator.PlayerCreator(room, dataObject, endPoint);
             await SendMsg(LinkPlayResponse.Resp0CPing(newRoom), data[4..12], endPoint);
-            var redisTokenCount = (await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId)).Token.Count;
-            if (dataObject.Counter > room.Counter) {} // skip for no reaction
+            if (dataObject.Counter > room.Counter) {return;} // skip for no reaction
             else
             {
                 if (dataObject.Counter < room.Counter) await SendMsg(newRoom.GetResendPack(dataObject.Counter), dataObject.Token!, endPoint);
-                if (newRoom.IsAllOnline()) newRoom.RoomState = RoomStates.Choosing;
-                if (newRoom.IsAllReady()) newRoom.RoomState = RoomStates.Countdown;
+                if (newRoom.IsAllOnline()) await newRoom.AlterState(RoomStates.Choosing); 
+                if (newRoom.IsAllReady()) await newRoom.AlterState(RoomStates.Countdown); newRoom.CountDown += 4000;
                 if (newRoom.Players[playerIndex].OnlineState is false && redisTokenCount > playerIndex && playerIndex >= 0)
                 {
                     newRoom.Players[playerIndex].OnlineState = true;
