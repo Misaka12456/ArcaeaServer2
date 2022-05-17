@@ -15,7 +15,11 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             if (tokenList.Contains(BitConverter.ToUInt64(data.Token)) || redisTokenCount == playerCount)
             {
                 var flag12 = false;
-                return (room, tokenList.IndexOf(BitConverter.ToUInt64(data.Token)), flag12);
+                var playerIndex = tokenList.IndexOf(BitConverter.ToUInt64(data.Token));
+                var player = room.Players[playerIndex];
+                if (player.Character != data.Character) flag12 = true; room.Players[playerIndex].Character = data.Character;
+                if (player.CharacterUncapped != data.CharacterUncapped) flag12 = true; room.Players[playerIndex].CharacterUncapped = data.CharacterUncapped;
+                return (room, playerIndex, flag12);
                 // TODO: Update Packet 12 - PlayerInfo and Validation of flag12
             }
             

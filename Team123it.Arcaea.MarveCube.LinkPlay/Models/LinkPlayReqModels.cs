@@ -53,6 +53,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         public ulong ClientTime { get; set; } // [16..24)
         public bool RobinEnabled { get; set; } // [24]
     }
+    
     //<summary>
     // Packet structure for the ping packet.
     //</summary>
