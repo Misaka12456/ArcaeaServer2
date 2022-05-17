@@ -1,12 +1,11 @@
 using System.Net;
-using Newtonsoft.Json.Linq;
 using Team123it.Arcaea.MarveCube.LinkPlay.Models;
 
 namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
 {
     public static class LinkPlayInstanceCreator
     {
-        public static async Task<(Room, int)> PlayerCreator(Room room, ClientPack09 data, EndPoint endPoint)
+        public static async Task<(Room, int, bool)> PlayerCreator(Room room, ClientPack09 data, EndPoint endPoint)
         {
             var redisToken = await LinkPlayRedisFetcher.FetchRoomIdByToken(BitConverter.ToUInt64(data.Token));
             var redisRoom = await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId);
@@ -15,7 +14,8 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             var redisTokenCount = redisRoom.Token.Count;
             if (tokenList.Contains(BitConverter.ToUInt64(data.Token)) || redisTokenCount == playerCount)
             {
-                return (room, tokenList.IndexOf(BitConverter.ToUInt64(data.Token)));
+                var flag12 = false;
+                return (room, tokenList.IndexOf(BitConverter.ToUInt64(data.Token)), flag12);
                 // TODO: Update Packet 12 - PlayerInfo and Validation of flag12
             }
             
@@ -44,7 +44,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 };
                 player.SendUserName(redisToken.UserName);
                 returnedRoom.Players.SetValue(player, 0);
-                return (returnedRoom, 0);
+                return (returnedRoom, 0, true);
             }
             else
             {
@@ -65,7 +65,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 await room.UpdateUnlocks();
                 player.SendUserName(redisToken.UserName);
                 room.Players.SetValue(player, playerIndex);
-                return (room, playerIndex);
+                return (room, playerIndex, true);
             }
         }
     }

@@ -93,6 +93,8 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
             RoundRobin = false;
         }
 
+        public ulong ServerTime => (ulong) (DateTime.UtcNow - DateTime.UnixEpoch).TotalMilliseconds * 1000;
+
         public byte[] GetResendPack(uint clientCounter)
         {
             return Counter - clientCounter > 0

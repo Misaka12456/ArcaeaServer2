@@ -8,7 +8,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         Ready = 4, // 自己准备好了
 
         Syncing = 5, // 进入游戏，但是在显示技能前
-        Asyncing = 6, // 疑似在 Syncing 阶段超过 1.5s 出现
+        Synced = 6, // 疑似在 Syncing 阶段超过 1.5s 出现
 
         Playing = 7, // 正在游玩
         GameEnd = 8, // 结算或者关门
@@ -22,8 +22,8 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         Countdown = 4, // 在准备界面，所有人都准备好了，进入倒计时
 
         // 似乎是同步时出现的，但是不知道具体含义
-        Unknown5 = 5, // 要我猜的话，5 应该是同步延迟
-        Unknown6 = 6, // 6 应该是倒计时
+        Syncing = 5, // 要我猜的话，5 应该是同步延迟
+        Skill = 6, // 6 应该是倒计时
 
         Playing = 7, // 正在游玩
         GameEnd = 8, // 结算

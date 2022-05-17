@@ -102,7 +102,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             var redisTokenCount = (await LinkPlayRedisFetcher.FetchRoomById(redisToken.RoomId)).Token.Count;
             var dataObject = LinkPlayParser.ParseClientPack09(data);
             if (FetchRoomById(redisToken.RoomId) is not null) room = (Room) FetchRoomById(redisToken.RoomId)!;
-            var (newRoom, playerIndex) = await LinkPlayInstanceCreator.PlayerCreator(room, dataObject, endPoint);
+            var (newRoom, playerIndex, flag12) = await LinkPlayInstanceCreator.PlayerCreator(room, dataObject, endPoint);
             await SendMsg(LinkPlayResponse.Resp0CPing(newRoom), data[4..12], endPoint);
             if (dataObject.Counter > room.Counter) {return;} // skip for no reaction
             else
@@ -116,11 +116,11 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                     if (newRoom.Players.Count(player => player.Token != 0) > 1)
                     {
                         await Broadcast(LinkPlayResponse.Resp11PlayerInfo(room), newRoom); newRoom.Counter++;
-                        await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(newRoom, playerIndex), newRoom); newRoom.Counter++;
                         await newRoom.UpdateUnlocks();
                     }
                     await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(newRoom), newRoom); newRoom.Counter++;
                 }
+                if (flag12) await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(newRoom, playerIndex), newRoom); newRoom.Counter++;
                 if (FetchRoomById(redisToken.RoomId) is not null) ReassignRoom(newRoom.RoomId, newRoom);
                 else RegisterRoom(newRoom, newRoom.RoomId);
             }

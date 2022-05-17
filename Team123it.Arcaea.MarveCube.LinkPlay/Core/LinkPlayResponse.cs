@@ -14,7 +14,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             returnedBytes.AddRange(GetBytes(room.ClientTime)); // [16, 24)
             returnedBytes.Add((byte) room.RoomState); // [24]
             returnedBytes.AddRange(GetBytes(room.CountDown)); // [25, 29)
-            returnedBytes.AddRange(GetBytes(DateTime.Now.Ticks)); // [29, 37)
+            returnedBytes.AddRange(GetBytes(room.ServerTime)); // [29, 37)
             return returnedBytes.ToArray();
         }
 
