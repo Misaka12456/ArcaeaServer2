@@ -25,6 +25,10 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
 
         public bool PersonalBest;
         public bool Top;
+        
+        //Score Broadcast
+        public uint LastScore;
+        public uint LastSongTime;
 
         public EndPoint EndPoint = new IPEndPoint(IPAddress.Any, 0);
 
@@ -47,6 +51,9 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
             PersonalBest = false;
             Top = false;
             EndPoint = new IPEndPoint(IPAddress.Any, 0);
+            //Score Broadcast
+            LastScore = 0;
+            LastSongTime = 0;
         }
 
         public void SendUserName(string setName)
@@ -70,7 +77,8 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
 
         public RoomStates RoomState = RoomStates.Locked;
         public uint Counter = 4;
-        public int CountDown = -1;
+        public long CountDown = -1;
+        public long? CountDownStart = null;
         public ulong HostId;
         public ulong ClientTime;
 
@@ -93,7 +101,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
             RoundRobin = false;
         }
 
-        public ulong ServerTime => (ulong) (DateTime.UtcNow - DateTime.UnixEpoch).TotalMilliseconds * 1000;
+        public long ServerTime => (long) (DateTime.UtcNow - DateTime.UnixEpoch).TotalMilliseconds * 1000;
 
         public byte[] GetResendPack(uint clientCounter)
         {
@@ -107,9 +115,84 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
             return (from player in Players where player.Token != 0 select player.OnlineState).All(state => state);
         }
 
-        public bool IsAllReady()
+        public bool IsAllState(PlayerStates desiredState, bool canOffline = false)
         {
-            return (from player in Players where player.Token != 0 select player.PlayerState).All(state => state == PlayerStates.Ready);
+            return (from player in Players where player.Token != 0 select player.PlayerState).All(state =>
+                state == desiredState || (canOffline && state == desiredState));
+        }
+        
+        private void UpdateCountDown()
+        {
+            if (CountDownStart is null) return;
+            var d = ServerTime - CountDownStart.Value;
+            CountDown -= d;
+            CountDownStart += d;
+        }
+
+        public async Task<bool> UpdateState()
+        {
+            if (RoomState == RoomStates.Locked && IsAllState(PlayerStates.Downloading)) // 1->2
+            {
+                RoomState = RoomStates.Choosing;
+                return true;
+            }
+            if (RoomState == RoomStates.Choosing && IsAllState(PlayerStates.Downloading)) // 2->1
+            {
+                RoomState = RoomStates.Locked;
+                return true;
+            }
+            if (RoomState == RoomStates.NotReady && IsAllState(PlayerStates.Ready)) // 3->4
+            {
+                CountDown = 3999;
+                RoomState = RoomStates.Countdown;
+                CountDownStart = ServerTime;
+                return true;
+            }
+            
+            UpdateCountDown();
+            if (RoomState is >= RoomStates.Countdown and <= RoomStates.Skill)
+            {
+                if (RoomState == RoomStates.Skill && CountDown < 0)
+                {
+                    // for (var i = 0; i < 4; i++) Players[i].ResetTimer
+                    CountDown = -1;
+                    CountDownStart = null;
+                    RoomState = RoomStates.Playing;
+                }
+                if (RoomState == RoomStates.Countdown && CountDown < 0)
+                {
+                    ClearPrepareInfo();
+                    await LinkPlayProcessor.Broadcast(LinkPlayResponse.Resp11PlayerInfo(this), this);
+
+                    Counter += 9999;
+                    RoomState = RoomStates.Syncing;
+                    return true;
+                }
+
+                if (RoomState == RoomStates.Syncing && (CountDown < 0 || IsAllState(PlayerStates.Synced)))
+                {
+                    CountDown += 2999;
+                    RoomState = RoomStates.Skill;
+                    return true;
+                }
+            }
+            if (RoomState == RoomStates.Playing && IsAllState(PlayerStates.GameEnd, true))
+            {
+                //MakeFinish()
+                return true;
+            }
+            if (RoomState == RoomStates.GameEnd && IsAllState(PlayerStates.Choosing, true))
+            {
+                SongIdxWithDiff = -1;
+                ClearPrepareInfo();
+                if (RoundRobin)
+                { 
+                    //Robin
+                }
+                RoomState = RoomStates.Locked;
+                return true;
+            }
+            return false;
         }
 
         public async Task UpdateUnlocks()
@@ -131,6 +214,17 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
               RoomState = roomState;
               await LinkPlayProcessor.Broadcast(LinkPlayResponse.Resp13PartRoomInfo(this), this); Counter++;
           }
+        }
+
+        public void ClearPrepareInfo()
+        {
+            for (var i = 0; i < Players.Length; i++)
+            {
+                Players[i].Score = 0;
+                Players[i].ClearType = ClearTypes.None;
+                Players[i].DownloadProgress = -1;
+                Players[i].LastScore = Players[i].LastSongTime = 0;            
+            }
         }
 
         public async Task<int> RemovePlayer(ulong token, ulong playerId)

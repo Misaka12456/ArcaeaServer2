@@ -109,7 +109,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
             {
                 if (dataObject.Counter < room.Counter) await SendMsg(newRoom.GetResendPack(dataObject.Counter), dataObject.Token!, endPoint);
                 if (newRoom.IsAllOnline()) await newRoom.AlterState(RoomStates.Choosing); 
-                if (newRoom.IsAllReady()) await newRoom.AlterState(RoomStates.Countdown); newRoom.CountDown += 4000;
+                if (newRoom.IsAllState(PlayerStates.Ready)) await newRoom.AlterState(RoomStates.Countdown); newRoom.CountDown += 4000;
                 if (newRoom.Players[playerIndex].OnlineState is false && redisTokenCount > playerIndex && playerIndex >= 0)
                 {
                     newRoom.Players[playerIndex].OnlineState = true;
@@ -121,6 +121,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                     await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(newRoom), newRoom); newRoom.Counter++;
                 }
                 if (flag12) await Broadcast(LinkPlayResponse.Resp12PlayerUpdate(newRoom, playerIndex), newRoom); newRoom.Counter++;
+                if (await newRoom.UpdateState()) await Broadcast(LinkPlayResponse.Resp13PartRoomInfo(newRoom), newRoom); newRoom.Counter++;
                 if (FetchRoomById(redisToken.RoomId) is not null) ReassignRoom(newRoom.RoomId, newRoom);
                 else RegisterRoom(newRoom, newRoom.RoomId);
             }
