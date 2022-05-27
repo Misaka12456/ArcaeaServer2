@@ -17,13 +17,41 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
                 var flag12 = false;
                 var playerIndex = tokenList.IndexOf(BitConverter.ToUInt64(data.Token));
                 var player = room.Players[playerIndex];
-                if (player.Character != data.Character) flag12 = true; room.Players[playerIndex].Character = data.Character;
-                if (player.CharacterUncapped != data.CharacterUncapped) flag12 = true; room.Players[playerIndex].CharacterUncapped = data.CharacterUncapped;
-                if ((uint)player.PlayerState != data.State) flag12 = true; room.Players[playerIndex].PlayerState = (PlayerStates)data.State;
-                if (player.Score != data.Score && room.RoomState == RoomStates.NotReady) flag12 = true; room.Players[playerIndex].Score = data.Score;
-                if (player.DownloadProgress != data.DownloadProgress && room.RoomState == RoomStates.NotReady) flag12 = true; room.Players[playerIndex].DownloadProgress = data.DownloadProgress;
-                if ((uint)player.Difficulty != data.Difficulty && room.RoomState == RoomStates.NotReady) flag12 = true; room.Players[playerIndex].Difficulty = (Difficulties)data.Difficulty;
-                if ((uint)player.ClearType != data.ClearType && room.RoomState == RoomStates.NotReady) flag12 = true; room.Players[playerIndex].ClearType = (ClearTypes)data.ClearType;
+                if (player.Character != data.Character)
+                {
+                    flag12 = true;
+                    room.Players[playerIndex].Character = data.Character;
+                }
+                if (player.CharacterUncapped != data.CharacterUncapped)
+                {
+                    flag12 = true;
+                    room.Players[playerIndex].CharacterUncapped = data.CharacterUncapped;
+                }
+                if ((uint)player.PlayerState != data.State)
+                {
+                    flag12 = true;
+                    room.Players[playerIndex].PlayerState = (PlayerStates) data.State;
+                }
+                if (player.Score != data.Score && room.RoomState == RoomStates.NotReady)
+                {
+                    flag12 = true;
+                    room.Players[playerIndex].Score = data.Score;
+                }
+                if (player.DownloadProgress != data.DownloadProgress && room.RoomState == RoomStates.NotReady)
+                {
+                    flag12 = true;
+                    room.Players[playerIndex].DownloadProgress = data.DownloadProgress;
+                }
+                if ((uint)player.Difficulty != data.Difficulty && room.RoomState == RoomStates.NotReady)
+                {
+                    flag12 = true;
+                    room.Players[playerIndex].Difficulty = (Difficulties) data.Difficulty;
+                }
+                if ((uint)player.ClearType != data.ClearType && room.RoomState == RoomStates.NotReady)
+                {
+                    flag12 = true;
+                    room.Players[playerIndex].ClearType = (ClearTypes) data.ClearType;
+                }
                 return (room, playerIndex, flag12);
             }
             
