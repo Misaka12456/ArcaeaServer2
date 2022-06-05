@@ -1,4 +1,5 @@
 using System;
+using System.Enhance.AspNetCore;
 using System.IO;
 using System.IO.Compression;
 using Microsoft.AspNetCore.Builder;
@@ -27,13 +28,6 @@ namespace Team123it.Arcaea.MarveCube
 		{
 			services.AddControllers();
 			services.Configure<FormOptions>(options => options.BufferBody = true);
-			services.AddResponseCompression();
-			services.Configure<GzipCompressionProviderOptions>(options =>
-			{
-				options.Level = CompressionLevel.Optimal;
-			});
-			//			services.AddTransient<LargeDataProcessMiddleware>();
-			// 			services.AddTransient<RealIpFetcherMiddleware>();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -44,22 +38,16 @@ namespace Team123it.Arcaea.MarveCube
 				app.UseDeveloperExceptionPage();
 			}
 
-//			app.UseHttpsRedirection();
+			app.UseMiddleware<DeChunkerMiddleware>(); // Forcibly disable buffering(chunked) response
 
 			app.UseRouting();
 
-//			app.UseAuthorization();
-
 			app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto });
 
-			//app.UseMiddleware<RealIpFetcherMiddleware>(null);
-
-			app.UseEndpoints(endpoints =>
+			app.UseEndpoints((endpoints) =>
 			{
 				endpoints.MapControllers();
 			});
-
-			//			app.UseMiddleware<LargeDataProcessMiddleware>(null);
 
 			app.Run(async context =>
 			{
@@ -73,5 +61,7 @@ namespace Team123it.Arcaea.MarveCube
 				await context.Response.WriteAsync($"Current Path: {context.Request.Path}\n");
 			});
 		}
+
+		// by Misaka12456 2022.4
 	}
 }

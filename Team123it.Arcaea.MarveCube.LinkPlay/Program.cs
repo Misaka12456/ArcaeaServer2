@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Enhance;
 using System.Net;
 using System.Net.Sockets;
@@ -10,8 +9,7 @@ using static Team123it.Arcaea.MarveCube.LinkPlay.GlobalProperties;
 
 namespace Team123it.Arcaea.MarveCube.LinkPlay
 {
-    [SuppressMessage("ReSharper", "FunctionNeverReturns")]
-    public class Program
+	public class Program
     {
         static Socket? _server;
         private static ConsoleWriter? _logWriter;
@@ -37,7 +35,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 		        for (;;)
 		        {
 			        Console.WriteLine("请输入LinkPlay服务器的监听端口(需与主服务器保持同步), 并回车:");
-			        if (ushort.TryParse(Console.ReadLine(), out var i))
+			        if (ushort.TryParse(Console.ReadLine(), out ushort i))
 			        {
 				        port = i;
 				        break;
@@ -72,7 +70,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 		        for (;;)
 		        {
 			        Console.WriteLine("请输入Redis服务器的监听端口(需与主服务器保持同步), 并回车:");
-			        if (ushort.TryParse(Console.ReadLine(), out var i))
+			        if (ushort.TryParse(Console.ReadLine(), out ushort i))
 			        {
 				        redisPort = i;
 				        break;
@@ -84,7 +82,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 		        {
 			        Console.WriteLine("请输入Redis服务器的密码(需与主服务器保持同步), 并回车:");
 			        var i = Console.ReadLine();
-			        if (i is not null)
+			        if (!string.IsNullOrWhiteSpace(i))
 			        {
 				        redisPassword = i;
 				        break;
@@ -93,16 +91,16 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 		        }
 
 		        Console.WriteLine("正在保存设置, 请稍后");
-		        var config = new JObject
-		        {
+		        var config = new JObject()
+				{
 			        {
-				        "settings", new JObject
-				        {
+				        "settings", new JObject()
+						{
 					        {"isMaintaining", false}
 				        }
 			        },
 			        {
-				        "config", new JObject
+				        "config", new JObject()
 				        {
 					        {"multiplayerServerUrl", multiplayerServerUrl},
 					        {"multiplayerServerPort", port},

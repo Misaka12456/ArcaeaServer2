@@ -8,7 +8,7 @@
 		"isWorldEventMapTesting": false, // 是否正在测试世界模式限时地图(true时设置的测试员(见下)将可以进入不在活动时间范围内的限时地图)
 		"eventMapTestPlayers": [], // 世界模式限时地图测试玩家的用户id列表
 		"minSupportVer": "3.10.6", // 最低支持的Arcaea客户端版本
-		"latestVersion": "3.12.8", // Arcaea客户端的最新版本
+		"latestVersion": "3.12.10", // Arcaea客户端的最新版本
 		"aprilFoolsStartTime": -1, // 愚人节开放的UNIX时间戳(单位为秒)(优先级高于上文的"服务器时间",低于"isOverrideAprilFools"的设置)
 		"topRankLimit": 200 //Top玩家(#框)的最大排名限制(最高可填写为200)
 	},
