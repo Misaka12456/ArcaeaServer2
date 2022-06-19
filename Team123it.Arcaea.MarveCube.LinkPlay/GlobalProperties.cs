@@ -2,31 +2,27 @@
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using StackExchange.Redis;
-using Team123it.Arcaea.MarveCube.LinkPlay.Core;
-using static Team123it.Arcaea.MarveCube.LinkPlay.GlobalProperties;
+using Team123it.Arcaea.MarveCube.LinkPlay.Entities;
 
 namespace Team123it.Arcaea.MarveCube.LinkPlay
 {
 	public static class RoomManager
 	{
-		private static Dictionary<string, Room> _rooms = new();
-		public static void RegisterRoom(Room room, string roomId) { _rooms.Add(roomId, room); }
-		public static void UnRegisterRoom(string roomId) { _rooms.Remove(roomId); }
-		public static Room? FetchRoomById(string roomId)
+		private static Dictionary<ulong, Room> _rooms = new();
+		
+		public static void RegisterRoom(this Room room, ulong roomId) => _rooms.Add(roomId, room);
+		
+		public static void UnRegisterRoom(ulong roomId) => _rooms.Remove(roomId);
+		
+		public static void ReassignRoom(this Room room) => _rooms[room.RoomId] = room;
+		
+		public static Room? FetchRoomById(ulong roomId)
 		{
-			if (_rooms.TryGetValue(roomId, out var room)) { return room; }
-			else { return null; }
-		}
-		public static string FetchRoomIdByToken(byte[] data)
-		{
-			var mDatabaseConnectUrl = $"{RedisServerUrl}:{RedisServerPort},password={RedisServerPassword}";
-			var conn = ConnectionMultiplexer.Connect(mDatabaseConnectUrl);
-			var db = conn.GetDatabase();
-			var roomData = JObject.Parse(db.StringGet($"Arcaea-LinkPlayToken-{BitConverter.ToUInt64(data)}"));
-			var roomId = roomData.Value<string>("roomId");
-			conn.Close();
-			return roomId!;
+			if (_rooms.TryGetValue(roomId, out var room))
+			{
+				return room;
+			}
+			return null;
 		}
 	}
 

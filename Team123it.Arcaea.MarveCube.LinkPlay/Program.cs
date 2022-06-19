@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Team123it.Arcaea.MarveCube.LinkPlay.Core;
+using static Team123it.Arcaea.MarveCube.LinkPlay.Core.LPCrypto;
 using static Team123it.Arcaea.MarveCube.LinkPlay.GlobalProperties;
 
 namespace Team123it.Arcaea.MarveCube.LinkPlay
@@ -132,14 +133,14 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 				        : new DirectoryInfo(Path.Combine(AppContext.BaseDirectory, "data", "Logs"));
 
 			        var newLog = string.Concat(DateTime.Now.ToString("yyyyMMddHHmmssfff"), ".log");
-			        _logWriter = new ConsoleWriter() {Tag = Path.Combine(AppContext.BaseDirectory, "data", "Logs", newLog)};
+			        _logWriter = new ConsoleWriter {Tag = Path.Combine(AppContext.BaseDirectory, "data", "Logs", newLog)};
 			        _logWriter.OnOutput += SaveLog;
 			        Console.WriteLine($"[{DateTime.Now:yyyy-M-d H:mm:ss}] Information: Detected '--background' argument. All logs will output to file {Path.Combine(AppContext.BaseDirectory, "data", "Logs", newLog)}.");
 			        Console.SetOut(_logWriter);
 		        }
 	        }
 	        Console.CancelKeyPress += StopServer;
-	        UdpBuilder();
+	        UdpBuilder().Start();
 	        StopServer(null, EventArgs.Empty);
         }
         
@@ -149,12 +150,12 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 	        File.AppendAllText(logFile, e.Text);
         }
 
-        private static void UdpBuilder()
+        private static async Task UdpBuilder()
         {
             _server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _server.Bind(new IPEndPoint(IPAddress.Parse(MultiplayerServerUrl), MultiplayerServerPort));//绑定端口号和IP
+            _server.Bind(new IPEndPoint(IPAddress.Parse(MultiplayerServerUrl!), MultiplayerServerPort));//绑定端口号和IP
             Console.WriteLine("Server Initialized, Now starting to process UDP");
-            ReceiveMsg();
+            await ReceiveMsg();
         }
 
         /// <summary>
@@ -163,36 +164,46 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
         /// <param name="data">需要发出的数据包</param>
         /// <param name="token">获取token</param>
         /// <param name="endPoint">数据要到达的终止点，可在ReceiveMsg中获得( <see cref="EndPoint"/> )</param>
-        public static void SendMsg(byte[] data, byte[] token, EndPoint endPoint)
+        public static async Task SendMsg(byte[] data, byte[] token, EndPoint endPoint)
         {
+	        const SocketFlags flags = SocketFlags.None;
 	        try
 	        {
-		        var encryptedData = LinkPlayCrypto.EncryptPack(token, data);
-		        _server?.SendTo(encryptedData, endPoint);
+		        var encryptedData = await EncryptPack(token, data);
+		        await _server?.SendToAsync(encryptedData, flags, endPoint)!;
+		        Console.WriteLine(endPoint + BitConverter.ToString(data));
 	        }
-	        catch (Exception e) { Console.WriteLine(e); }
+	        catch (Exception e)
+	        {
+		        Console.WriteLine(e);
+	        }
         }
         /// <summary>
         /// 接收发送给本机ip对应端口号的数据报
         /// </summary>
-        private static void ReceiveMsg()
+        private static async Task ReceiveMsg()
         {
-	        try
-	        {            
-		        while (true)
+	        const SocketFlags flags = SocketFlags.None;
+	        while (true)
+	        {
+		        try
 		        {
-			        EndPoint point = new IPEndPoint(IPAddress.Any, 0);//用来保存发送方的ip和端口号
+			        EndPoint point = new IPEndPoint(IPAddress.Any, 0); //用来保存发送方的ip和端口号
 			        var buffer = new byte[1024];
 			        if (_server == null) continue;
-			        var length = _server.ReceiveFrom(buffer, ref point);//接收数据报
-			        var message = LinkPlayCrypto.DecryptPack(buffer[..length]);
-			        Console.WriteLine(point.ToString() + message);
-			        LinkPlayParser.LinkPlayResp(message, point);
+			        var rawMessage = _server.ReceiveFromAsync(buffer, flags, point).Result; //接收数据报
+			        var message = await DecryptPack(buffer[..rawMessage.ReceivedBytes]);
+			        Console.WriteLine(rawMessage.RemoteEndPoint + BitConverter.ToString(message));
+			        var processor = new LinkPlayProcessor(message, rawMessage.RemoteEndPoint);
+			        await processor.ProcessPacket();
+		        }
+		        catch (Exception e)
+		        {
+			        Console.WriteLine(e);
 		        }
 	        }
-	        catch (Exception e) { Console.WriteLine(e); }
-        }
-        
+	    }
+
         private static void StopServer(object? sender, EventArgs e)
         {
 	        _logWriter?.Dispose();
