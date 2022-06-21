@@ -4,7 +4,7 @@ using Team123it.Arcaea.MarveCube.LinkPlay.Models;
 
 namespace Team123it.Arcaea.MarveCube.LinkPlay.Entities
 {
-        public struct Player
+    public struct Player
     {
         public byte[] Name = Encoding.ASCII.GetBytes("EmptyPlayer\x00\x00\x00\x00\x00"); // buf(16) (string)
         public ulong PlayerId; // u32

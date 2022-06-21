@@ -45,7 +45,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Entities
             Counter++;
         }
         
-        public bool HostValidation(ulong token)
+        public bool HostValidation(ulong token) // return true if host
         {
             var player = Players.FirstOrDefault(x => x.Token == token);
             return HostId == player.PlayerId;
