@@ -27,6 +27,7 @@ namespace Team123it.Arcaea.MarveCube
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddControllers();
+			services.AddTransient<DeChunkerMiddleware>();
 			services.Configure<FormOptions>(options => options.BufferBody = true);
 		}
 
