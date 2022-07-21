@@ -14,7 +14,11 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 		
 		public static void UnRegisterRoom(ulong roomId) => _rooms.Remove(roomId);
 		
-		public static void ReassignRoom(this Room room) => _rooms[room.RoomId] = room;
+		public static void ReassignRoom(this Room room)
+		{
+			_rooms.Remove(room.RoomId);
+			_rooms.Add(room.RoomId, room);
+		}
 		
 		public static Room? FetchRoomById(ulong roomId)
 		{

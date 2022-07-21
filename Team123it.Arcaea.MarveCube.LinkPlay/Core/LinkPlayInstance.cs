@@ -18,7 +18,7 @@ public static class LinkPlayInstance
             {
                 ClientTime = packet.ClientTime,
                 Counter = 4,
-                HostId = ulong.Parse(redisRoom.PlayerId[0]),
+                HostId = ulong.Parse(redisRoom.PlayerId[0].ToString()),
                 SongMap = Convert.FromBase64String(redisRoom.AllowSongs[0])
             };
             var (player, playerIndex) = room.AddPlayer(packet, endPoint, redisToken);

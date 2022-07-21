@@ -9,11 +9,12 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         public static T Deserialize<T>(this byte[] data)
         {
             var returnedObject = Activator.CreateInstance<T>();
-            var fields = typeof(T).GetFields(BindingFlags.Public | BindingFlags.Instance);
+            var fields = typeof(T).GetFields();
             foreach (var field in fields)
             {
                 var attribute = field.GetCustomAttribute<LPResponseAttribute>();
                 if (attribute == null) continue;
+                var bytes = data.AsSpan()[attribute.RangeStart..attribute.RangeEnd];
                 switch (field)
                 {
                     case var fieldInfo when fieldInfo.FieldType == typeof(bool):
@@ -23,22 +24,22 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
                     }
                     case var fieldInfo when fieldInfo.FieldType == typeof(short):       
                     {
-                        field.SetValue(returnedObject, ToInt16(data.AsSpan()[attribute.RangeStart..attribute.RangeEnd]));
+                        field.SetValue(returnedObject, ToInt16(bytes));
                         break;
                     }
                     case var fieldInfo when fieldInfo.FieldType == typeof(int):       
                     {
-                        field.SetValue(returnedObject, ToInt32(data.AsSpan()[attribute.RangeStart..attribute.RangeEnd]));
+                        field.SetValue(returnedObject, ToInt32(bytes));
                         break;
                     }
                     case var fieldInfo when fieldInfo.FieldType == typeof(uint):       
                     {
-                        field.SetValue(returnedObject, ToUInt32(data.AsSpan()[attribute.RangeStart..attribute.RangeEnd]));
+                        field.SetValue(returnedObject, ToUInt32(bytes));
                         break;
                     }
                     case var fieldInfo when fieldInfo.FieldType == typeof(ulong):       
                     {
-                        field.SetValue(returnedObject, ToUInt64(data.AsSpan()[attribute.RangeStart..attribute.RangeEnd]));
+                        field.SetValue(returnedObject, ToUInt64(bytes));
                         break;
                     }
                     case var fieldInfo when fieldInfo.FieldType == typeof(byte[]):

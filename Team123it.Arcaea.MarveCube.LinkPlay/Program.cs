@@ -140,7 +140,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 		        }
 	        }
 	        Console.CancelKeyPress += StopServer;
-	        UdpBuilder().Start();
+	        while (true) UdpBuilder();
 	        StopServer(null, EventArgs.Empty);
         }
         
@@ -150,12 +150,12 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
 	        File.AppendAllText(logFile, e.Text);
         }
 
-        private static async Task UdpBuilder()
+        private static void UdpBuilder()
         {
             _server = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             _server.Bind(new IPEndPoint(IPAddress.Parse(MultiplayerServerUrl!), MultiplayerServerPort));//绑定端口号和IP
             Console.WriteLine("Server Initialized, Now starting to process UDP");
-            await ReceiveMsg();
+	        ReceiveMsg();
         }
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay
         /// <summary>
         /// 接收发送给本机ip对应端口号的数据报
         /// </summary>
-        private static async Task ReceiveMsg()
+        private static async void ReceiveMsg()
         {
 	        const SocketFlags flags = SocketFlags.None;
 	        while (true)

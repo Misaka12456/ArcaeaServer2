@@ -11,7 +11,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Models
         [JsonProperty("roomId")] public ulong RoomId { get; set; }
         [JsonProperty("token")] public List<ulong> Token { get; set; }
         [JsonProperty("key")] public string Key { get; set; } = "EUUUGRkZGAARRRQZGRkYAA==";
-        [JsonProperty("playerId")] public List<string> PlayerId { get; set; }
+        [JsonProperty("playerId")] public List<int> PlayerId { get; set; }
         [JsonProperty("userId")] public List<uint> UserId { get; set; }
         [JsonProperty("allowSongs")] public List<string> AllowSongs { get; set; }
     }

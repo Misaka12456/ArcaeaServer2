@@ -217,7 +217,7 @@ namespace Team123it.Arcaea.MarveCube.LinkPlay.Core
 
         private async Task Process09Ping()
         {
-            var packet = _message.Deserialize<LPRequest.Req09Ping>();
+            var packet = _message.ParseClientPack09();
             _room = RoomManager.FetchRoomById(_roomId).GetValueOrDefault();
             var (player, playerIndex) = await LinkPlayInstance.Handler(packet, _endPoint);
         
